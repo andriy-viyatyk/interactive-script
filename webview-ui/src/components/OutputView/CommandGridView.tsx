@@ -21,7 +21,7 @@ const CommandGridViewRoot = styled.div({
     position: "relative",
     "& .title": {
         color: color.text.light,
-        backgroundColor: color.vs.gutter,
+        backgroundColor: color.background.dark,
         borderBottom: `1px solid ${color.border.default}`,
         paddingBottom: 4,
         display: "flex",

@@ -13,7 +13,7 @@ const CommandConfirmViewRoot = styled.div({
     borderRadius: 4,
     "& .title": {
         color: color.text.light,
-        backgroundColor: color.vs.gutter,
+        backgroundColor: color.background.dark,
         borderBottom: `1px solid ${color.border.default}`,
         paddingBottom: 4,
     },

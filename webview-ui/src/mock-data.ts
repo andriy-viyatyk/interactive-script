@@ -13,7 +13,7 @@ export async function mockData() {
         const data = await response.json();
 
         // mock input data
-        window.webViewType = "grid"; // "grid" | "output"
+        window.webViewType = "output"; // "grid" | "output"
         window.jsonData = data;
         window.sendDebugMessage = sendDebugMessage;
         window.isDebug = true;

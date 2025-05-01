@@ -21,7 +21,7 @@ const GridViewRoot = styled.div({
     display: "flex",
     flexDirection: "column",
     overflow: "auto",
-    backgroundColor: color.vs.background,
+    backgroundColor: color.background.default,
     "& .data-cell": {
         userSelect: "none",
     },
@@ -29,7 +29,7 @@ const GridViewRoot = styled.div({
         userSelect: "none",
     },
     "& .highlighted-text": {
-        color: color.olive[6],
+        color: color.misc.green,
     },
     "& .app-header": {
         display: "flex",
@@ -38,15 +38,18 @@ const GridViewRoot = styled.div({
     },
     "& .search-field": {
         "& input": {
-            borderColor: color.border.light,
-            borderRadius: 0,
+            borderColor: color.border.default,
+            borderRadius: 4,
             padding: 0,
             paddingLeft: 8,
             height: 24,
             outline: "none",
+            "&:focus": {
+                borderColor: color.border.active,
+            }
         },
         "& .search-icon": {
-            color: color.icon.light,
+            color: color.icon.disabled,
             width: 16,
             height: 16,
             margin: 3,
@@ -57,7 +60,7 @@ const GridViewRoot = styled.div({
         }
     },
     '& .search-field-focus input': {
-        borderColor: color.olive[7],
+        borderColor: color.misc.green,
     }
 });
 

@@ -13,7 +13,7 @@ const ButtonRoot = styled.button({
     columnGap: 6,
     alignItems: 'center',
     backgroundColor: color.background.default,
-    color: color.text.mainDefault,
+    color: color.text.default,
     border: '1px solid',
     borderColor: 'transparent',
     borderRadius: 6,
@@ -65,7 +65,7 @@ const ButtonRoot = styled.button({
         paddingRight: 8,
     },
     '&.disabled': {
-        color: color.text.mainDisabled,
+        color: color.text.light,
         '& svg': {
             color: color.icon.disabled,
         },

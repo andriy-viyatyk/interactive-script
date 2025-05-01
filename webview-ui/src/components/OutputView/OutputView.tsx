@@ -17,8 +17,8 @@ const OutputRoot = styled.div({
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
-    backgroundColor: color.vs.background,
-    color: color.vs.gray2,
+    backgroundColor: color.background.default,
+    color: color.text.light,
     padding: 4,
 });
 

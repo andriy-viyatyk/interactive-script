@@ -54,6 +54,7 @@ const RenderGridStyled = styled(RenderGrid)(
             top: 0,
             zIndex: 1,
             borderBottom: `solid 1px ${color.grid.borderColor}`,
+            userSelect: "none",
             "& .header-cell-title": {
                 flex: "1 1 auto",
                 textAlign: "center",
@@ -74,6 +75,7 @@ const RenderGridStyled = styled(RenderGrid)(
             fontSize: 14,
             fontWeight: 400,
             outline: "none",
+            userSelect: "none",
             '&[data-col="0"]': {
                 borderLeft: `solid 1px ${color.grid.borderColor}`,
             },
@@ -137,14 +139,6 @@ const RenderGridStyled = styled(RenderGrid)(
             pointerEvents: "none",
             border: `1px solid ${color.grid.selectionColor.border}`,
         },
-        "& .in-cell-link": {
-            cursor: "pointer",
-            textDecoration: "none",
-            "&:hover": {
-                color: color.text.mainDefault,
-                textDecoration: "underline",
-            },
-        },
         "& .cell-check-icon": {
             width: 16,
             height: 16,
@@ -156,11 +150,11 @@ const RenderGridStyled = styled(RenderGrid)(
             fontSize: 13,
             cursor: "pointer",
             "& .add-row-plus": {
-                color: color.icon.light,
+                color: color.icon.disabled,
                 marginRight: 4,
             },
             "&:hover": {
-                color: color.text.mainDefault,
+                color: color.icon.default,
                 "& .add-row-plus": {
                     color: color.icon.default,
                 },

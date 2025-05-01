@@ -12,29 +12,31 @@ const CommandTextViewRoot = styled.div({
         height: 16,
         marginRight: 4,
     },
+
     '& .icon-error': {
-        color: color.vs.red,
+        color: color.misc.red,
     },
     '& .icon-warn': {
-        color: color.vs.yellow,
+        color: color.misc.yellow,
     },
     '& .icon-success': {
-        color: color.vs.green,
+        color: color.misc.green,
     },
     '& .icon-info': {
-        color: color.vs.blue,
+        color: color.misc.blue,
     },
+
     '&.item-info': {
-        color: color.vs.blue,
+        color: color.misc.blue,
     },
     '&.item-warn': {
-        color: color.vs.yellow,
+        color: color.misc.yellow,
     },
     '&.item-error': {
-        color: color.vs.red,
+        color: color.misc.red,
     },
     '&.item-success': {
-        color: color.vs.green,
+        color: color.misc.green,
     },
 })
 
