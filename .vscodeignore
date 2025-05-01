@@ -1,0 +1,12 @@
+src/
+tsconfig.json
+.vscode
+.git
+.gitignore
+webview-ui
+test
+package-lock.json
+script-interact
+shared/
+
+*.map

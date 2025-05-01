@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs",
+        "lib": ["ES2020"],
+        "outDir": "out",
+        "rootDir": ".",
+        "strict": true,
+        "esModuleInterop": true,
+        "sourceMap": true
+    },
+    "include": ["src", "shared"],
+    "exclude": [
+        "node_modules",
+        ".vscode-test",
+        "webview-ui",
+        "test",
+        "script-interact",
+    ]
+}

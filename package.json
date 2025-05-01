@@ -1,0 +1,126 @@
+{
+  "name": "vscode-grid-viever",
+  "displayName": "Interactive Script",
+  "description": "Provides interactive UI elements for the JS and TS scripts.",
+  "publisher": "Andriy Viyatyk",
+  "author": "Andriy Viyatyk",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/your-repo-name.git"
+  },
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:avScriptTools.showGrid"
+  ],
+  "main": "./out/src/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "avScriptTools.bottomPanel",
+          "name": "Script Output",
+          "contextualTitle": "Script Output",
+          "type": "webview",
+          "when": "true",
+          "icon": "./icons/av.svg"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "avScriptTools.showGrid",
+        "title": "Show Grid",
+        "category": "Interactive Script",
+        "icon": {
+          "light": "./icons/av.svg",
+          "dark": "./icons/av.svg"
+        }
+      },
+      {
+        "command": "avScriptTools.runScript",
+        "title": "Run TS Script",
+        "category": "Interactive Script",
+        "icon": {
+          "light": "./icons/arrowRight.svg",
+          "dark": "./icons/arrowRight.svg"
+        }
+      },
+      {
+        "command": "avScriptTools.stopScript",
+        "title": "Stop Script",
+        "category": "Interactive Script",
+        "icon": {
+          "light": "./icons/stop.svg",
+          "dark": "./icons/stop.svg"
+        }
+      },
+      {
+        "command": "avScriptTools.clearConsole",
+        "title": "Clear Console",
+        "category": "Interactive Script",
+        "icon": {
+          "light": "./icons/clear-console.svg",
+          "dark": "./icons/clear-console.svg"
+        }
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "avScriptTools.showGrid",
+          "when": "resourceExtname == .json",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "avScriptTools.runScript",
+          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js) && !avScriptTools.scriptRunning",
+          "group": "navigation@1"
+        },
+        {
+          "command": "avScriptTools.stopScript",
+          "when": "view == avScriptTools.bottomPanel && avScriptTools.scriptRunning",
+          "group": "navigation@2"
+        },
+        {
+          "command": "avScriptTools.clearConsole",
+          "when": "view == avScriptTools.bottomPanel",
+          "group": "navigation@3"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -p ./",
+    "start": "tsc -watch -p ./",
+    "build": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.70.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "interactive",
+    "script",
+    "script runner",
+    "typescript",
+    "javascript",
+    "json",
+    "grid",
+    "preview"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "uuid": "^11.1.0"
+  }
+}

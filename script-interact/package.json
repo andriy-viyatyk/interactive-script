@@ -1,0 +1,15 @@
+{
+    "name": "script-interact",
+    "version": "0.1.0",
+    "main": "dist/script-interact/index.js",
+    "types": "dist/script-interact/index.d.ts",
+    "scripts": {
+      "build": "tsc"
+    },
+    "files": [
+      "dist"
+    ],
+    "author": "Andriy Viyatyk",
+    "license": "ISC"
+  }
+  

@@ -1,0 +1,10 @@
+<svg width="24" height="24" viewBox="-2 0 28 24" xmlns="http://www.w3.org/2000/svg" fill="none" 
+     stroke="#00BFC8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+
+  <!-- Ліва частина "A" (трикутник вгору) -->
+  <path d="M1.5 20 L8 6 L14 20 M1.5 20 L8 20" />
+
+  <!-- Права частина "V" (трикутник вниз) зі збільшеним "x" на 4 -->
+  <path d="M13 6 L19 20 L24.5 6 M13 6 L19 6" />
+
+</svg>
