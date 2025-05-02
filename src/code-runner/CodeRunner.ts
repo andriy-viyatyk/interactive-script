@@ -79,7 +79,7 @@ class CodeRunner {
         );
     }
 
-    handleProcess = (child: cp.ChildProcessWithoutNullStreams) => {
+    handleProcess = (child: cp.ChildProcessWithoutNullStreams, fileName: string) => {
         if (!this.viewsSubscribed) {
             views.onOutputMessage.subscribe(this.onReplayMessage);
             this.viewsSubscribed = true;
@@ -125,7 +125,10 @@ class CodeRunner {
         child.on("exit", (code) => {
             if (!isLive()) return;
             views.messageToOutput(
-                commands.log.info(`Script exited with code ${code}`)
+                commands.log.log([
+                    {text: `[ ${fileName} ]`, styles: {color: "cyan"}},
+                    ` exit code ${code}`
+                ])
             );
             this.child = null;
             this.isRunning = false;
@@ -137,10 +140,14 @@ class CodeRunner {
 
         const fileExtension = path.extname(filePath);
         const command = fileExtension === ".js" ? "node" : "ts-node";
+        const fileName = path.basename(filePath);
 
         views.messageToOutput(
-            commands.log.info(
-                `> ${command} "${filePath}"`
+            commands.log.log(
+                [
+                    {text: `[ ${fileName} ]`, styles: {color: "cyan"}},
+                    ` ${command} "${filePath}"`
+                ]
             )
         );
 
@@ -149,7 +156,7 @@ class CodeRunner {
             shell: true,
         });
 
-        this.handleProcess(this.child);
+        this.handleProcess(this.child, fileName);
     };
 
     stop = () => {

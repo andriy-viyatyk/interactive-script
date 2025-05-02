@@ -25,8 +25,8 @@
       "explorer": [
         {
           "id": "avScriptTools.bottomPanel",
-          "name": "Script Output",
-          "contextualTitle": "Script Output",
+          "name": "Script UI",
+          "contextualTitle": "Script UI",
           "type": "webview",
           "when": "true",
           "icon": "./icons/av.svg"

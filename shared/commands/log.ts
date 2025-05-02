@@ -1,6 +1,6 @@
-import { newMessage, ViewMessage } from "../ViewMessage";
+import { newMessage, UiText, ViewMessage } from "../ViewMessage";
 
-export interface LogCommand extends ViewMessage<string> {
+export interface LogCommand extends ViewMessage<UiText> {
     command: "log" | "info" | "warn" | "error" | "success";
 }
 
@@ -15,9 +15,9 @@ export function isLogCommand(message: ViewMessage): message is LogCommand {
 }
 
 export default {
-    log: (message: string) => newMessage("log", message),
-    info: (message: string) => newMessage("info", message),
-    warn: (message: string) => newMessage("warn", message),
-    error: (message: string) => newMessage("error", message),
-    success: (message: string) => newMessage("success", message),
+    log: (message: UiText) => newMessage("log", message),
+    info: (message: UiText) => newMessage("info", message),
+    warn: (message: UiText) => newMessage("warn", message),
+    error: (message: UiText) => newMessage("error", message),
+    success: (message: UiText) => newMessage("success", message),
 };

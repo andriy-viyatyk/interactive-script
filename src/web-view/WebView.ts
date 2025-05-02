@@ -36,7 +36,7 @@ export class WebView implements vscode.WebviewViewProvider {
     resolveWebviewView(webviewView: vscode.WebviewView) {
         this.type = "output";
         this.panel = webviewView;
-        this.panel.title = "Script Output";
+        this.panel.title = "Script UI";
         this.panel.webview.options = {
             enableScripts: true,
         };

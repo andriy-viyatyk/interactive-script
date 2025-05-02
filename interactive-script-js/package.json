@@ -1,8 +1,8 @@
 {
-    "name": "script-interact",
+    "name": "interactive-script-js",
     "version": "0.1.0",
-    "main": "dist/script-interact/index.js",
-    "types": "dist/script-interact/index.d.ts",
+    "main": "dist/interactive-script-js/index.js",
+    "types": "dist/interactive-script-js/index.d.ts",
     "scripts": {
       "build": "tsc"
     },

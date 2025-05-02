@@ -2,8 +2,9 @@ import styled from "@emotion/styled";
 import { ConfirmCommand } from "../../../../shared/commands/confirm";
 import { Button } from "../../controls/Button";
 import color from "../../theme/color";
-import { ViewMessage } from "../../../../shared/ViewMessage";
+import { uiTextToString, ViewMessage } from "../../../../shared/ViewMessage";
 import { CheckIcon } from "../../theme/icons";
+import { UiTextView } from "./UiTextView";
 
 const CommandConfirmViewRoot = styled.div({
     "& .message": {
@@ -37,17 +38,24 @@ export function CommandConfirmView({
 
     return (
         <CommandConfirmViewRoot className="command-confirm dialog">
-            {Boolean(item.data?.title) && <div className="dialog-header">{item.data?.title}</div>}
-            <div className="message">{item.data?.message}</div>
+            {Boolean(item.data?.title) && (
+                <div className="dialog-header">
+                    <UiTextView uiText={item.data?.title} />
+                </div>
+            )}
+            <div className="message">
+                <UiTextView uiText={item.data?.message} />
+            </div>
             <div className="dialog-buttons">
                 {buttons.map((button, index) => (
                     <Button
                         size="small"
-                        key={`${button}-${index}`}
-                        onClick={() => buttonClick(button)}
+                        key={`${uiTextToString(button)}-${index}`}
+                        onClick={() => buttonClick(uiTextToString(button))}
                         disabled={Boolean(item.data?.result)}
                     >
-                        {(item.data?.result === button ? <CheckIcon /> : null)}{button}
+                        {item.data?.result === uiTextToString(button) ? <CheckIcon /> : null}
+                        <UiTextView uiText={button} />
                     </Button>
                 ))}
             </div>

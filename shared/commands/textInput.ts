@@ -1,8 +1,8 @@
-import { newMessage, ViewMessage } from "../ViewMessage";
+import { newMessage, UiText, ViewMessage } from "../ViewMessage";
 
 export interface TextInputData {
-    title: string;
-    buttons?: string[];
+    title: UiText;
+    buttons?: UiText[];
 }
 
 export interface TextInputResultData extends TextInputData {

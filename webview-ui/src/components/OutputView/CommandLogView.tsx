@@ -1,11 +1,12 @@
 import styled from "@emotion/styled";
 import color from "../../theme/color";
 import { LogCommand } from "../../../../shared/commands/log";
+import { UiTextView } from "./UiTextView";
 
 const CommandLogViewRoot = styled.div({
-    display: 'flex',
-    alignItems: 'flex-start',
-    whiteSpace: 'pre',
+    display: 'inline-block',
+    whiteSpace: 'pre-wrap',
+    minHeight: 17,
 
     '&.item-info': {
         color: color.misc.blue,
@@ -28,7 +29,7 @@ export interface CommandLogViewProps {
 export function CommandLogView({ item }: Readonly<CommandLogViewProps>) {
     return (
         <CommandLogViewRoot className={`item-${item.command}`}>
-            {item.data}
+            <UiTextView uiText={item.data}/>
         </CommandLogViewRoot>
     )
 }

@@ -7,8 +7,9 @@ import { CellFocus } from "../../controls/AVGrid/avGridTypes";
 import { FlexSpace } from "../../controls/FlexSpace";
 import { Button } from "../../controls/Button";
 import { OpenWindowIcon } from "../../theme/icons";
-import { ViewMessage } from "../../../../shared/ViewMessage";
+import { uiTextToString, ViewMessage } from "../../../../shared/ViewMessage";
 import commands from "../../../../shared/commands";
+import { UiTextView } from "./UiTextView";
 
 const CommandGridViewRoot = styled.div({
     position: "relative",
@@ -29,7 +30,7 @@ export function CommandGridView({
     return (
         <CommandGridViewRoot className="command-grid dialog">
             <div className="dialog-header">
-                {item.data?.title}
+                <UiTextView uiText={item.data?.title} />
                 <FlexSpace />
                 <Button
                     size="small"
@@ -39,7 +40,7 @@ export function CommandGridView({
                         sendMessage(
                             commands.window.showGrid({
                                 data: item.data?.data ?? [],
-                                title: item.data?.title,
+                                title: uiTextToString(item.data?.title),
                                 columns: item.data?.columns,
                             })
                         );

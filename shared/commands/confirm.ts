@@ -1,9 +1,9 @@
-import { newMessage, ViewMessage } from "../ViewMessage";
+import { newMessage, UiText, ViewMessage } from "../ViewMessage";
 
 export interface ConfirmData {
-    title?: string;
-    message: string;
-    buttons?: string[];
+    title?: UiText;
+    message: UiText;
+    buttons?: UiText[];
     result?: string;
 }
 

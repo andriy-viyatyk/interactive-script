@@ -1,12 +1,13 @@
 import styled from "@emotion/styled";
 import { TextInputCommand } from "../../../../shared/commands/textInput";
-import { ViewMessage } from "../../../../shared/ViewMessage";
+import { uiTextToString, ViewMessage } from "../../../../shared/ViewMessage";
 import { useState } from "react";
 import { TextAreaField } from "../../controls/TextAreaField";
 import { Button } from "../../controls/Button";
 import { CheckIcon } from "../../theme/icons";
 import color from "../../theme/color";
 import clsx from "clsx";
+import { UiTextView } from "./UiTextView";
 
 const CommandTextInputViewRoot = styled.div({
     "& .text-area-field": {
@@ -61,7 +62,7 @@ export function CommandTextInputView({
 
     return (
         <CommandTextInputViewRoot className="command-text-input dialog">
-            <div className="dialog-header">{item.data?.title}</div>
+            <div className="dialog-header"><UiTextView uiText={item.data?.title} /></div>
             <TextAreaField
                 className={clsx("text-area-field", { readOnly })}
                 value={text}
@@ -72,12 +73,12 @@ export function CommandTextInputView({
                 {buttons.map((button, index) => (
                     <Button
                         size="small"
-                        key={`${button}-${index}`}
-                        onClick={() => buttonClick(button)}
+                        key={`${uiTextToString(button)}-${index}`}
+                        onClick={() => buttonClick(uiTextToString(button))}
                         disabled={Boolean(item.data?.resultButton)}
                     >
-                        {item.data?.resultButton === button ? <CheckIcon /> : null}
-                        {button}
+                        {item.data?.resultButton === uiTextToString(button) ? <CheckIcon /> : null}
+                        <UiTextView uiText={button} />
                     </Button>
                 ))}
             </div>

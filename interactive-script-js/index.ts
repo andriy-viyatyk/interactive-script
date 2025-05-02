@@ -1,11 +1,11 @@
 import * as readline from "readline";
 
-import commands from "../../shared/commands";
-import { commandLine } from "../../shared/constants";
-import { ViewMessage } from "../../shared/ViewMessage";
-import { ConfirmCommand, ConfirmData } from "../../shared/commands/confirm";
-import { GridColumn } from "../../shared/commands/grid";
-import { TextInputCommand, TextInputData, TextInputResultData } from "../../shared/commands/textInput";
+import commands from "../shared/commands";
+import { commandLine } from "../shared/constants";
+import { isUiText, UiText, ViewMessage } from "../shared/ViewMessage";
+import { ConfirmCommand, ConfirmData } from "../shared/commands/confirm";
+import { GridColumn } from "../shared/commands/grid";
+import { TextInputCommand, TextInputData } from "../shared/commands/textInput";
 
 function messageToString(message: ViewMessage): string {
     return `${commandLine} ${JSON.stringify(message)}`;
@@ -48,17 +48,18 @@ function withResponse(message: ViewMessage): Promise<ViewMessage | undefined> {
 }
 
 const ui = {
-    log: (message: string) => send(commands.log.log(message)),
-    error: (message: string) => send(commands.log.error(message)),
-    info: (message: string) => send(commands.log.info(message)),
-    warn: (message: string) => send(commands.log.warn(message)),
-    success: (message: string) => send(commands.log.success(message)),
+    log: (message: UiText) => send(commands.log.log(message)),
+    error: (message: UiText) => send(commands.log.error(message)),
+    info: (message: UiText) => send(commands.log.info(message)),
+    warn: (message: UiText) => send(commands.log.warn(message)),
+    success: (message: UiText) => send(commands.log.success(message)),
     clear: () => send(commands.clear()),
     dialog: {
-        confirm: async (params: string | ConfirmData) => {
-            const message = typeof params === 'string'
-                ? commands.confirm({ message: params })
-                : commands.confirm(params);
+        confirm: async (params: UiText | ConfirmData) => {
+            const message =
+                isUiText(params)
+                    ? commands.confirm({ message: params })
+                    : commands.confirm(params);
             const response = await withResponse(message);
             if (response) {
                 return (response as ConfirmCommand).data?.result;
@@ -66,10 +67,12 @@ const ui = {
                 return undefined;
             }
         },
-        textInput: async (params: string | TextInputData) => {
-            const message = typeof params === 'string'
-                ? commands.textInput({ title: params })
-                : commands.textInput(params);
+
+        textInput: async (params: UiText | TextInputData) => {
+            const message =
+                isUiText(params)
+                    ? commands.textInput({ title: params })
+                    : commands.textInput(params);
             const response = await withResponse(message);
             if (response) {
                 return (response as TextInputCommand).data;
@@ -79,17 +82,23 @@ const ui = {
         },
     },
     display: {
-        gridFromJsonArray: (data: any[], options?: {title?: string, columns?: GridColumn[]}) =>
-            send(commands.grid.fromJsonArray(data, options)),
-        textBlock: (data: string, options?: {title?: string}) =>
+        gridFromJsonArray: (
+            data: any[],
+            options?: { title?: UiText; columns?: GridColumn[] }
+        ) => send(commands.grid.fromJsonArray(data, options)),
+
+        textBlock: (data: string, options?: { title?: string }) =>
             send(commands.text({ text: data, title: options?.title })),
     },
     window: {
-        showGrid: (data: any[], options?: {title?: string, columns?: GridColumn[]}) =>
-            send(commands.window.showGrid({ data, ...options })),
-        showText: (text: string, options?: {language?: string}) =>
+        showGrid: (
+            data: any[],
+            options?: { title?: string; columns?: GridColumn[] }
+        ) => send(commands.window.showGrid({ data, ...options })),
+
+        showText: (text: string, options?: { language?: string }) =>
             send(commands.window.showText({ text, ...options })),
-    }
-}
+    },
+};
 
 export default ui;

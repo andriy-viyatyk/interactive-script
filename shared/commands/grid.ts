@@ -1,4 +1,4 @@
-import { newMessage, ViewMessage } from "../ViewMessage";
+import { newMessage, UiText, ViewMessage } from "../ViewMessage";
 
 export interface GridColumn {
     key: string;
@@ -7,7 +7,7 @@ export interface GridColumn {
 }
 
 export interface GridData {
-    title?: string;
+    title?: UiText;
     data: any[];
     columns?: GridColumn[];
 }
@@ -20,7 +20,7 @@ export function isGridCommand(message: ViewMessage): message is GridCommand {
     return message.command === "grid";
 }
 
-const fromJsonArray = (data: any[], options?: {title?: string, columns?: GridColumn[]}) => {
+const fromJsonArray = (data: any[], options?: {title?: UiText, columns?: GridColumn[]}) => {
     return newMessage("grid", {
         title: options?.title,
         data: data,

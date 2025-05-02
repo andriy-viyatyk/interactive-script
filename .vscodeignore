@@ -6,7 +6,8 @@ tsconfig.json
 webview-ui
 test
 package-lock.json
-script-interact
+interactive-script-js
 shared/
+demo/
 
 *.map

@@ -15,6 +15,6 @@
         ".vscode-test",
         "webview-ui",
         "test",
-        "script-interact",
+        "interactive-script-js",
     ]
 }

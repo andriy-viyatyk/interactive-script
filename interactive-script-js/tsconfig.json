@@ -8,5 +8,5 @@
         "esModuleInterop": true,
         "strict": true
     },
-    "include": ["src", "../shared"]
+    "include": ["index.ts", "src", "../shared"]
 }
