@@ -13,8 +13,6 @@ import color from '../theme/color';
 
 const TextAreaRoot = styled.div(
     {
-        fontFamily: 'Open Sans',
-        fontSize: 14,
         padding: '4px 6px',
         backgroundColor: color.background.default,
         color: color.text.dark,

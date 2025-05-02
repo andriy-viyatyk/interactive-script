@@ -15,4 +15,7 @@ body {
   width: 100%;
   overflow: hidden;
   padding: 0;
+  font-family: var(--vscode-font-family, 'Segoe WPC', 'Segoe UI', sans-serif, Consolas, 'Courier New');
+  font-size: var(--vscode-font-size, 14px);
+  font-weight: var(--vscode-font-weight, normal);
 }

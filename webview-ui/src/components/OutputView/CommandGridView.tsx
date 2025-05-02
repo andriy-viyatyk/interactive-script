@@ -14,16 +14,16 @@ import commands from "../../../../shared/commands";
 const CommandGridViewRoot = styled.div({
     margin: "4px 0",
     marginLeft: 20,
-    padding: 4,
     border: `1px solid ${color.border.default}`,
     borderRadius: 4,
-    // maxWidth: "calc(100% - 50px)",
     position: "relative",
     "& .title": {
         color: color.text.light,
         backgroundColor: color.background.dark,
         borderBottom: `1px solid ${color.border.default}`,
-        paddingBottom: 4,
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4,
+        padding: 4,
         display: "flex",
         alignItems: "center",
         "& button": {

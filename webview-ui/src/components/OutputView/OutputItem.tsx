@@ -9,8 +9,7 @@ import { isGridCommand } from "../../../../shared/commands/grid";
 import { CommandGridView } from "./CommandGridView";
 
 const OutputItemRoot = styled.div({
-    fontSize: 14,
-    lineHeight: 1,
+    lineHeight: "1.4em",
     maxWidth: "calc(100% - 20px)",
     position: "relative",
 });

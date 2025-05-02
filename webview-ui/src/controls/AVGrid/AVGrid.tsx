@@ -48,8 +48,6 @@ const RenderGridStyled = styled(RenderGrid)(
             whiteSpace: "nowrap",
             textOverflow: "ellipsis",
             backgroundColor: color.grid.headerCellBackground,
-            fontSize: 14,
-            fontWeight: 400,
             color: color.grid.headerCellColor,
             top: 0,
             zIndex: 1,
@@ -72,8 +70,6 @@ const RenderGridStyled = styled(RenderGrid)(
             borderBottom: `solid 1px ${color.grid.borderColor}`,
             borderRight: `solid 1px ${color.grid.borderColor}`,
             color: color.grid.dataCellColor,
-            fontSize: 14,
-            fontWeight: 400,
             outline: "none",
             userSelect: "none",
             '&[data-col="0"]': {
@@ -113,20 +109,18 @@ const RenderGridStyled = styled(RenderGrid)(
             right: 0,
             backgroundColor: color.grid.selectionColor.selected,
             pointerEvents: "none",
-            borderBottom: `solid 1px ${color.grid.selectionColor.borderLight}`,
-            borderRight: `solid 1px ${color.grid.selectionColor.borderLight}`,
         },
         "& .data-cell.inSelectionTop:not(.focused)::before": {
-            borderTop: `1px solid ${color.grid.selectionColor.borderLight}`,
+            borderTop: `1px solid ${color.grid.selectionColor.border}`,
         },
         "& .data-cell.inSelectionBottom:not(.focused)::before": {
-            borderBottom: `1px solid ${color.grid.selectionColor.borderLight}`,
+            borderBottom: `1px solid ${color.grid.selectionColor.border}`,
         },
         "& .data-cell.inSelectionLeft:not(.focused)::before": {
-            borderLeft: `1px solid ${color.grid.selectionColor.borderLight}`,
+            borderLeft: `1px solid ${color.grid.selectionColor.border}`,
         },
         "& .data-cell.inSelectionRight:not(.focused)::before": {
-            borderRight: `1px solid ${color.grid.selectionColor.borderLight}`,
+            borderRight: `1px solid ${color.grid.selectionColor.border}`,
         },
         "& .data-cell.focused::before": {
             content: "''",

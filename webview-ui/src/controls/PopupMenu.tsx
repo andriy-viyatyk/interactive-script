@@ -21,7 +21,6 @@ const PopupMenuRoot = styled(PopperRoot)<{ height?: CSSProperties['height'] }>(
             display: 'flex',
             alignItems: 'center',
             columnGap: 8,
-            fontSize: 13,
             color: color.text.default,
             cursor: 'pointer',
             padding: '0 4px',

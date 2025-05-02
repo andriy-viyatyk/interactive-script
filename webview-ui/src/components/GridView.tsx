@@ -29,7 +29,7 @@ const GridViewRoot = styled.div({
         userSelect: "none",
     },
     "& .highlighted-text": {
-        color: color.misc.green,
+        color: color.misc.blue,
     },
     "& .app-header": {
         display: "flex",
@@ -60,7 +60,7 @@ const GridViewRoot = styled.div({
         }
     },
     '& .search-field-focus input': {
-        borderColor: color.misc.green,
+        borderColor: color.misc.blue,
     }
 });
 

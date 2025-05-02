@@ -7,7 +7,6 @@ import color from '../theme/color';
 
 const TextFieldRoot = styled(Input)({
     '& .textField-label': {
-        fontSize: 13,
         color: color.text.light,
         position: 'absolute',
         left: 0,

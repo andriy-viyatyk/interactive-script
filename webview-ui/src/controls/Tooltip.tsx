@@ -9,7 +9,6 @@ const TooltipRoot = styled(ReactTooltip)({
     color: `${color.text.dark} !important`,
     zIndex: 1000,
     borderRadius: '6px !important',
-    fontSize: '13px !important',
 });
 
 export function Tooltip(props: Readonly<ITooltip>) {
