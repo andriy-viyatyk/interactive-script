@@ -39,6 +39,14 @@ const ButtonRoot = styled.button({
             height: 16,
         },
     },
+    '&.mini': {
+        height: 'unset',
+        padding: 2,
+        '& svg': {
+            width: 16,
+            height: 16,
+        },
+    },
     '&.medium': {
         height: 32,
         padding: 3,
@@ -92,7 +100,7 @@ export interface ButtonProps extends ParentType {
     onDoubleClick?: () => void;
     children?: ReactNode;
     className?: string;
-    size?: 'small' | 'medium';
+    size?: 'mini' | 'small' | 'medium';
     type?: 'flat' | 'raised' | 'icon';
     tooltip?: ReactNode;
     extraPadding?: boolean;
@@ -146,6 +154,7 @@ export const Button = forwardRef(function ButtonComponent(props: Readonly<Button
                         raised: type === 'raised',
                         flat: type === 'flat',
                         icon: type === 'icon',
+                        mini: size === 'mini',
                         extraPadding: textPadding,
                         disabled: disabled || loading,
                     },

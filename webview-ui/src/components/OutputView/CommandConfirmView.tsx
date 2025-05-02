@@ -7,26 +7,19 @@ import { CheckIcon } from "../../theme/icons";
 
 const CommandConfirmViewRoot = styled.div({
     margin: "4px 0",
-    marginLeft: 20,
     border: `1px solid ${color.border.default}`,
     borderRadius: 4,
-    "& .title": {
-        color: color.text.light,
-        backgroundColor: color.background.dark,
-        borderBottom: `1px solid ${color.border.default}`,
-        borderTopLeftRadius: 4,
-        borderTopRightRadius: 4,
-        padding: 4,
-    },
     "& .message": {
         color: color.text.default,
         padding: 8,
+        whiteSpace: "pre",
     },
     "& .buttons": {
         display: "flex",
         flexDirection: "row",
         columnGap: 8,
         justifyContent: "flex-end",
+        flexWrap: "wrap",
         padding: 4,
         paddingBottom: 0,
     },
@@ -56,7 +49,7 @@ export function CommandConfirmView({
 
     return (
         <CommandConfirmViewRoot className="command-confirm">
-            {Boolean(item.data?.title) && <div className="title">{item.data?.title}</div>}
+            {Boolean(item.data?.title) && <div className="dialog-header">{item.data?.title}</div>}
             <div className="message">{item.data?.message}</div>
             <div className="buttons">
                 {buttons.map((button, index) => (

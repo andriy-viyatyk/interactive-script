@@ -13,23 +13,9 @@ import commands from "../../../../shared/commands";
 
 const CommandGridViewRoot = styled.div({
     margin: "4px 0",
-    marginLeft: 20,
     border: `1px solid ${color.border.default}`,
     borderRadius: 4,
     position: "relative",
-    "& .title": {
-        color: color.text.light,
-        backgroundColor: color.background.dark,
-        borderBottom: `1px solid ${color.border.default}`,
-        borderTopLeftRadius: 4,
-        borderTopRightRadius: 4,
-        padding: 4,
-        display: "flex",
-        alignItems: "center",
-        "& button": {
-            padding: 0,
-        },
-    },
 });
 
 interface CommandGridViewProps {
@@ -46,7 +32,7 @@ export function CommandGridView({
 
     return (
         <CommandGridViewRoot className="command-grid">
-            <div className="title">
+            <div className="dialog-header">
                 {item.data?.title}
                 <FlexSpace />
                 <Button

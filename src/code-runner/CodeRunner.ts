@@ -41,7 +41,7 @@ class CodeRunner {
             }
             catch (error) {
                 views.messageToOutput(
-                    commands.text.error(`Error parsing command: ${error}`)
+                    commands.log.error(`Error parsing command: ${error}`)
                 );
                 return false;
             }
@@ -83,7 +83,7 @@ class CodeRunner {
         const onLine = (line: string) => {
             if (this.handleCommand(line)) return;
 
-            views.messageToOutput(commands.text.log(line));
+            views.messageToOutput(commands.log.log(line));
 
             // Check if the script printed "ping"
             if (line === "ping") {
@@ -92,7 +92,7 @@ class CodeRunner {
         };
 
         const onError = (error: string) => {
-            views.messageToOutput(commands.text.error(error));
+            views.messageToOutput(commands.log.error(error));
         }
 
         child.stdout.on("data", (data: Buffer) => {
@@ -118,7 +118,7 @@ class CodeRunner {
         child.on("exit", (code) => {
             if (!isLive()) return;
             views.messageToOutput(
-                commands.text.info(`Script exited with code ${code}`)
+                commands.log.info(`Script exited with code ${code}`)
             );
             this.child = null;
             this.isRunning = false;
@@ -132,7 +132,7 @@ class CodeRunner {
         const command = fileExtension === ".js" ? "node" : "ts-node";
 
         views.messageToOutput(
-            commands.text.info(
+            commands.log.info(
                 `> ${command} "${filePath}"`
             )
         );

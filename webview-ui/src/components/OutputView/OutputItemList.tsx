@@ -76,13 +76,6 @@ export class OutputItemListModel extends TComponentModel<
             this.gridModel?.scrollBy({ x: 0, y: Number.MAX_SAFE_INTEGER });
         }, 1);
     };
-
-    onCheckSize = (item: ViewMessage, itemDiv: HTMLDivElement) => {
-        const row = this.props.items.findIndex((i) => i.commandId === item.commandId);
-        if (row >= 0) {
-            this.setRowHeight(row, itemDiv.scrollHeight);
-        }
-    };
 }
 
 export const OutputItemList = forwardRef(function OutputItemListComponent(
@@ -108,14 +101,13 @@ export const OutputItemList = forwardRef(function OutputItemListComponent(
                     key={p.key}
                     item={items[p.row]}
                     setRowHeight={model.setRowHeight}
-                    onCheckSize={model.onCheckSize}
                     replayMessage={props.replayMessage}
                     updateMessage={props.updateMessage}
                     sendMessage={props.sendMessage}
                 />
             );
         },
-        [items, model, props.replayMessage],
+        [items, model.setRowHeight, props.replayMessage, props.sendMessage, props.updateMessage],
     );
 
     return (

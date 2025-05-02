@@ -9,6 +9,7 @@ export type Command =
     | "clear"
     | "confirm"
     | "grid"
+    | "text"
     | "windowGrid";
 
 export interface ViewMessage<T = any> {

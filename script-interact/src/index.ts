@@ -47,11 +47,11 @@ function withResponse(message: ViewMessage): Promise<ViewMessage | undefined> {
 }
 
 const ui = {
-    log: (message: string) => send(commands.text.log(message)),
-    error: (message: string) => send(commands.text.error(message)),
-    info: (message: string) => send(commands.text.info(message)),
-    warn: (message: string) => send(commands.text.warn(message)),
-    success: (message: string) => send(commands.text.success(message)),
+    log: (message: string) => send(commands.log.log(message)),
+    error: (message: string) => send(commands.log.error(message)),
+    info: (message: string) => send(commands.log.info(message)),
+    warn: (message: string) => send(commands.log.warn(message)),
+    success: (message: string) => send(commands.log.success(message)),
     clear: () => send(commands.clear()),
     dialog: {
         confirm: async (params: string | ConfirmData) => {
@@ -64,11 +64,13 @@ const ui = {
             } else {
                 return undefined;
             }
-        }
+        },
     },
     display: {
         gridFromJsonArray: (data: any[], options?: {title?: string, columns?: GridColumn[]}) =>
             send(commands.grid.fromJsonArray(data, options)),
+        textBlock: (data: string, options?: {title?: string}) =>
+            send(commands.text({ text: data, title: options?.title })),
     },
     window: {
         showGrid: (data: any[], options?: {title?: string, columns?: GridColumn[]}) =>
