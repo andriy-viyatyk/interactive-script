@@ -4,7 +4,6 @@ import { getRowKey, useGridDataWithColumns } from "../useGridData";
 import AVGrid from "../../controls/AVGrid/AVGrid";
 import { useState } from "react";
 import { CellFocus } from "../../controls/AVGrid/avGridTypes";
-import color from "../../theme/color";
 import { FlexSpace } from "../../controls/FlexSpace";
 import { Button } from "../../controls/Button";
 import { OpenWindowIcon } from "../../theme/icons";
@@ -12,9 +11,6 @@ import { ViewMessage } from "../../../../shared/ViewMessage";
 import commands from "../../../../shared/commands";
 
 const CommandGridViewRoot = styled.div({
-    margin: "4px 0",
-    border: `1px solid ${color.border.default}`,
-    borderRadius: 4,
     position: "relative",
 });
 
@@ -31,7 +27,7 @@ export function CommandGridView({
     const [focus, setFocus] = useState<CellFocus | undefined>(undefined);
 
     return (
-        <CommandGridViewRoot className="command-grid">
+        <CommandGridViewRoot className="command-grid dialog">
             <div className="dialog-header">
                 {item.data?.title}
                 <FlexSpace />
@@ -41,7 +37,8 @@ export function CommandGridView({
                     title="Open in separate window"
                     onClick={() => {
                         sendMessage(
-                            commands.window.showGrid(item.data?.data ?? [], {
+                            commands.window.showGrid({
+                                data: item.data?.data ?? [],
                                 title: item.data?.title,
                                 columns: item.data?.columns,
                             })

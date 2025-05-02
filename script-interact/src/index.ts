@@ -5,6 +5,7 @@ import { commandLine } from "../../shared/constants";
 import { ViewMessage } from "../../shared/ViewMessage";
 import { ConfirmCommand, ConfirmData } from "../../shared/commands/confirm";
 import { GridColumn } from "../../shared/commands/grid";
+import { TextInputCommand, TextInputData, TextInputResultData } from "../../shared/commands/textInput";
 
 function messageToString(message: ViewMessage): string {
     return `${commandLine} ${JSON.stringify(message)}`;
@@ -65,6 +66,17 @@ const ui = {
                 return undefined;
             }
         },
+        textInput: async (params: string | TextInputData) => {
+            const message = typeof params === 'string'
+                ? commands.textInput({ title: params })
+                : commands.textInput(params);
+            const response = await withResponse(message);
+            if (response) {
+                return (response as TextInputCommand).data;
+            } else {
+                return undefined;
+            }
+        },
     },
     display: {
         gridFromJsonArray: (data: any[], options?: {title?: string, columns?: GridColumn[]}) =>
@@ -74,7 +86,9 @@ const ui = {
     },
     window: {
         showGrid: (data: any[], options?: {title?: string, columns?: GridColumn[]}) =>
-            send(commands.window.showGrid(data, options)),
+            send(commands.window.showGrid({ data, ...options })),
+        showText: (text: string, options?: {language?: string}) =>
+            send(commands.window.showText({ text, ...options })),
     }
 }
 

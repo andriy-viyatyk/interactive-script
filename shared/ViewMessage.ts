@@ -10,7 +10,9 @@ export type Command =
     | "confirm"
     | "grid"
     | "text"
-    | "windowGrid";
+    | "textInput"
+    | "windowGrid"
+    | "windowText";
 
 export interface ViewMessage<T = any> {
     command: Command;

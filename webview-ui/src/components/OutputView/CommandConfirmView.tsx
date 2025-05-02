@@ -6,22 +6,10 @@ import { ViewMessage } from "../../../../shared/ViewMessage";
 import { CheckIcon } from "../../theme/icons";
 
 const CommandConfirmViewRoot = styled.div({
-    margin: "4px 0",
-    border: `1px solid ${color.border.default}`,
-    borderRadius: 4,
     "& .message": {
         color: color.text.default,
         padding: 8,
         whiteSpace: "pre",
-    },
-    "& .buttons": {
-        display: "flex",
-        flexDirection: "row",
-        columnGap: 8,
-        justifyContent: "flex-end",
-        flexWrap: "wrap",
-        padding: 4,
-        paddingBottom: 0,
     },
 });
 
@@ -36,7 +24,7 @@ export function CommandConfirmView({
     replayMessage,
     updateMessage,
 }: Readonly<CommandConfirmViewProps>) {
-    let buttons = item.data?.buttons || ["Yes", "No"];
+    let buttons = item.data?.buttons || ["No", "Yes"];
     if (buttons.length === 0) {
         buttons = ["OK"];
     }
@@ -48,10 +36,10 @@ export function CommandConfirmView({
     };
 
     return (
-        <CommandConfirmViewRoot className="command-confirm">
+        <CommandConfirmViewRoot className="command-confirm dialog">
             {Boolean(item.data?.title) && <div className="dialog-header">{item.data?.title}</div>}
             <div className="message">{item.data?.message}</div>
-            <div className="buttons">
+            <div className="dialog-buttons">
                 {buttons.map((button, index) => (
                     <Button
                         size="small"

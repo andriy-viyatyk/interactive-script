@@ -5,13 +5,12 @@ import clsx from "clsx";
 import { FlexSpace } from "../../controls/FlexSpace";
 import { Button } from "../../controls/Button";
 import { useState } from "react";
-import { CopyIcon } from "../../theme/icons";
+import { CopyIcon, OpenWindowIcon } from "../../theme/icons";
 import { toClipboard } from "../../common/utils/utils";
+import { ViewMessage } from "../../../../shared/ViewMessage";
+import commands from "../../../../shared/commands";
 
 const CommandTextBlockViewRoot = styled.div({
-    margin: "4px 0",
-    border: `1px solid ${color.border.default}`,
-    borderRadius: 4,
     "& .text-data": {
         whiteSpace: "pre",
         color: color.text.default,
@@ -29,11 +28,13 @@ const CommandTextBlockViewRoot = styled.div({
 export interface CommandTextBlockViewProps {
     item: TextCommand;
     onCheckSize?: () => void;
+    sendMessage: (message: ViewMessage) => void;
 }
 
 export function CommandTextBlockView({
     item,
     onCheckSize,
+    sendMessage,
 }: Readonly<CommandTextBlockViewProps>) {
     const [wrap, setWrap] = useState(false);
 
@@ -43,7 +44,7 @@ export function CommandTextBlockView({
     };
 
     return (
-        <CommandTextBlockViewRoot className="text-block">
+        <CommandTextBlockViewRoot className="text-block dialog">
             <div className="dialog-header">
                 {item.data?.title}
                 <FlexSpace />
@@ -63,6 +64,21 @@ export function CommandTextBlockView({
                     title="Copy to clipboard"
                 >
                     <CopyIcon />
+                </Button>
+                <Button
+                    size="small"
+                    type="icon"
+                    title="Open in separate window"
+                    onClick={() => {
+                        sendMessage(
+                            commands.window.showText({
+                                text: item.data?.text ?? "",
+                                language: 'plaintext',
+                            })
+                        );
+                    }}
+                >
+                    <OpenWindowIcon />
                 </Button>
             </div>
             <div className={clsx("text-data", { wrap })}>{item.data?.text}</div>

@@ -10,12 +10,19 @@ import { CommandGridView } from "./CommandGridView";
 import { isTextCommand } from "../../../../shared/commands/text";
 import { CommandTextBlockView } from "./CommandTextBlockView";
 import color from "../../theme/color";
+import { isTextInputCommand } from "../../../../shared/commands/textInput";
+import { CommandTextInputView } from "./CommandTextInput";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
     maxWidth: "calc(100% - 30px)",
     position: "relative",
-    '& .dialog-header': {
+    "& .dialog": {
+        margin: "4px 0",
+        border: `1px solid ${color.border.default}`,
+        borderRadius: 4,
+    },
+    "& .dialog-header": {
         color: color.text.light,
         backgroundColor: color.background.dark,
         borderBottom: `1px solid ${color.border.default}`,
@@ -26,9 +33,20 @@ const OutputItemRoot = styled.div({
         alignItems: "center",
         columnGap: 8,
         "& button": {
-            padding: '0 2px',
+            padding: "0 2px",
         },
         whiteSpace: "pre",
+    },
+    "& .dialog-buttons": {
+        display: "flex",
+        flexDirection: "row",
+        columnGap: 8,
+        alignItems: "center",
+        justifyContent: "flex-end",
+        flexWrap: "wrap",
+        padding: 4,
+        paddingBottom: 0,
+        marginBottom: 4,
     },
 });
 
@@ -41,7 +59,13 @@ interface OutputItemProps {
 }
 
 export const OutputItem = forwardRef(function OutputItemComponent(
-    { item, onCheckSize, replayMessage, updateMessage, sendMessage }: OutputItemProps,
+    {
+        item,
+        onCheckSize,
+        replayMessage,
+        updateMessage,
+        sendMessage,
+    }: OutputItemProps,
     ref: React.Ref<HTMLDivElement>
 ) {
     let el: ReactNode = null;
@@ -57,9 +81,24 @@ export const OutputItem = forwardRef(function OutputItemComponent(
             />
         );
     } else if (isGridCommand(item)) {
-        el = <CommandGridView item={item} sendMessage={sendMessage}/>;
+        el = <CommandGridView item={item} sendMessage={sendMessage} />;
     } else if (isTextCommand(item)) {
-        el = <CommandTextBlockView item={item} onCheckSize={onCheckSize} />;
+        el = (
+            <CommandTextBlockView
+                item={item}
+                onCheckSize={onCheckSize}
+                sendMessage={sendMessage}
+            />
+        );
+    } else if (isTextInputCommand(item)) {
+        el = (
+            <CommandTextInputView
+                item={item}
+                replayMessage={replayMessage}
+                updateMessage={updateMessage}
+                onCheckSize={onCheckSize}
+            />
+        );
     }
 
     return (

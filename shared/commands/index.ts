@@ -4,6 +4,7 @@ import confirm from './confirm';
 import grid from './grid';
 import window from './window';
 import text from './text';
+import textInput from './textInput';
 
 const commands = {
     log,
@@ -12,6 +13,7 @@ const commands = {
     grid,
     window,
     text,
+    textInput,
 }
 
 export default commands;

@@ -104,7 +104,6 @@ export const TextAreaField = forwardRef<TextAreaFieldRef, TextAreaFieldProps>(
                 role="textarea"
                 contentEditable
                 spellCheck={false}
-                //dangerouslySetInnerHTML={{ __html: value as string }}
                 {...divProps}
                 tabIndex={divProps.tabIndex ?? 0}
             />

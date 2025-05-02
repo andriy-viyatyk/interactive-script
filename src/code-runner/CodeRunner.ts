@@ -6,7 +6,7 @@ import { contextScriptRunning } from '../constants';
 import { commandLine } from '../../shared/constants';
 import commands from '../../shared/commands';
 import { ViewMessage } from '../../shared/ViewMessage';
-import { isWindowGridCommand, WindowGridCommand } from '../../shared/commands/window';
+import { isWindowGridCommand, isWindowTextCommand, WindowGridCommand, WindowTextCommand } from '../../shared/commands/window';
 import vars from '../vars';
 
 class CodeRunner {
@@ -48,6 +48,8 @@ class CodeRunner {
             if (commandObj?.command) {
                 if (isWindowGridCommand(commandObj)) {
                     this.handleWindowGridCommand(commandObj);
+                } else if (isWindowTextCommand(commandObj)) {
+                    this.handleWindowTextCommand(commandObj);
                 } else {
                     views.messageToOutput(commandObj);
                 }
@@ -62,6 +64,11 @@ class CodeRunner {
 
         if (isWindowGridCommand(message)) {
             this.handleWindowGridCommand(message);
+            return;
+        }
+
+        if (isWindowTextCommand(message)) {
+            this.handleWindowTextCommand(message);
             return;
         }
 
@@ -159,6 +166,17 @@ class CodeRunner {
         if (vars.extensionContext) {
             const view = views.createView(vars.extensionContext, "grid")
             view.createGridPanel(message.data?.title ?? "Data", message.data?.data ?? [], message.data?.columns);
+        }
+    }
+
+    private readonly handleWindowTextCommand = async (message: WindowTextCommand) => {
+        if (vars.extensionContext) {
+            const document = await vscode.workspace.openTextDocument({
+                content: message.data?.text ?? "",
+                language: message.data?.language ?? 'plaintext',
+            });
+
+            await vscode.window.showTextDocument(document, { preview: true });
         }
     }
 }
