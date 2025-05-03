@@ -1,51 +1,11 @@
-import * as readline from "readline";
-
 import commands from "../shared/commands";
-import { commandLine } from "../shared/constants";
-import { isUiText, UiText, ViewMessage } from "../shared/ViewMessage";
+import { isUiText, UiText } from "../shared/ViewMessage";
 import { ConfirmCommand, ConfirmData } from "../shared/commands/input-confirm";
 import { GridColumn } from "../shared/commands/output-grid";
 import { TextInputCommand, TextInputData } from "../shared/commands/input-text";
-
-function messageToString(message: ViewMessage): string {
-    return `${commandLine} ${JSON.stringify(message)}`;
-}
-
-function messageFromString(line: string): ViewMessage | undefined {
-    if (line.startsWith(commandLine)) {
-        const command = line.substring(commandLine.length).trim();
-        let commandObj: any = null;
-        try {
-            commandObj = JSON.parse(command);
-        } catch (error) {
-            console.error(`Error parsing command: ${error}`);
-            return undefined;
-        }
-        if (commandObj?.command) {
-            return commandObj;
-        }
-    }
-    return undefined;
-}
-
-function send(message: ViewMessage) {
-    console.log(messageToString(message));
-}
-
-function withResponse(message: ViewMessage): Promise<ViewMessage | undefined> {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-
-    const messageToSend: ViewMessage = { ...message, isResponseRequired: true };
-    return new Promise((resolve) => {
-        rl.question(messageToString(messageToSend), (ans) => {
-            rl.close();
-            resolve(messageFromString(ans));
-        });
-    });
-}
+import { ButtonsCommand } from "../shared/commands/input-buttons";
+import { send, withResponse } from "./src/handlers";
+import { Progress } from "./src/objects/Progress";
 
 const ui = {
     log: (message: UiText) => send(commands.log.log(message)),
@@ -55,6 +15,16 @@ const ui = {
     success: (message: UiText) => send(commands.log.success(message)),
     clear: () => send(commands.clear()),
     dialog: {
+        buttons: async (buttons: UiText[]) => {
+            const message = commands.buttons({ buttons });
+            const response = await withResponse(message);
+            if (response) {
+                return (response as ButtonsCommand).data?.result;
+            } else {
+                return undefined;
+            }
+        },
+
         confirm: async (params: UiText | ConfirmData) => {
             const message =
                 isUiText(params)
@@ -89,6 +59,9 @@ const ui = {
 
         textBlock: (data: string, options?: { title?: string }) =>
             send(commands.text({ text: data, title: options?.title })),
+
+        progress: (label: UiText, max?: number, value?: number) => 
+            new Progress(send(commands.progress({ label, max, value }))),
     },
     window: {
         showGrid: (
@@ -102,3 +75,5 @@ const ui = {
 };
 
 export default ui;
+
+export { Progress };

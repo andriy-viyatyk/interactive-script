@@ -5,6 +5,8 @@ import grid from './output-grid';
 import window from './window';
 import text from './output-text';
 import textInput from './input-text';
+import buttons from './input-buttons';
+import progress from './output-progress';
 
 const commands = {
     log,
@@ -14,6 +16,8 @@ const commands = {
     window,
     text,
     textInput,
+    buttons,
+    progress,
 }
 
 export default commands;

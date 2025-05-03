@@ -27,8 +27,9 @@ export interface CommandLogViewProps {
 }
 
 export function CommandLogView({ item }: Readonly<CommandLogViewProps>) {
+    const styleCommand = item.command.split('.').pop() || 'log';
     return (
-        <CommandLogViewRoot className={`item-${item.command}`}>
+        <CommandLogViewRoot className={`item-${styleCommand}`}>
             <UiTextView uiText={item.data}/>
         </CommandLogViewRoot>
     )

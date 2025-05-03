@@ -39,8 +39,14 @@ class OutputViewModel extends TModel<OutputViewState> {
                     });
                     return;
                 default:
+                    console.log("commandId", message.commandId);
                     this.state.update((state) => {
-                        state.items.push(message);
+                        const existingIndex = state.items.findIndex((item) => item.commandId === message.commandId);
+                        if (existingIndex >= 0) {
+                            state.items[existingIndex] = message;
+                        } else {
+                            state.items.push(message);
+                        }
                     });
                     break;
             }

@@ -12,6 +12,10 @@ import { CommandTextBlockView } from "./CommandTextBlockView";
 import color from "../../theme/color";
 import { isTextInputCommand } from "../../../../shared/commands/input-text";
 import { CommandTextInputView } from "./CommandTextInput";
+import { isButtonsCommand } from "../../../../shared/commands/input-buttons";
+import { CommandButtonsView } from "./CommandButtonsView";
+import { isProgressCommand } from "../../../../shared/commands/output-progress";
+import { CommandProgressView } from "./CommandProgressView";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
@@ -99,6 +103,16 @@ export const OutputItem = forwardRef(function OutputItemComponent(
                 onCheckSize={onCheckSize}
             />
         );
+    } else if (isButtonsCommand(item)) {
+        el = (
+            <CommandButtonsView
+                item={item}
+                replayMessage={replayMessage}
+                updateMessage={updateMessage}
+            />
+        );
+    } else if (isProgressCommand(item)) {
+        el = <CommandProgressView item={item} />;
     }
 
     return (

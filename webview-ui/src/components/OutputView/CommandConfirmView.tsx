@@ -27,7 +27,7 @@ export function CommandConfirmView({
 }: Readonly<CommandConfirmViewProps>) {
     let buttons = item.data?.buttons || ["No", "Yes"];
     if (buttons.length === 0) {
-        buttons = ["OK"];
+        buttons = ["Ok"];
     }
 
     const buttonClick = (button: string) => {

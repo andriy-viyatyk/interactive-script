@@ -9,8 +9,10 @@ export type Command =
     | "log.error"
     | "input.confirm"
     | "input.text"
+    | "input.buttons"
     | "output.grid"
     | "output.text"
+    | "output.progress"
     | "window.grid"
     | "window.text";
 

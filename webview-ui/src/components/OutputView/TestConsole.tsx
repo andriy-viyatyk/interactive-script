@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import color from "../../theme/color";
 import { FlexSpace } from "../../controls/FlexSpace";
 import { Button } from "../../controls/Button";
-import { ViewMessage } from "../../../../shared/ViewMessage";
+import { newMessage, ViewMessage } from "../../../../shared/ViewMessage";
 import { v4 } from "uuid";
 
 const TestConsoleRoot = styled.div({
@@ -20,6 +20,7 @@ const TestConsoleRoot = styled.div({
         display: "flex",
         flexDirection: "row",
         padding: 4,
+        columnGap: 8,
     },
     '& .test-console-textarea': {
         flex: '1 1 auto',
@@ -39,16 +40,22 @@ export function TestConsole() {
     const sendClick = useCallback(() => {
         const messages = JSON.parse(text) as ViewMessage[];
         messages.forEach((message) => {
-            message.commandId = v4();
+            message.commandId = message.commandId ?? v4();
             window.postMessage(message, "*");
         });
     }, [text]);
+
+    const clearClick = useCallback(() => {
+        const message = newMessage("clear", {});
+        window.postMessage(message, "*");
+    }, []);
 
     return (
         <TestConsoleRoot>
             <div className="test-console-header">
                 <FlexSpace />
-                <Button type="icon" onClick={sendClick}>Send</Button>
+                <Button size="mini" onClick={clearClick}>Clear</Button>
+                <Button size="mini" onClick={sendClick}>Send</Button>
             </div>
             <TextAreaField 
                 onChange={setTextProxy}
