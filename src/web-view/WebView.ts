@@ -3,7 +3,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { v4 } from "uuid";
 import { Subscription } from "../utils/events";
-import { GridColumn } from "../../shared/commands/grid";
+import { GridColumn } from "../../shared/commands/output-grid";
 
 export type WebViewType = "grid" | "output";
 

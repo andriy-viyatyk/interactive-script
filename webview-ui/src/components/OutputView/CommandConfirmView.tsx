@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { ConfirmCommand } from "../../../../shared/commands/confirm";
+import { ConfirmCommand } from "../../../../shared/commands/input-confirm";
 import { Button } from "../../controls/Button";
 import color from "../../theme/color";
 import { uiTextToString, ViewMessage } from "../../../../shared/ViewMessage";

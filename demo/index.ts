@@ -77,11 +77,7 @@ async function demoMain() {
     pressedButton = await ui.dialog.confirm({
         title: "Confirm dialog with custom buttons",
         message: "This is dialog with custom buttons provided.\nPlease, press any.",
-        buttons: [
-            "Yes",
-            "No",
-            "Maybe",
-        ],
+        buttons: ["Yes", "No", "Maybe"],
     });
     ui.log(["You pressed: ", {text: pressedButton ?? "", styles: {color: 'lime'}}, " button."]);
 

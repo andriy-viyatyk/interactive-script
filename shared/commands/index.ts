@@ -1,10 +1,10 @@
 import log from './log';
 import clear from './clear';
-import confirm from './confirm';
-import grid from './grid';
+import confirm from './input-confirm';
+import grid from './output-grid';
 import window from './window';
-import text from './text';
-import textInput from './textInput';
+import text from './output-text';
+import textInput from './input-text';
 
 const commands = {
     log,

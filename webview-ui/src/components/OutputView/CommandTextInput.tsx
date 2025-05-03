@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { TextInputCommand } from "../../../../shared/commands/textInput";
+import { TextInputCommand } from "../../../../shared/commands/input-text";
 import { uiTextToString, ViewMessage } from "../../../../shared/ViewMessage";
 import { useState } from "react";
 import { TextAreaField } from "../../controls/TextAreaField";

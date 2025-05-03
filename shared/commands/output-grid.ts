@@ -13,15 +13,15 @@ export interface GridData {
 }
 
 export interface GridCommand extends ViewMessage<GridData> {
-    command: "grid";
+    command: "output.grid";
 }
 
 export function isGridCommand(message: ViewMessage): message is GridCommand {
-    return message.command === "grid";
+    return message.command === "output.grid";
 }
 
 const fromJsonArray = (data: any[], options?: {title?: UiText, columns?: GridColumn[]}) => {
-    return newMessage("grid", {
+    return newMessage("output.grid", {
         title: options?.title,
         data: data,
         columns: options?.columns,

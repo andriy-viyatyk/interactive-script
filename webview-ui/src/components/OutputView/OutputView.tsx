@@ -57,7 +57,7 @@ class OutputViewModel extends TModel<OutputViewState> {
             this.state.update((s) => {
                 s.items.push({
                     commandId: v4(),
-                    command: "error",
+                    command: "log.error",
                     data: "Replay message failed: no vscode object",
                 });
             });

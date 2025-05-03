@@ -3,9 +3,9 @@ import * as readline from "readline";
 import commands from "../shared/commands";
 import { commandLine } from "../shared/constants";
 import { isUiText, UiText, ViewMessage } from "../shared/ViewMessage";
-import { ConfirmCommand, ConfirmData } from "../shared/commands/confirm";
-import { GridColumn } from "../shared/commands/grid";
-import { TextInputCommand, TextInputData } from "../shared/commands/textInput";
+import { ConfirmCommand, ConfirmData } from "../shared/commands/input-confirm";
+import { GridColumn } from "../shared/commands/output-grid";
+import { TextInputCommand, TextInputData } from "../shared/commands/input-text";
 
 function messageToString(message: ViewMessage): string {
     return `${commandLine} ${JSON.stringify(message)}`;

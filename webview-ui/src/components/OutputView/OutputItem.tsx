@@ -3,14 +3,14 @@ import { forwardRef, ReactNode } from "react";
 import { CommandLogView } from "./CommandLogView";
 import { ViewMessage } from "../../../../shared/ViewMessage";
 import { isLogCommand } from "../../../../shared/commands/log";
-import { isConfirmCommand } from "../../../../shared/commands/confirm";
+import { isConfirmCommand } from "../../../../shared/commands/input-confirm";
 import { CommandConfirmView } from "./CommandConfirmView";
-import { isGridCommand } from "../../../../shared/commands/grid";
+import { isGridCommand } from "../../../../shared/commands/output-grid";
 import { CommandGridView } from "./CommandGridView";
-import { isTextCommand } from "../../../../shared/commands/text";
+import { isTextCommand } from "../../../../shared/commands/output-text";
 import { CommandTextBlockView } from "./CommandTextBlockView";
 import color from "../../theme/color";
-import { isTextInputCommand } from "../../../../shared/commands/textInput";
+import { isTextInputCommand } from "../../../../shared/commands/input-text";
 import { CommandTextInputView } from "./CommandTextInput";
 
 const OutputItemRoot = styled.div({

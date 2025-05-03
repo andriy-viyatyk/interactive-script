@@ -1,18 +1,18 @@
 import { v4 } from "uuid";
 
 export type Command =
-    | "log"
-    | "info"
-    | "success"
-    | "warn"
-    | "error"
     | "clear"
-    | "confirm"
-    | "grid"
-    | "text"
-    | "textInput"
-    | "windowGrid"
-    | "windowText";
+    | "log.log"
+    | "log.info"
+    | "log.success"
+    | "log.warn"
+    | "log.error"
+    | "input.confirm"
+    | "input.text"
+    | "output.grid"
+    | "output.text"
+    | "window.grid"
+    | "window.text";
 
 export interface ViewMessage<T = any> {
     command: Command;

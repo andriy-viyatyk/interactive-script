@@ -6,11 +6,11 @@ export interface TextData {
 }
 
 export interface TextCommand extends ViewMessage<TextData> {
-    command: "text";
+    command: "output.text";
 }
 
 export function isTextCommand(message: ViewMessage): message is TextCommand {
-    return message.command === "text";
+    return message.command === "output.text";
 }
 
-export default (data: TextData) => newMessage("text", data);
+export default (data: TextData) => newMessage("output.text", data);

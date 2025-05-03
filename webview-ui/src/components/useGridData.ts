@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { GridData } from "./types";
 import { Column } from "../controls/AVGrid/avGridTypes";
-import { GridColumn } from "../../../shared/commands/grid";
+import { GridColumn } from "../../../shared/commands/output-grid";
 
 const charWidth = 8; // Approximate width of a character in pixels
 const maxColumnWidth = 300; // Maximum column width in pixels

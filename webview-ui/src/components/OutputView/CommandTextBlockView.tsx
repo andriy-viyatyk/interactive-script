@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { TextCommand } from "../../../../shared/commands/text";
+import { TextCommand } from "../../../../shared/commands/output-text";
 import color from "../../theme/color";
 import clsx from "clsx";
 import { FlexSpace } from "../../controls/FlexSpace";

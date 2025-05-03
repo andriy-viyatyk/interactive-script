@@ -11,11 +11,11 @@ export interface TextInputResultData extends TextInputData {
 }
 
 export interface TextInputCommand extends ViewMessage<TextInputResultData> {
-    command: "textInput";
+    command: "input.text";
 }
 
 export function isTextInputCommand(message: ViewMessage): message is TextInputCommand {
-    return message.command === "textInput";
+    return message.command === "input.text";
 }
 
-export default (data: TextInputData) => newMessage("textInput", data);
+export default (data: TextInputData) => newMessage("input.text", data);

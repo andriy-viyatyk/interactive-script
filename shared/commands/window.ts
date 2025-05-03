@@ -1,5 +1,5 @@
 import { newMessage, ViewMessage } from "../ViewMessage";
-import { GridColumn } from "./grid";
+import { GridColumn } from "./output-grid";
 
 // WindowGridCommand
 
@@ -10,17 +10,17 @@ export interface WindowGridData {
 }
 
 export interface WindowGridCommand extends ViewMessage<WindowGridData> {
-    command: "windowGrid";
+    command: "window.grid";
 }
 
 export function isWindowGridCommand(
     message: ViewMessage
 ): message is WindowGridCommand {
-    return message.command === "windowGrid";
+    return message.command === "window.grid";
 }
 
 function showGrid(data: WindowGridData): WindowGridCommand {
-    return newMessage("windowGrid", data) as WindowGridCommand;
+    return newMessage("window.grid", data) as WindowGridCommand;
 }
 
 // WindowTextCommand
@@ -31,16 +31,16 @@ export interface WindowTextData {
 }
 
 export interface WindowTextCommand extends ViewMessage<WindowTextData> {
-    command: "windowText";
+    command: "window.text";
 }
 export function isWindowTextCommand(
     message: ViewMessage
 ): message is WindowTextCommand {
-    return message.command === "windowText";
+    return message.command === "window.text";
 }
 
 export function showText(data: WindowTextData): WindowTextCommand {
-    return newMessage("windowText", data) as WindowTextCommand;
+    return newMessage("window.text", data) as WindowTextCommand;
 }
 
 export default {

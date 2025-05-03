@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { GridCommand } from "../../../../shared/commands/grid";
+import { GridCommand } from "../../../../shared/commands/output-grid";
 import { getRowKey, useGridDataWithColumns } from "../useGridData";
 import AVGrid from "../../controls/AVGrid/AVGrid";
 import { useState } from "react";
