@@ -2,6 +2,7 @@ import { v4 } from "uuid";
 
 export type Command =
     | "clear"
+    | "log.text"
     | "log.log"
     | "log.info"
     | "log.success"
@@ -44,7 +45,8 @@ export interface Styles {
     [key: string]: string | number;
 }
 
-export type UiTextBlock = string | { text: string; styles?: Styles };
+export type TextWithStyle = { text: string; styles?: Styles };
+export type UiTextBlock = string | TextWithStyle;
 export type UiText = string | UiTextBlock[];
 
 export function isUiText(text: any): text is UiText {

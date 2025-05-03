@@ -126,7 +126,7 @@ class CodeRunner {
             if (!isLive()) return;
             views.messageToOutput(
                 commands.log.log([
-                    {text: `[ ${fileName} ]`, styles: {color: "cyan"}},
+                    {text: `[ ${fileName} ]`, styles: {color: "lightseagreen"}},
                     ` exit code ${code}`
                 ])
             );
@@ -145,7 +145,7 @@ class CodeRunner {
         views.messageToOutput(
             commands.log.log(
                 [
-                    {text: `[ ${fileName} ]`, styles: {color: "cyan"}},
+                    {text: `[ ${fileName} ]`, styles: {color: "lightseagreen"}},
                     ` ${command} "${filePath}"`
                 ]
             )

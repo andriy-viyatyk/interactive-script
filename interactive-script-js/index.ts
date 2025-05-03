@@ -6,13 +6,26 @@ import { TextInputCommand, TextInputData } from "../shared/commands/input-text";
 import { ButtonsCommand } from "../shared/commands/input-buttons";
 import { send, withResponse } from "./src/handlers";
 import { Progress } from "./src/objects/Progress";
+import {
+    StyledLogCommand,
+    styledText,
+    StyledText,
+} from "./src/objects/StyledText";
+import { namedColors } from "./src/objects/StyledTextColor";
 
 const ui = {
-    log: (message: UiText) => send(commands.log.log(message)),
-    error: (message: UiText) => send(commands.log.error(message)),
-    info: (message: UiText) => send(commands.log.info(message)),
-    warn: (message: UiText) => send(commands.log.warn(message)),
-    success: (message: UiText) => send(commands.log.success(message)),
+    text: (message: UiText) =>
+        new StyledLogCommand(send(commands.log.text(message))),
+    log: (message: UiText) =>
+        new StyledLogCommand(send(commands.log.log(message))),
+    error: (message: UiText) =>
+        new StyledLogCommand(send(commands.log.error(message))),
+    info: (message: UiText) =>
+        new StyledLogCommand(send(commands.log.info(message))),
+    warn: (message: UiText) =>
+        new StyledLogCommand(send(commands.log.warn(message))),
+    success: (message: UiText) =>
+        new StyledLogCommand(send(commands.log.success(message))),
     clear: () => send(commands.clear()),
     dialog: {
         buttons: async (buttons: UiText[]) => {
@@ -26,10 +39,9 @@ const ui = {
         },
 
         confirm: async (params: UiText | ConfirmData) => {
-            const message =
-                isUiText(params)
-                    ? commands.confirm({ message: params })
-                    : commands.confirm(params);
+            const message = isUiText(params)
+                ? commands.confirm({ message: params })
+                : commands.confirm(params);
             const response = await withResponse(message);
             if (response) {
                 return (response as ConfirmCommand).data?.result;
@@ -39,10 +51,9 @@ const ui = {
         },
 
         textInput: async (params: UiText | TextInputData) => {
-            const message =
-                isUiText(params)
-                    ? commands.textInput({ title: params })
-                    : commands.textInput(params);
+            const message = isUiText(params)
+                ? commands.textInput({ title: params })
+                : commands.textInput(params);
             const response = await withResponse(message);
             if (response) {
                 return (response as TextInputCommand).data;
@@ -60,7 +71,7 @@ const ui = {
         textBlock: (data: string, options?: { title?: string }) =>
             send(commands.text({ text: data, title: options?.title })),
 
-        progress: (label: UiText, max?: number, value?: number) => 
+        progress: (label: UiText, max?: number, value?: number) =>
             new Progress(send(commands.progress({ label, max, value }))),
     },
     window: {
@@ -76,4 +87,4 @@ const ui = {
 
 export default ui;
 
-export { Progress };
+export { Progress, StyledText, styledText, namedColors };

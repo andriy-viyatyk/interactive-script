@@ -13,11 +13,11 @@ export class Progress {
         send(this.progress);
     }
 
-    get label(): UiText {
-        return this.progress.data?.label || "";
+    get label(): UiText | undefined {
+        return this.progress.data?.label;
     }
 
-    set label(value: UiText) {
+    set label(value: UiText | undefined) {
         this.progress.data = { ...this.progress.data, label: value };
         this.sendUpdate();
     }
@@ -47,5 +47,14 @@ export class Progress {
     set completed(value: boolean | undefined) {
         this.progress.data = { ...this.progress.data, completed: value };
         this.sendUpdate();
+    }
+
+    conpleteWhenPromise = (promise: Promise<any>, completeText?: UiText) => {
+        promise.finally(() => {
+            this.completed = true;
+            if (completeText !== undefined) {
+                this.label = completeText;
+            }
+        });
     }
 }

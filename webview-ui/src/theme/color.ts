@@ -67,14 +67,17 @@ const vscode = {
         orange: "var(--vscode-charts-orange, #d18616)",
         green: "var(--vscode-charts-green, #89d185)",
         purple: "var(--vscode-charts-purple, #b180d7)",
-    }
+    },
+    button: {
+        secondaryBackground: "var(--vscode-button-secondaryBackground, #313131)",
+    },
 }
 
 const color = {
     background: {
         default: vscode.editor.background, 
         dark: vscode.sidebar.background, 
-        light: vscode.input.background, 
+        light: vscode.button.secondaryBackground,
     },
     text: {
         default: vscode.editor.foreground,

@@ -8,6 +8,9 @@ const CommandLogViewRoot = styled.div({
     whiteSpace: 'pre-wrap',
     minHeight: 17,
 
+    '&.item-text': {
+        color: color.text.default,
+    },
     '&.item-info': {
         color: color.misc.blue,
     },

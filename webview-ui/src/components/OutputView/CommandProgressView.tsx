@@ -10,13 +10,11 @@ const CommandProgressViewRoot = styled.div({
     alignItems: "center",
     columnGap: 4,
     "& .completed-icon": {
-        transform: "translateY(1px)",
     },
     "& .progress-label": {},
     "& .progress-indicator": {
         width: 16,
         height: 16,
-        transform: "translateY(1px)",
     },
 });
 
@@ -29,7 +27,6 @@ const ProgressBarRoot = styled.div({
     boxSizing: "border-box",
     overflow: "hidden",
     border: `1px solid ${color.border.default}`,
-    transform: "translateY(1px)",
     "& .inner-bar": {
         backgroundColor: color.background.light,
         height: "100%",
