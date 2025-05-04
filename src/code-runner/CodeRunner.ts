@@ -1,13 +1,18 @@
-import * as vscode from 'vscode';
-import * as cp from 'child_process';
-import * as path from 'path';
+import * as vscode from "vscode";
+import * as cp from "child_process";
+import * as path from "path";
 import views from "../web-view/Views";
-import { contextScriptRunning } from '../constants';
-import { commandLine } from '../../shared/constants';
-import commands from '../../shared/commands';
-import { ViewMessage } from '../../shared/ViewMessage';
-import { isWindowGridCommand, isWindowTextCommand, WindowGridCommand, WindowTextCommand } from '../../shared/commands/window';
-import vars from '../vars';
+import { contextScriptRunning } from "../constants";
+import { commandLine } from "../../shared/constants";
+import commands from "../../shared/commands";
+import { ViewMessage } from "../../shared/ViewMessage";
+import {
+    isWindowGridCommand,
+    isWindowTextCommand,
+    WindowGridCommand,
+    WindowTextCommand,
+} from "../../shared/commands/window";
+import vars from "../vars";
 
 class CodeRunner {
     private _isRunning: boolean = false;
@@ -38,8 +43,7 @@ class CodeRunner {
             let commandObj: any = null;
             try {
                 commandObj = JSON.parse(command);
-            }
-            catch (error) {
+            } catch (error) {
                 views.messageToOutput(
                     commands.log.error(`Error parsing command: ${error}`)
                 );
@@ -57,7 +61,7 @@ class CodeRunner {
             }
         }
         return false;
-    }
+    };
 
     onReplayMessage = (message?: ViewMessage) => {
         if (!message) return;
@@ -74,12 +78,13 @@ class CodeRunner {
 
         if (!this.child) return;
 
-        this.child.stdin.write(
-            `${commandLine}${JSON.stringify(message)}\n`
-        );
-    }
+        this.child.stdin.write(`${commandLine}${JSON.stringify(message)}\n`);
+    };
 
-    handleProcess = (child: cp.ChildProcessWithoutNullStreams, fileName: string) => {
+    handleProcess = (
+        child: cp.ChildProcessWithoutNullStreams,
+        fileName: string
+    ) => {
         if (!this.viewsSubscribed) {
             views.onOutputMessage.subscribe(this.onReplayMessage);
             this.viewsSubscribed = true;
@@ -91,16 +96,11 @@ class CodeRunner {
             if (this.handleCommand(line)) return;
 
             views.messageToOutput(commands.log.log(line));
-
-            // Check if the script printed "ping"
-            if (line === "ping") {
-                this.child?.stdin.write("pong\n");
-            }
         };
 
         const onError = (error: string) => {
             views.messageToOutput(commands.log.error(error));
-        }
+        };
 
         child.stdout.on("data", (data: Buffer) => {
             if (!isLive()) return;
@@ -108,7 +108,7 @@ class CodeRunner {
             const lines = text.split("\n");
             if (lines.length && lines[lines.length - 1] === "") {
                 lines.pop();
-              }
+            }
             lines.forEach(onLine);
         });
 
@@ -118,7 +118,7 @@ class CodeRunner {
             const lines = text.trim().split("\n");
             if (lines.length && lines[lines.length - 1] === "") {
                 lines.pop();
-              }
+            }
             lines.forEach(onError);
         });
 
@@ -126,14 +126,17 @@ class CodeRunner {
             if (!isLive()) return;
             views.messageToOutput(
                 commands.log.log([
-                    {text: `[ ${fileName} ]`, styles: {color: "lightseagreen"}},
-                    ` exit code ${code}`
+                    {
+                        text: `[ ${fileName} ]`,
+                        styles: { color: "lightseagreen" },
+                    },
+                    ` exit code ${code}`,
                 ])
             );
             this.child = null;
             this.isRunning = false;
         });
-    }
+    };
 
     runFile = (filePath: string) => {
         this.isRunning = true;
@@ -143,12 +146,10 @@ class CodeRunner {
         const fileName = path.basename(filePath);
 
         views.messageToOutput(
-            commands.log.log(
-                [
-                    {text: `[ ${fileName} ]`, styles: {color: "lightseagreen"}},
-                    ` ${command} "${filePath}"`
-                ]
-            )
+            commands.log.log([
+                { text: `[ ${fileName} ]`, styles: { color: "lightseagreen" } },
+                ` ${command} "${filePath}"`,
+            ])
         );
 
         this.child = cp.spawn(command, [`"${filePath}"`], {
@@ -163,29 +164,37 @@ class CodeRunner {
         if (this.child) {
             this.child.kill("SIGKILL");
         }
-    }
+    };
 
     clear = () => {
         views.messageToOutput(commands.clear());
-    }
+    };
 
     private readonly handleWindowGridCommand = (message: WindowGridCommand) => {
-        if (vars.extensionContext) {
-            const view = views.createView(vars.extensionContext, "grid")
-            view.createGridPanel(message.data?.title ?? "Data", message.data?.data ?? [], message.data?.columns);
-        }
-    }
+        setTimeout(() => {
+            if (vars.extensionContext) {
+                const view = views.createView(vars.extensionContext, "grid");
+                view.createGridPanel(
+                    message.data?.title ?? "Data",
+                    message.data?.data ?? [],
+                    message.data?.columns
+                );
+            }
+        }, 0);
+    };
 
-    private readonly handleWindowTextCommand = async (message: WindowTextCommand) => {
+    private readonly handleWindowTextCommand = async (
+        message: WindowTextCommand
+    ) => {
         if (vars.extensionContext) {
             const document = await vscode.workspace.openTextDocument({
                 content: message.data?.text ?? "",
-                language: message.data?.language ?? 'plaintext',
+                language: message.data?.language ?? "plaintext",
             });
 
             await vscode.window.showTextDocument(document, { preview: true });
         }
-    }
+    };
 }
 
 const codeRunner = new CodeRunner();
