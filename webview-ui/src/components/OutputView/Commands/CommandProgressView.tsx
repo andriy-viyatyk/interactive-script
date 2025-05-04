@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
-import { ProgressCommand } from "../../../../shared/commands/output-progress";
-import { CircularProgress } from "../../controls/CircularProgress";
-import { CheckIcon } from "../../theme/icons";
-import color from "../../theme/color";
-import { UiTextView } from "./UiTextView";
+import { ProgressCommand } from "../../../../../shared/commands/output-progress";
+import { CircularProgress } from "../../../controls/CircularProgress";
+import { CheckIcon } from "../../../theme/icons";
+import color from "../../../theme/color";
+import { UiTextView } from "../UiTextView";
 
 const CommandProgressViewRoot = styled.div({
     display: "flex",

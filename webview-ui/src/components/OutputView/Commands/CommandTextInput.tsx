@@ -1,20 +1,31 @@
 import styled from "@emotion/styled";
-import { TextInputCommand } from "../../../../shared/commands/input-text";
-import { uiTextToString, ViewMessage } from "../../../../shared/ViewMessage";
+import { TextInputCommand } from "../../../../../shared/commands/input-text";
+import { ViewMessage } from "../../../../../shared/ViewMessage";
 import { useState } from "react";
-import { TextAreaField } from "../../controls/TextAreaField";
-import { Button } from "../../controls/Button";
-import { CheckIcon } from "../../theme/icons";
-import color from "../../theme/color";
+import { TextAreaField } from "../../../controls/TextAreaField";
+import color from "../../../theme/color";
 import clsx from "clsx";
-import { UiTextView } from "./UiTextView";
+import { OutputDialog } from "../OutputDialog/OutputDialog";
+import { OutputDialogHeader } from "../OutputDialog/OutputDialogHeader";
+import { OutputDialogButtons } from "../OutputDialog/OutputDialogButtons";
 
-const CommandTextInputViewRoot = styled.div({
+const CommandTextInputViewRoot = styled(OutputDialog)({
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
     "& .text-area-field": {
+        flex: "1 1 auto",
+        overflowY: "auto",
         borderRadius: 0,
         borderColor: "transparent",
         backgroundColor: color.background.light,
         margin: 2,
+        whiteSpace: "pre",
+        minHeight: 29,
+        "&.multiline": {
+            paddingBottom: 16,
+            paddingRight: 16,
+        },
         "&.readOnly": {
             backgroundColor: color.background.default,
             color: color.text.light,
@@ -39,10 +50,6 @@ export function CommandTextInputView({
     onCheckSize,
 }: Readonly<CommandTextInputViewProps>) {
     const [text, setText] = useState(item.data?.result || "");
-    let buttons = item.data?.buttons || ["Cancel", "Proceed"];
-    if (buttons.length === 0) {
-        buttons = ["Proceed"];
-    }
 
     const setTextProxy = (value: string) => {
         setText(value);
@@ -61,27 +68,20 @@ export function CommandTextInputView({
     const readOnly = Boolean(item.data?.resultButton);
 
     return (
-        <CommandTextInputViewRoot className="command-text-input dialog">
-            <div className="dialog-header"><UiTextView uiText={item.data?.title} /></div>
+        <CommandTextInputViewRoot className="command-text-input">
+            <OutputDialogHeader title={item.data?.title} />
             <TextAreaField
-                className={clsx("text-area-field", { readOnly })}
+                className={clsx("text-area-field", { readOnly, multiline: text.indexOf("\n") > -1 })}
                 value={text}
                 onChange={setTextProxy}
                 contentEditable={!readOnly}
             />
-            <div className="dialog-buttons">
-                {buttons.map((button, index) => (
-                    <Button
-                        size="small"
-                        key={`${uiTextToString(button)}-${index}`}
-                        onClick={() => buttonClick(uiTextToString(button))}
-                        disabled={Boolean(item.data?.resultButton)}
-                    >
-                        {item.data?.resultButton === uiTextToString(button) ? <CheckIcon /> : null}
-                        <UiTextView uiText={button} />
-                    </Button>
-                ))}
-            </div>
+            <OutputDialogButtons 
+                buttons={item.data?.buttons}
+                defaultButtons={["Cancel", "Proceed"]}
+                resultButton={item.data?.resultButton}
+                onClick={buttonClick}
+            />
         </CommandTextInputViewRoot>
     );
 }

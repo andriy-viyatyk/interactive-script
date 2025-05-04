@@ -1,20 +1,24 @@
 import styled from "@emotion/styled";
-import { TextCommand } from "../../../../shared/commands/output-text";
-import color from "../../theme/color";
+import { TextCommand } from "../../../../../shared/commands/output-text";
+import color from "../../../theme/color";
 import clsx from "clsx";
-import { FlexSpace } from "../../controls/FlexSpace";
-import { Button } from "../../controls/Button";
+import { Button } from "../../../controls/Button";
 import { useState } from "react";
-import { CopyIcon, OpenWindowIcon } from "../../theme/icons";
-import { toClipboard } from "../../common/utils/utils";
-import { ViewMessage } from "../../../../shared/ViewMessage";
-import commands from "../../../../shared/commands";
+import { CopyIcon, OpenWindowIcon } from "../../../theme/icons";
+import { toClipboard } from "../../../common/utils/utils";
+import { ViewMessage } from "../../../../../shared/ViewMessage";
+import commands from "../../../../../shared/commands";
+import { OutputDialog } from "../OutputDialog/OutputDialog";
+import { OutputDialogHeader } from "../OutputDialog/OutputDialogHeader";
 
-const CommandTextBlockViewRoot = styled.div({
+const CommandTextBlockViewRoot = styled(OutputDialog)({
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
     "& .text-data": {
+        flex: '1 1 auto',
         whiteSpace: "pre",
         color: color.text.default,
-        maxHeight: 400,
         overflowY: "auto",
         padding: 8,
         paddingBottom: 20,
@@ -44,10 +48,8 @@ export function CommandTextBlockView({
     };
 
     return (
-        <CommandTextBlockViewRoot className="text-block dialog">
-            <div className="dialog-header">
-                {item.data?.title}
-                <FlexSpace />
+        <CommandTextBlockViewRoot className="text-block">
+            <OutputDialogHeader title={item.data?.title}>
                 <Button
                     size="mini"
                     onClick={() => setWrapProxy(!wrap)}
@@ -73,14 +75,14 @@ export function CommandTextBlockView({
                         sendMessage(
                             commands.window.showText({
                                 text: item.data?.text ?? "",
-                                language: 'plaintext',
+                                language: "plaintext",
                             })
                         );
                     }}
                 >
                     <OpenWindowIcon />
                 </Button>
-            </div>
+            </OutputDialogHeader>
             <div className={clsx("text-data", { wrap })}>{item.data?.text}</div>
         </CommandTextBlockViewRoot>
     );

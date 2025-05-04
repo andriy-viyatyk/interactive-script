@@ -1,6 +1,7 @@
 import { v4 } from "uuid";
 
 export type Command =
+    | "ping"
     | "clear"
     | "log.text"
     | "log.log"
@@ -12,6 +13,7 @@ export type Command =
     | "input.text"
     | "input.buttons"
     | "input.checkboxes"
+    | "input.radioboxes"
     | "output.grid"
     | "output.text"
     | "output.progress"
@@ -56,14 +58,14 @@ export function isUiText(text: any): text is UiText {
 
 export function uiTextToString(uiText?: UiText): string {
     if (uiText === undefined) {
-        return '';
+        return "";
     }
-    
-    if (typeof uiText === 'string') {
+
+    if (typeof uiText === "string") {
         return uiText;
     }
 
     return uiText
-        .map(block => typeof block === 'string' ? block : block.text)
-        .join('');
+        .map((block) => (typeof block === "string" ? block : block.text))
+        .join("");
 }

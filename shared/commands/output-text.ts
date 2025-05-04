@@ -1,8 +1,8 @@
-import { newMessage, ViewMessage } from "../ViewMessage";
+import { newMessage, UiText, ViewMessage } from "../ViewMessage";
 
 export interface TextData {
     text: string;
-    title?: string;
+    title?: UiText;
 }
 
 export interface TextCommand extends ViewMessage<TextData> {
@@ -13,4 +13,4 @@ export function isTextCommand(message: ViewMessage): message is TextCommand {
     return message.command === "output.text";
 }
 
-export default (data: TextData) => newMessage("output.text", data);
+export default (data: TextData) => newMessage("output.text", data) as TextCommand;

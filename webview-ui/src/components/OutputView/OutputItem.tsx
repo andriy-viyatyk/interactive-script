@@ -1,59 +1,29 @@
 import styled from "@emotion/styled";
 import { forwardRef, ReactNode } from "react";
-import { CommandLogView } from "./CommandLogView";
+import { CommandLogView } from "./Commands/CommandLogView";
 import { ViewMessage } from "../../../../shared/ViewMessage";
 import { isLogCommand } from "../../../../shared/commands/log";
 import { isConfirmCommand } from "../../../../shared/commands/input-confirm";
-import { CommandConfirmView } from "./CommandConfirmView";
+import { CommandConfirmView } from "./Commands/CommandConfirmView";
 import { isGridCommand } from "../../../../shared/commands/output-grid";
-import { CommandGridView } from "./CommandGridView";
+import { CommandGridView } from "./Commands/CommandGridView";
 import { isTextCommand } from "../../../../shared/commands/output-text";
-import { CommandTextBlockView } from "./CommandTextBlockView";
-import color from "../../theme/color";
+import { CommandTextBlockView } from "./Commands/CommandTextBlockView";
 import { isTextInputCommand } from "../../../../shared/commands/input-text";
-import { CommandTextInputView } from "./CommandTextInput";
+import { CommandTextInputView } from "./Commands/CommandTextInput";
 import { isButtonsCommand } from "../../../../shared/commands/input-buttons";
-import { CommandButtonsView } from "./CommandButtonsView";
+import { CommandButtonsView } from "./Commands/CommandButtonsView";
 import { isProgressCommand } from "../../../../shared/commands/output-progress";
-import { CommandProgressView } from "./CommandProgressView";
+import { CommandProgressView } from "./Commands/CommandProgressView";
 import { isCheckboxesCommand } from "../../../../shared/commands/input-checkboxes";
-import { CommandCheckboxesView } from "./CommandCheckboxesView";
+import { CommandCheckboxesView } from "./Commands/CommandCheckboxesView";
+import { isRadioboxesCommand } from "../../../../shared/commands/input-radioboxes";
+import { CommandRadioboxesView } from "./Commands/CommandRadioboxesView";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
     maxWidth: "calc(100% - 30px)",
     position: "relative",
-    "& .dialog": {
-        margin: "4px 0",
-        border: `1px solid ${color.border.default}`,
-        borderRadius: 4,
-    },
-    "& .dialog-header": {
-        color: color.text.light,
-        backgroundColor: color.background.dark,
-        borderBottom: `1px solid ${color.border.default}`,
-        borderTopLeftRadius: 4,
-        borderTopRightRadius: 4,
-        padding: "4px 8px",
-        display: "flex",
-        alignItems: "center",
-        columnGap: 8,
-        "& button": {
-            padding: "0 2px",
-        },
-        whiteSpace: "pre",
-    },
-    "& .dialog-buttons": {
-        display: "flex",
-        flexDirection: "row",
-        columnGap: 8,
-        alignItems: "center",
-        justifyContent: "flex-end",
-        flexWrap: "wrap",
-        padding: 4,
-        paddingBottom: 0,
-        marginBottom: 4,
-    },
 });
 
 interface OutputItemProps {
@@ -117,6 +87,8 @@ export const OutputItem = forwardRef(function OutputItemComponent(
         el = <CommandProgressView item={item} />;
     } else if (isCheckboxesCommand(item)) {
         el = <CommandCheckboxesView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
+    } else if (isRadioboxesCommand(item)) {
+        el = <CommandRadioboxesView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     }
 
     return (

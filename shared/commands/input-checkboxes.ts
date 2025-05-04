@@ -23,5 +23,5 @@ export function isCheckboxesCommand(message: ViewMessage): message is Checkboxes
 }
 
 export default function checkboxes(data: CheckboxesData) {
-    return newMessage("input.checkboxes", data);
+    return newMessage("input.checkboxes", data) as CheckboxesCommand;
 }

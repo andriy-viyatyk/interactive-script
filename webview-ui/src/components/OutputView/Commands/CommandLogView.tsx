@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
-import color from "../../theme/color";
-import { LogCommand } from "../../../../shared/commands/log";
-import { UiTextView } from "./UiTextView";
+import color from "../../../theme/color";
+import { LogCommand } from "../../../../../shared/commands/log";
+import { UiTextView } from "../UiTextView";
 
 const CommandLogViewRoot = styled.div({
     display: 'inline-block',

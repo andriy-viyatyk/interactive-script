@@ -18,13 +18,13 @@ async function longRunningTask(progress: Progress) {
 
 async function progressDemo() {
     ui.log("Starting progress demo...");
-    let progress = ui.display.progress("Progress Demo");
+    let progress = ui.show.progress("Progress Demo");
     await longRunningTask(progress);
 
     ui.log("");
     ui.log("You can also use progress with a promise:");
     const promise = new Promise((resolve) => setTimeout(resolve, 5000));
-    progress = ui.display.progress("Will be completed in 5 seconds...");
+    progress = ui.show.progress("Will be completed in 5 seconds...");
     progress.conpleteWhenPromise(promise, styledText("Done.").color("palegreen").value);
     await promise;
 

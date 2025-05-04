@@ -25,7 +25,7 @@ const fromJsonArray = (data: any[], options?: {title?: UiText, columns?: GridCol
         title: options?.title,
         data: data,
         columns: options?.columns,
-    });
+    }) as GridCommand;
 }
 
 export default {

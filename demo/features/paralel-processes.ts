@@ -25,8 +25,8 @@ async function paralelDemo() {
     ui.text("Paralel processes demo").color("lightseagreen").bold().print();
     ui.log("");
 
-    const progress1 = ui.display.progress("Process 1");
-    const progress2 = ui.display.progress("Process 2");
+    const progress1 = ui.show.progress("Process 1");
+    const progress2 = ui.show.progress("Process 2");
 
     const proc1Promise = paralelProcess(progress1, "Process 1");
     const proc2Promise = paralelProcess(progress2, "Process 2");

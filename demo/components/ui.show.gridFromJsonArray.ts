@@ -23,12 +23,12 @@ function gridDemo() {
     ui.text("Grid Demo").color("lightseagreen").fontSize(18).print();
 
     ui.log("");
-    ui.text("You can display a grid using array of objects with: ui.display.gridFromJsonArray(data, options):");
-    ui.display.gridFromJsonArray(getRows(10000));
+    ui.text("You can display a grid using array of objects with: ui.show.gridFromJsonArray(data, options):");
+    ui.show.gridFromJsonArray(getRows(10000));
 
     ui.log("");
-    ui.text("You can define title and columns by passing options: ui.display.gridFromJsonArray(data, { title, columns }):");
-    ui.display.gridFromJsonArray(getRows(10000), {
+    ui.text("You can define title and columns by passing options: ui.show.gridFromJsonArray(data, { title, columns }):");
+    ui.show.gridFromJsonArray(getRows(10000), {
         title: styledText("Grid").color("yellow").then(" title").value,
         columns: [
             { title: "Name", key: "name", width: 200 },

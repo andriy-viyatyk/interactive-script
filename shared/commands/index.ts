@@ -1,3 +1,4 @@
+import ping from './ping';
 import log from './log';
 import clear from './clear';
 import confirm from './input-confirm';
@@ -8,8 +9,10 @@ import textInput from './input-text';
 import buttons from './input-buttons';
 import progress from './output-progress';
 import checkboxes from './input-checkboxes';
+import radioboxes from './input-radioboxes';
 
 const commands = {
+    ping,
     log,
     clear,
     confirm,
@@ -20,6 +23,7 @@ const commands = {
     buttons,
     progress,
     checkboxes,
+    radioboxes,
 }
 
 export default commands;

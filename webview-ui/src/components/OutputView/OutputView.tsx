@@ -33,13 +33,15 @@ class OutputViewModel extends TModel<OutputViewState> {
         const message = event.data as ViewMessage;
         if (message?.command) {
             switch (message.command) {
+                case "ping":
+                    this.replayMessage(message);
+                    return;
                 case "clear":
                     this.state.update((state) => {
                         state.items = [];
                     });
                     return;
                 default:
-                    console.log("commandId", message.commandId);
                     this.state.update((state) => {
                         const existingIndex = state.items.findIndex((item) => item.commandId === message.commandId);
                         if (existingIndex >= 0) {

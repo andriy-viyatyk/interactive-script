@@ -370,3 +370,14 @@ export const CheckedIcon = createIcon(16)(
 export const UncheckedIcon = createIcon(16)(
     <rect width="16" height="16" rx="4" fill="none" stroke="currentColor"/>
 );
+
+export const RadioCheckedIcon = createIcon(16)(
+    <>
+        <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" />
+        <circle cx="8" cy="8" r="3" fill="currentColor" />
+    </>
+);
+
+export const RadioUncheckedIcon = createIcon(16)(
+    <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" />
+);

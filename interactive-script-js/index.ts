@@ -3,7 +3,7 @@ import { isUiText, UiText } from "../shared/ViewMessage";
 import { ConfirmCommand, ConfirmData } from "../shared/commands/input-confirm";
 import { GridColumn } from "../shared/commands/output-grid";
 import { TextInputCommand, TextInputData } from "../shared/commands/input-text";
-import { ButtonsCommand } from "../shared/commands/input-buttons";
+import { ButtonsCommand, ButtonsData } from "../shared/commands/input-buttons";
 import { send, responseHandler } from "./src/handlers";
 import { Progress } from "./src/objects/Progress";
 import {
@@ -13,8 +13,11 @@ import {
 } from "./src/objects/StyledText";
 import { namedColors } from "./src/objects/StyledTextColor";
 import { CheckboxesCommand, CheckboxesData } from "../shared/commands/input-checkboxes";
+import { RadioboxesCommand, RadioboxesData } from "../shared/commands/input-radioboxes";
+import { TextData } from "../shared/commands/output-text";
 
 const ui = {
+    ping: () => responseHandler.send(commands.ping()),
     text: (message: UiText) =>
         new StyledLogCommand(send(commands.log.text(message))),
     log: (message: UiText) =>
@@ -29,8 +32,10 @@ const ui = {
         new StyledLogCommand(send(commands.log.success(message))),
     clear: () => send(commands.clear()),
     dialog: {
-        buttons: async (buttons: UiText[]) => {
-            const message = commands.buttons({ buttons });
+        buttons: async (buttons: UiText[] | ButtonsData) => {
+            const message = Array.isArray(buttons)
+                ? commands.buttons({ buttons })
+                : commands.buttons(buttons);
             const response = await responseHandler.send(message);
             if (response) {
                 return (response as ButtonsCommand).data?.result;
@@ -73,17 +78,33 @@ const ui = {
             } else {
                 return undefined;
             }
+        },
+
+        radioboxes: async (params: UiText[] | RadioboxesData) => {
+            const message = Array.isArray(params)
+                ? commands.radioboxes({ items: params })
+                : commands.radioboxes(params);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as RadioboxesCommand).data;
+            } else {
+                return undefined;
+            }
         }
 
     },
-    display: {
+    show: {
         gridFromJsonArray: (
             data: any[],
             options?: { title?: UiText; columns?: GridColumn[] }
         ) => send(commands.grid.fromJsonArray(data, options)),
 
-        textBlock: (data: string, options?: { title?: string }) =>
-            send(commands.text({ text: data, title: options?.title })),
+        textBlock: (data: string | TextData) => {
+            const message = typeof data === "string"
+                ? commands.text({ text: data })
+                : commands.text(data);
+            send(message);
+        },
 
         progress: (label: UiText, max?: number, value?: number) =>
             new Progress(send(commands.progress({ label, max, value }))),

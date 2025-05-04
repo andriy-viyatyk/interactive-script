@@ -1,18 +1,19 @@
 import styled from "@emotion/styled";
-import { GridCommand } from "../../../../shared/commands/output-grid";
-import { getRowKey, useGridDataWithColumns } from "../useGridData";
-import AVGrid from "../../controls/AVGrid/AVGrid";
+import { GridCommand } from "../../../../../shared/commands/output-grid";
+import { getRowKey, useGridDataWithColumns } from "../../useGridData";
+import AVGrid from "../../../controls/AVGrid/AVGrid";
 import { useState } from "react";
-import { CellFocus } from "../../controls/AVGrid/avGridTypes";
-import { FlexSpace } from "../../controls/FlexSpace";
-import { Button } from "../../controls/Button";
-import { OpenWindowIcon } from "../../theme/icons";
-import { uiTextToString, ViewMessage } from "../../../../shared/ViewMessage";
-import commands from "../../../../shared/commands";
-import { UiTextView } from "./UiTextView";
+import { CellFocus } from "../../../controls/AVGrid/avGridTypes";
+import { Button } from "../../../controls/Button";
+import { OpenWindowIcon } from "../../../theme/icons";
+import { uiTextToString, ViewMessage } from "../../../../../shared/ViewMessage";
+import commands from "../../../../../shared/commands";
+import { OutputDialog } from "../OutputDialog/OutputDialog";
+import { OutputDialogHeader } from "../OutputDialog/OutputDialogHeader";
 
-const CommandGridViewRoot = styled.div({
+const CommandGridViewRoot = styled(OutputDialog)({
     position: "relative",
+    maxHeight: "unset",
 });
 
 interface CommandGridViewProps {
@@ -28,10 +29,8 @@ export function CommandGridView({
     const [focus, setFocus] = useState<CellFocus | undefined>(undefined);
 
     return (
-        <CommandGridViewRoot className="command-grid dialog">
-            <div className="dialog-header">
-                <UiTextView uiText={item.data?.title} />
-                <FlexSpace />
+        <CommandGridViewRoot className="command-grid">
+            <OutputDialogHeader title={item.data?.title}>
                 <Button
                     size="small"
                     type="icon"
@@ -48,7 +47,7 @@ export function CommandGridView({
                 >
                     <OpenWindowIcon />
                 </Button>
-            </div>
+            </OutputDialogHeader>
             <AVGrid
                 columns={data.columns}
                 rows={data.rows}

@@ -1,5 +1,7 @@
 import ui, { styledText } from "interactive-script-js";
 
+const manyButtons = Array.from({ length: 100 }, (_, i) => `Button ${i + 1}`);
+
 async function buttonsDemo() {
     ui.success("Buttons Demo").fontSize(18).print();
 
@@ -16,6 +18,22 @@ async function buttonsDemo() {
         styledText("button ").then("three").color("aqua").value,
     ]);
     ui.text("You pressed: ").then(pressedButton).color("lightseagreen").print();
+
+    ui.log("");
+    ui.text("Many buttons will wrap by lines:");
+    await ui.dialog.buttons(manyButtons);
+
+    ui.log("");
+    ui.text("You can provide bodyStyles to display them for example in a grid:");
+    await ui.dialog.buttons({
+        buttons: manyButtons,
+        bodyStyles: {
+            display: "grid",
+            gridTemplateColumns: "repeat(5, 1fr)",
+            gap: "4px",
+            padding: "4px",
+        },
+    });
 
     ui.success("\nDemo completed.");
 }

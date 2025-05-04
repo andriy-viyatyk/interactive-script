@@ -15,6 +15,6 @@ export function isConfirmCommand(message: ViewMessage): message is ConfirmComman
     return message.command === "input.confirm";
 }
 
-const confirm = (data: ConfirmData) => newMessage("input.confirm", data);
+const confirm = (data: ConfirmData) => newMessage("input.confirm", data) as ConfirmCommand;
 
 export default confirm;

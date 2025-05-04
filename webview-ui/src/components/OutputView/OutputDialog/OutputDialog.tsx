@@ -1,0 +1,9 @@
+import styled from "@emotion/styled";
+import color from "../../../theme/color";
+
+export const OutputDialog = styled.div({
+    margin: "4px 0",
+    border: `1px solid ${color.border.default}`,
+    borderRadius: 4,
+    maxHeight: 400,
+});
