@@ -2,8 +2,11 @@ import styled from "@emotion/styled";
 import { UiText } from "../../../../shared/ViewMessage";
 
 const UiTextViewRoot = styled.span({
-    display: "inline",
+    display: "inline-block",
     whiteSpace: "pre-wrap",
+    "& .inner-span": {
+        display: "inline-block",
+    }
 });
 
 export interface UiTextViewProps {
@@ -22,7 +25,7 @@ export function UiTextView({ uiText, className }: Readonly<UiTextViewProps>) {
                 if (typeof item === "string") {
                     return item;
                 }
-                return <span key={index} style={item.styles}>
+                return <span key={index} className="inner-span" style={item.styles}>
                     {item.text}
                 </span>
             });

@@ -17,7 +17,7 @@ async function demoMain() {
     ui.clear();
     ui.log([{text: "Interactive Script Demo", styles: {fontSize: 18, color: 'cyan'}}]);
     ui.log("After importing ui from 'interactive-script-js:'");
-    ui.display.textBlock('import ui from "interactive-script-js";');
+    ui.log('import ui from "interactive-script-js";').border("silver").style({padding: 8}).print();
     ui.log("what you can do running it using 'Interactive Script' extension in VSCode:");
     ui.log("");
 
@@ -42,15 +42,17 @@ async function demoMain() {
         {text: "draw text in a box", styles: {border: '1px solid silver', borderRadius: 4, padding: '0 4px'}},
         ", you can do it by passing to above methods an array of objects with text and styles properties.",
     ]);
+    await ui.dialog.buttons(["Next"]);
     
     ui.log("");
-    ui.log("If you need to output a long text, you can use: ui.display.textBlock('text'):");
-    ui.display.textBlock(longText, {title: "Long text"});
+    ui.log("If you need to output a long text, you can use: ui.show.textBlock('text'):");
+    ui.show.textBlock({text: longText, title: "Long text"});
     ui.log("Note that you have buttons to copy text to clipboard and open it in a separate VSCode window.");
+    await ui.dialog.buttons(["Next"]);
 
     ui.log("");
-    ui.log("You can display a grid using array of objects with: ui.display.gridFromJsonArray(data, options):");
-    ui.display.gridFromJsonArray(someJsonForGrid, {
+    ui.log("You can display a grid using array of objects with: ui.show.gridFromJsonArray(data, options):");
+    ui.show.gridFromJsonArray(someJsonForGrid, {
         title: [{text: "Titles", styles: {color: 'lime'},}, " also can be styled"],
         columns: [
             { title: "Name", key: "name" },
@@ -59,7 +61,7 @@ async function demoMain() {
         ],
     });
     ui.log("Note that you have button to open it in a separate VSCode window. And by the way, you can open any json file in a grid using 'AV' button in the top right corner of the VSCode.");
-
+    await ui.dialog.buttons(["Next"]);
     ui.log("");
 
     // Input
@@ -92,8 +94,8 @@ async function demoMain() {
         " button.",
     ]);
 
-
     ui.log("");
+    ui.text("Find more demo scripts in subfolders with more UI elements and more detailed.")
 }
 
 demoMain().finally(() => {

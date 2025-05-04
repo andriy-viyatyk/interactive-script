@@ -1,12 +1,13 @@
 import ui, { styledText } from "interactive-script-js";
 import { generateRows } from "./utils";
 
-function gridDemo() {
+async function gridDemo() {
     ui.text("Grid Demo").color("lightseagreen").fontSize(18).print();
 
     ui.log("");
     ui.text("You can display a grid using array of objects with: ui.show.gridFromJsonArray(data, options):");
     ui.show.gridFromJsonArray(generateRows(10000));
+    await ui.dialog.buttons(["Next"]);
 
     ui.log("");
     ui.text("You can define title and columns by passing options: ui.show.gridFromJsonArray(data, { title, columns }):");
@@ -24,4 +25,6 @@ function gridDemo() {
     ui.info("Also you can open any json file in a grid using 'AV' button in the top right corner of the VSCode.");
 }
 
-gridDemo();
+gridDemo().finally(() => {
+    process.exit(0);
+});
