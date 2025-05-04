@@ -4,7 +4,7 @@ import { ConfirmCommand, ConfirmData } from "../shared/commands/input-confirm";
 import { GridColumn } from "../shared/commands/output-grid";
 import { TextInputCommand, TextInputData } from "../shared/commands/input-text";
 import { ButtonsCommand } from "../shared/commands/input-buttons";
-import { send, withResponse } from "./src/handlers";
+import { send, responseHandler } from "./src/handlers";
 import { Progress } from "./src/objects/Progress";
 import {
     StyledLogCommand,
@@ -30,7 +30,7 @@ const ui = {
     dialog: {
         buttons: async (buttons: UiText[]) => {
             const message = commands.buttons({ buttons });
-            const response = await withResponse(message);
+            const response = await responseHandler.send(message);
             if (response) {
                 return (response as ButtonsCommand).data?.result;
             } else {
@@ -42,7 +42,7 @@ const ui = {
             const message = isUiText(params)
                 ? commands.confirm({ message: params })
                 : commands.confirm(params);
-            const response = await withResponse(message);
+            const response = await responseHandler.send(message);
             if (response) {
                 return (response as ConfirmCommand).data?.result;
             } else {
@@ -54,7 +54,7 @@ const ui = {
             const message = isUiText(params)
                 ? commands.textInput({ title: params })
                 : commands.textInput(params);
-            const response = await withResponse(message);
+            const response = await responseHandler.send(message);
             if (response) {
                 return (response as TextInputCommand).data;
             } else {

@@ -49,7 +49,7 @@ async function styledTextDemo() {
         "If you need to generate styled text ",
         {text: "dynamically", styles: {color: 'yellow'}},
         " you can use array of objects with text and styles properties.",
-        {text: "\nFor example: ui.text([ 'string or object', {text: 'text', styles: {color: 'yellow'}} ])", styles: { fontStyle: "italic" }},
+        {text: "\nFor example: ui.text([ {text: 'text', styles: {color: 'yellow'}} ])", styles: { fontStyle: "italic" }},
     ]);
 
     ui.log("");

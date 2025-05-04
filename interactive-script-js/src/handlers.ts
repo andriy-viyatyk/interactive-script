@@ -8,17 +8,37 @@ export function send<T extends ViewMessage>(message: T): T {
     return message;
 }
 
-export function withResponse(message: ViewMessage): Promise<ViewMessage | undefined> {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
+type ResponseHandlerResolve = (message: ViewMessage) => void;
+class ResponseHandler {
+    private readonly rl: readline.Interface;
+    private readonly commandMap: Map<string, ResponseHandlerResolve> = new Map();
 
-    const messageToSend: ViewMessage = { ...message, isResponseRequired: true };
-    return new Promise((resolve) => {
-        rl.question(messageToString(messageToSend), (ans) => {
-            rl.close();
-            resolve(messageFromString(ans));
+    constructor() {
+        this.rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
         });
-    });
+        this.rl.on("line", this.onLine);
+    }
+
+    private readonly onLine = (line: string) => {
+        const message = messageFromString(line);
+        if (message) {
+            const resolve = this.commandMap.get(message.commandId);
+            if (resolve) {
+                this.commandMap.delete(message.commandId);
+                resolve(message);
+            }
+        }
+    }
+
+    send = <T>(message: ViewMessage): Promise<ViewMessage<T>> => {
+        const messageToSend: ViewMessage = { ...message, isResponseRequired: true };
+        return new Promise<ViewMessage<T>>((resolve) => {
+            this.commandMap.set(messageToSend.commandId, resolve);
+            console.log(messageToString(messageToSend));
+        });
+    }
 }
+
+export const responseHandler = new ResponseHandler();
