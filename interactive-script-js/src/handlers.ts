@@ -10,15 +10,24 @@ export function send<T extends ViewMessage>(message: T): T {
 
 type ResponseHandlerResolve = (message: ViewMessage) => void;
 class ResponseHandler {
-    private readonly rl: readline.Interface;
+    private rl: readline.Interface | undefined;
     private readonly commandMap: Map<string, ResponseHandlerResolve> = new Map();
 
-    constructor() {
-        this.rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-        });
-        this.rl.on("line", this.onLine);
+    private createRl() {
+        if (!this.rl) {
+            this.rl = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout,
+            });
+            this.rl.on("line", this.onLine);
+        }
+    }
+
+    private closeRlIfIdle() {
+        if (this.rl && this.commandMap.size === 0) {
+            this.rl.close();
+            this.rl = undefined;
+        }
     }
 
     private readonly onLine = (line: string) => {
@@ -28,6 +37,7 @@ class ResponseHandler {
             if (resolve) {
                 this.commandMap.delete(message.commandId);
                 resolve(message);
+                this.closeRlIfIdle();
             }
         }
     }
@@ -35,10 +45,12 @@ class ResponseHandler {
     send = <T>(message: ViewMessage): Promise<ViewMessage<T>> => {
         const messageToSend: ViewMessage = { ...message, isResponseRequired: true };
         return new Promise<ViewMessage<T>>((resolve) => {
+            this.createRl();
             this.commandMap.set(messageToSend.commandId, resolve);
             console.log(messageToString(messageToSend));
         });
     }
 }
+
 
 export const responseHandler = new ResponseHandler();
