@@ -11,6 +11,7 @@ export type Command =
     | "input.confirm"
     | "input.text"
     | "input.buttons"
+    | "input.checkboxes"
     | "output.grid"
     | "output.text"
     | "output.progress"

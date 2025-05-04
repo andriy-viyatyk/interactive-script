@@ -1,7 +1,7 @@
 import ui, { styledText } from "interactive-script-js";
 
 async function confirmDemo() {
-    ui.text("Confirm Dialog Demo").color("cyan").fontSize(18).print();
+    ui.text("Confirm Dialog Demo").color("lightseagreen").fontSize(18).print();
 
     let pressedButton = await ui.dialog.confirm("Single confirm message with default buttons.");
     ui.log("You pressed: ")

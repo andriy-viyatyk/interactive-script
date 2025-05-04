@@ -1,8 +1,15 @@
+import styled from "@emotion/styled";
 import { ButtonsCommand } from "../../../../shared/commands/input-buttons";
 import { uiTextToString, ViewMessage } from "../../../../shared/ViewMessage";
 import { Button } from "../../controls/Button";
 import { CheckIcon } from "../../theme/icons";
 import { UiTextView } from "./UiTextView";
+
+const CommandButtonsViewRoot = styled.div({
+    '&.this-buttons': {
+        padding: "2px 4px",
+    }
+});
 
 interface CommandButtonsViewProps {
     item: ButtonsCommand;
@@ -17,7 +24,7 @@ export function CommandButtonsView({
 }: Readonly<CommandButtonsViewProps>) {
     let buttons = item.data?.buttons || [];
     if (buttons.length === 0) {
-        buttons = ["Ok"];
+        buttons = ["Proceed"];
     }
 
     const buttonClick = (button: string) => {
@@ -27,7 +34,7 @@ export function CommandButtonsView({
     };
 
     return (
-        <div className="dialog-buttons">
+        <CommandButtonsViewRoot className="dialog dialog-buttons this-buttons">
             {buttons.map((button, index) => (
                 <Button
                     size="small"
@@ -41,6 +48,6 @@ export function CommandButtonsView({
                     <UiTextView uiText={button} />
                 </Button>
             ))}
-        </div>
+        </CommandButtonsViewRoot>
     );
 }

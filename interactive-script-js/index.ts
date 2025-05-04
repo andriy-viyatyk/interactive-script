@@ -12,6 +12,7 @@ import {
     StyledText,
 } from "./src/objects/StyledText";
 import { namedColors } from "./src/objects/StyledTextColor";
+import { CheckboxesCommand, CheckboxesData } from "../shared/commands/input-checkboxes";
 
 const ui = {
     text: (message: UiText) =>
@@ -61,6 +62,19 @@ const ui = {
                 return undefined;
             }
         },
+
+        checkboxes: async (params: UiText[] | CheckboxesData) => {
+            const message = Array.isArray(params)
+                ? commands.checkboxes({ items: params.map((item) => ({ label: item })) })
+                : commands.checkboxes(params);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as CheckboxesCommand).data;
+            } else {
+                return undefined;
+            }
+        }
+
     },
     display: {
         gridFromJsonArray: (

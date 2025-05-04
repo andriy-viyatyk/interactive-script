@@ -16,6 +16,8 @@ import { isButtonsCommand } from "../../../../shared/commands/input-buttons";
 import { CommandButtonsView } from "./CommandButtonsView";
 import { isProgressCommand } from "../../../../shared/commands/output-progress";
 import { CommandProgressView } from "./CommandProgressView";
+import { isCheckboxesCommand } from "../../../../shared/commands/input-checkboxes";
+import { CommandCheckboxesView } from "./CommandCheckboxesView";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
@@ -113,6 +115,8 @@ export const OutputItem = forwardRef(function OutputItemComponent(
         );
     } else if (isProgressCommand(item)) {
         el = <CommandProgressView item={item} />;
+    } else if (isCheckboxesCommand(item)) {
+        el = <CommandCheckboxesView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     }
 
     return (

@@ -63,7 +63,7 @@ const ButtonRoot = styled.button({
         '&:hover:not(.disabled) svg': {
             color: color.icon.default,
         },
-        '&:active svg': {
+        '&:active:not(.disabled) svg': {
             color: color.icon.dark,
         },
         backgroundColor: 'transparent',

@@ -304,7 +304,7 @@ export const CopyIcon = createIcon(24)(
             strokeWidth="1.5"
             fill="none"
         />
-    </>,
+    </>
 );
 
 export const DeleteIcon = createIcon(24)(
@@ -330,7 +330,7 @@ export const DeleteIcon = createIcon(24)(
             strokeLinecap="round"
             fill="none"
         />
-    </>,
+    </>
 );
 
 export const PasteIcon = createIcon(24)(
@@ -341,7 +341,7 @@ export const PasteIcon = createIcon(24)(
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
-    />,
+    />
 );
 
 export const PlusIcon = createIcon(24)(
@@ -351,5 +351,22 @@ export const PlusIcon = createIcon(24)(
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
-    />,
+    />
+);
+
+export const CheckedIcon = createIcon(16)(
+    <>
+        <rect width="16" height="16" rx="4" fill="none" stroke="currentColor"/>
+        <path
+            d="M3.75 7.75L6.75 10.75L12.25 5.25"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </>
+);
+
+export const UncheckedIcon = createIcon(16)(
+    <rect width="16" height="16" rx="4" fill="none" stroke="currentColor"/>
 );
