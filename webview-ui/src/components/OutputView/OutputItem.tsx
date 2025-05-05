@@ -19,6 +19,8 @@ import { isCheckboxesCommand } from "../../../../shared/commands/input-checkboxe
 import { CommandCheckboxesView } from "./Commands/CommandCheckboxesView";
 import { isRadioboxesCommand } from "../../../../shared/commands/input-radioboxes";
 import { CommandRadioboxesView } from "./Commands/CommandRadioboxesView";
+import { isSelectRecordCommand } from "../../../../shared/commands/input-selectRecord";
+import { CommandSelectRecordView } from "./Commands/CommandSelectRecordView";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
@@ -28,7 +30,7 @@ const OutputItemRoot = styled.div({
 
 interface OutputItemProps {
     item: ViewMessage;
-    onCheckSize?: () => void;
+    onCheckSize: () => void;
     replayMessage: (message: ViewMessage) => void;
     updateMessage: (message: ViewMessage) => void;
     sendMessage: (message: ViewMessage) => void;
@@ -89,6 +91,8 @@ export const OutputItem = forwardRef(function OutputItemComponent(
         el = <CommandCheckboxesView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     } else if (isRadioboxesCommand(item)) {
         el = <CommandRadioboxesView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
+    } else if (isSelectRecordCommand(item)) {
+        el = <CommandSelectRecordView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     }
 
     return (

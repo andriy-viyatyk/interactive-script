@@ -14,6 +14,7 @@ export type Command =
     | "input.buttons"
     | "input.checkboxes"
     | "input.radioboxes"
+    | "input.selectRecord"
     | "output.grid"
     | "output.text"
     | "output.progress"

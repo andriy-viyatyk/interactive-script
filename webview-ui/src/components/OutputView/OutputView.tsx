@@ -7,8 +7,9 @@ import { ViewMessage } from "../../../../shared/ViewMessage";
 import { TestConsole } from "./TestConsole";
 import { OutputItemList } from "./OutputItemList";
 import { v4 } from "uuid";
+import { GlobalRoot } from "../GlobalRoot";
 
-const OutputRoot = styled.div({
+const OutputRoot = styled(GlobalRoot)({
     position: "absolute",
     top: 0,
     left: 0,

@@ -2,11 +2,12 @@ import { useMemo } from "react";
 import { GridData } from "./types";
 import { Column } from "../controls/AVGrid/avGridTypes";
 import { GridColumn } from "../../../shared/commands/output-grid";
+import SelectColumn from "../controls/AVGrid/SelectColumn";
 
 const charWidth = 8; // Approximate width of a character in pixels
 const maxColumnWidth = 300; // Maximum column width in pixels
 
-function getColumns(data: any[]): Column[] {
+function getColumns(data: any[], withSelectColumn?: boolean): Column[] {
     const columnsMap = new Map<string, Column>();
     data.forEach((row) => {
         Object.keys(row).forEach((key) => {
@@ -31,7 +32,9 @@ function getColumns(data: any[]): Column[] {
             }
         });
     });
-    return [...columnsMap.values()];
+    return withSelectColumn
+        ? [SelectColumn, ...columnsMap.values()]
+        : [...columnsMap.values()];
 }
 
 export const idColumnKey = "#intrnl-id";
@@ -40,17 +43,17 @@ export function getRowKey(row: any) {
     return row?.[idColumnKey] ?? "";
 }
 
-export function useGridData(jsonData: any): GridData {
+export function useGridData(jsonData: any, withSelectColumn?: boolean): GridData {
     return useMemo(() => {
         let columns: Column[] = [];
         let rows: any[] = [];
 
         if (jsonData) {
             if (Array.isArray(jsonData)) {
-                columns = getColumns(jsonData);
+                columns = getColumns(jsonData, withSelectColumn);
                 rows = jsonData;
             } else if (jsonData instanceof Object) {
-                columns = getColumns([jsonData]);
+                columns = getColumns([jsonData], withSelectColumn);
                 rows = [jsonData];
             }
         }
@@ -61,16 +64,16 @@ export function useGridData(jsonData: any): GridData {
         }))
 
         return { columns, rows };
-    }, [jsonData])
+    }, [jsonData, withSelectColumn])
 }
 
-export function useGridDataWithColumns(jsonData: any, columns?: GridColumn[]): GridData {
-    const gridData = useGridData(jsonData);
+export function useGridDataWithColumns(jsonData: any, columns?: GridColumn[], withSelectColumn?: boolean): GridData {
+    const gridData = useGridData(jsonData, withSelectColumn);
 
     return useMemo(() => {
         let data = gridData;
         if (columns) {
-            const newColumns = columns.map((column) => {
+            let newColumns = columns.map((column) => {
                 const existing = data.columns.find((c) => c.key === column.key);
                 const c: Column = {
                     ...(existing ?? {}),
@@ -81,13 +84,16 @@ export function useGridDataWithColumns(jsonData: any, columns?: GridColumn[]): G
                 }
                 return c;
             });
+            if (withSelectColumn) {
+                newColumns = [SelectColumn, ...newColumns];
+            }
             data = {
                 ...data,
                 columns: newColumns,
             };
         }
         return data;
-    }, [gridData, columns]);
+    }, [gridData, columns, withSelectColumn]);
 }
 
 export function useWorkingData(): GridData {

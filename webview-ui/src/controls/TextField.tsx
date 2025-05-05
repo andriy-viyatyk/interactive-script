@@ -25,7 +25,7 @@ interface TextFieldProps extends FieldProps<string> {
     onClick?: (e: React.MouseEvent) => void;
 }
 
-const buttonWidth = 22;
+const buttonWidth = 16;
 const buttonSpacing = 4;
 
 export const TextField = forwardRef(function TextFieldComponent(props: Readonly<TextFieldProps>, ref: React.Ref<HTMLInputElement>) {

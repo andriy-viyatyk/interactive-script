@@ -4,8 +4,6 @@ import styled from '@emotion/styled';
 import color from '../theme/color';
 
 const InputBaseRoot = styled.input((props) => ({
-    fontFamily: 'Open Sans',
-    fontSize: 14,
     padding: '4px 6px',
     backgroundColor: color.background.default,
     color: color.text.dark,
@@ -21,6 +19,7 @@ const InputBaseRoot = styled.input((props) => ({
     },
     '&:focus': {
         borderColor: color.border.active,
+        outline: 'none',
     },
 }), { label: 'InputBaseRoot' });
 

@@ -7,6 +7,7 @@ import RenderGridModel, {
 } from './RenderGridModel';
 import { RefType } from './types';
 import { useComponentModel } from '../../common/classes/model';
+import { whiteSpace } from './renderInfo';
 
 const iFrameStyle: React.CSSProperties = {
     display: 'block',
@@ -248,7 +249,9 @@ const RenderGrid = React.forwardRef<RenderGridModel, RenderGridProps>(function R
                                 height:
                                     info.innerSize.height -
                                     (info.innerSize.stickyTopHeight +
-                                        info.innerSize.stickyBottomHeight),
+                                        (info.innerSize.stickyBottomHeight
+                                            ? info.innerSize.stickyBottomHeight
+                                            : whiteSpace)),
                                 zIndex: 1,
                                 position: 'sticky',
                                 transform: `translate(0, -${info.innerSize.stickyBottomHeight}px)`,

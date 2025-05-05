@@ -33,6 +33,7 @@ export interface TAVGridContext<R = any> {
     onDragEnd?: CellDragEvent;
     cellEdit: IState<CellEdit>
     editRow?: (columnKey: string, rowKey: string, value: any) => void;
+    readonly?: boolean;
 }
 
 export interface TCellRendererProps<R = any> extends RenderCellParams {

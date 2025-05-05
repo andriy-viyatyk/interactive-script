@@ -10,6 +10,7 @@ import buttons from './input-buttons';
 import progress from './output-progress';
 import checkboxes from './input-checkboxes';
 import radioboxes from './input-radioboxes';
+import selectRecord from './input-selectRecord';
 
 const commands = {
     ping,
@@ -24,6 +25,7 @@ const commands = {
     progress,
     checkboxes,
     radioboxes,
+    selectRecord,
 }
 
 export default commands;

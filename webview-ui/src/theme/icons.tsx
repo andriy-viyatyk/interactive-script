@@ -356,7 +356,7 @@ export const PlusIcon = createIcon(24)(
 
 export const CheckedIcon = createIcon(16)(
     <>
-        <rect width="16" height="16" rx="4" fill="none" stroke="currentColor"/>
+        <rect width="16" height="16" rx="4" fill="none" stroke="currentColor" />
         <path
             d="M3.75 7.75L6.75 10.75L12.25 5.25"
             stroke="currentColor"
@@ -368,7 +368,22 @@ export const CheckedIcon = createIcon(16)(
 );
 
 export const UncheckedIcon = createIcon(16)(
-    <rect width="16" height="16" rx="4" fill="none" stroke="currentColor"/>
+    <rect width="16" height="16" rx="4" fill="none" stroke="currentColor" />
+);
+
+export const IndeterminateIcon = createIcon(16)(
+    <>
+        <rect width="16" height="16" rx="4" fill="none" stroke="currentColor" />
+        <line
+            x1="5"
+            y1="8"
+            x2="11"
+            y2="8"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+        />
+    </>
 );
 
 export const RadioCheckedIcon = createIcon(16)(

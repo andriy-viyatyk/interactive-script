@@ -15,6 +15,7 @@ import { namedColors } from "./src/objects/StyledTextColor";
 import { CheckboxesCommand, CheckboxesData } from "../shared/commands/input-checkboxes";
 import { RadioboxesCommand, RadioboxesData } from "../shared/commands/input-radioboxes";
 import { TextData } from "../shared/commands/output-text";
+import { SelectRecordCommand, SelectRecordData } from "../shared/commands/input-selectRecord";
 
 const ui = {
     ping: () => responseHandler.send(commands.ping()),
@@ -87,6 +88,18 @@ const ui = {
             const response = await responseHandler.send(message);
             if (response) {
                 return (response as RadioboxesCommand).data;
+            } else {
+                return undefined;
+            }
+        },
+
+        selectRecord: async (records: any[] | SelectRecordData) => {
+            const message = Array.isArray(records)
+                ? commands.selectRecord({ records })
+                : commands.selectRecord(records);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as SelectRecordCommand).data;
             } else {
                 return undefined;
             }

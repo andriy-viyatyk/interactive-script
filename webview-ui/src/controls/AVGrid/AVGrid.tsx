@@ -165,7 +165,7 @@ const LoadingContainerRoot = styled.div({
     justifyContent: "center",
 });
 
-function Cell(props: TCellRendererProps) {
+function Cell(props: Readonly<TCellRendererProps>) {
     const { col, row, context } = props;
     const Renderer: TCellRenderer =
         row === 0
@@ -213,6 +213,7 @@ export interface AVGridProps<R> {
     grawToHeight?: CSSProperties["height"];
     grawToWidth?: CSSProperties["height"];
     searchString?: string;
+    readonly?: boolean;
 }
 
 function AVGridComponent<R = any>(
@@ -242,6 +243,7 @@ function AVGridComponent<R = any>(
         onAddRows,
         onDeleteRows,
         searchString,
+        readonly,
     } = props;
 
     const renderGridRef = useRef<RenderGridModel>(null);
@@ -252,7 +254,7 @@ function AVGridComponent<R = any>(
 
     useEffect(() => {
         update({ all: true });
-    }, [update, propsColumns, propsRows, propsSelected]);
+    }, [update, propsColumns, propsRows, propsSelected, readonly]);
 
     const { columns, onColumnResize, onColumnsReorder, lastIsStatusIndex } =
         useColumns<R>({
@@ -378,6 +380,7 @@ function AVGridComponent<R = any>(
             onDragEnd,
             cellEdit,
             editRow,
+            readonly,
         }),
         [
             update,
@@ -406,6 +409,7 @@ function AVGridComponent<R = any>(
             onDragEnd,
             cellEdit,
             editRow,
+            readonly,
         ]
     );
 

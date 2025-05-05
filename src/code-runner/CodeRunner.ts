@@ -152,8 +152,14 @@ class CodeRunner {
             ])
         );
 
+        let workDirectory = path.dirname(filePath);
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders && workspaceFolders.length > 0) {
+            workDirectory = workspaceFolders[0].uri.fsPath;
+        }
+
         this.child = cp.spawn(command, [`"${filePath}"`], {
-            cwd: path.dirname(filePath),
+            cwd: workDirectory,
             shell: true,
         });
 

@@ -11,8 +11,9 @@ import { TextField } from "../controls/TextField";
 import { Button } from "../controls/Button";
 import { CloseIcon, SearchIcon } from "../theme/icons";
 import AVGrid from "../controls/AVGrid/AVGrid";
+import { GlobalRoot } from "./GlobalRoot";
 
-const GridViewRoot = styled.div({
+const GridViewRoot = styled(GlobalRoot)({
     position: "absolute",
     top: 0,
     left: 0,
@@ -22,15 +23,6 @@ const GridViewRoot = styled.div({
     flexDirection: "column",
     overflow: "auto",
     backgroundColor: color.background.default,
-    "& .data-cell": {
-        userSelect: "none",
-    },
-    "& .header-cell": {
-        userSelect: "none",
-    },
-    "& .highlighted-text": {
-        color: color.misc.blue,
-    },
     "& .app-header": {
         display: "flex",
         alignItems: "center",
