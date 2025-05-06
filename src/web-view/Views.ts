@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
-import { WebView, WebViewType } from "./WebView";
+import { WebView } from "./WebView";
 import { Subscription } from "../utils/events";
 import { ViewMessage } from "../../shared/ViewMessage";
+import { WebViewType } from "../../shared/types";
 
 class Views {
     views: Map<string, WebView> = new Map<string, WebView>();

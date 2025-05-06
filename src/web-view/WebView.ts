@@ -4,8 +4,7 @@ import * as fs from "fs";
 import { v4 } from "uuid";
 import { Subscription } from "../utils/events";
 import { GridColumn } from "../../shared/commands/output-grid";
-
-export type WebViewType = "grid" | "output";
+import { WebViewInput, WebViewType } from "../../shared/types";
 
 export interface ViewPanel {
     viewType: string;
@@ -41,17 +40,15 @@ export class WebView implements vscode.WebviewViewProvider {
             enableScripts: true,
         };
 
-        this.createPanelHtml(
-            this.panel,
-            `
-                window.webViewType = "${this.type}";
-            `
-        );
+        const webViewInput: WebViewInput = {
+            viewType: this.type,
+        };
+        this.createPanelHtml(this.panel, webViewInput);
 
         this.onPanel.send(this);
     }
 
-    createGridPanel = (title: string, data: any, columns?: GridColumn[]) => {
+    createGridPanel = (title: string, data: any, columns?: GridColumn[], isCsv?: boolean) => {
         const panel = vscode.window.createWebviewPanel(
             "avScriptTools",
             title,
@@ -67,22 +64,25 @@ export class WebView implements vscode.WebviewViewProvider {
             path.join(this.context.extensionPath, "icons", "av.svg") // Path to your icon
         );
 
-        const jsonStr = JSON.stringify(data).replace(/</g, "\\u003c");
-        const columnsStr = columns ? JSON.stringify(columns).replace(/</g, "\\u003c") : undefined;
-
-        this.createPanelHtml(
-            panel,
-            `
-                window.jsonData = ${jsonStr};
-                ${columnsStr ? `window.gridColumns = ${columnsStr};` : ""}
-                window.webViewType = "${this.type}";
-            `
-        );
+        const webViewInput: WebViewInput = {
+            viewType: "grid",
+            gridInput: {
+                jsonData: isCsv ? undefined :data,
+                csvData: isCsv ? data : undefined,
+                gridColumns: columns,
+            },
+        };
+        this.createPanelHtml(panel, webViewInput);
 
         this.onPanel.send(this);
     };
 
-    private readonly createPanelHtml = (panel: ViewPanel, script: string) => {
+    private readonly createPanelHtml = (
+        panel: ViewPanel,
+        webViewInput: WebViewInput
+    ) => {
+        const jsonStr = JSON.stringify(webViewInput).replace(/</g, "\\u003c");
+
         // Path to the manifest.json
         const manifestPath = path.join(
             this.context.extensionUri.fsPath,
@@ -122,7 +122,7 @@ export class WebView implements vscode.WebviewViewProvider {
               <title>JSON Grid</title>
               <link href="${styleUri}" rel="stylesheet">
               <script>
-                ${script}
+                window.appInput = ${jsonStr};
               </script>
             </head>
             <body>

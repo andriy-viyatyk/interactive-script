@@ -3,6 +3,7 @@ import { GridData } from "./types";
 import { Column } from "../controls/AVGrid/avGridTypes";
 import { GridColumn } from "../../../shared/commands/output-grid";
 import SelectColumn from "../controls/AVGrid/SelectColumn";
+import { csvToRecords } from "../common/utils/csvUtils";
 
 const charWidth = 8; // Approximate width of a character in pixels
 const maxColumnWidth = 300; // Maximum column width in pixels
@@ -96,8 +97,17 @@ export function useGridDataWithColumns(jsonData: any, columns?: GridColumn[], wi
     }, [gridData, columns, withSelectColumn]);
 }
 
-export function useWorkingData(): GridData {
-    const jsonData = window.jsonData;
-    const gridColumns = window.gridColumns;
-    return useGridDataWithColumns(jsonData, gridColumns);
+export function useWorkingData(withColumns = false, delimiter = ','): GridData {
+    let jsonData = window.appInput?.gridInput?.jsonData;
+    const gridColumns = window.appInput?.gridInput?.gridColumns;
+    const csvData = window.appInput?.gridInput?.csvData;
+    const isCsv = !jsonData && Boolean(csvData);
+
+    if (isCsv && csvData) {
+        jsonData = csvToRecords(csvData, withColumns, delimiter);
+    }
+
+    const gridData = useGridDataWithColumns(jsonData, gridColumns);
+    gridData.isCsv = isCsv;
+    return gridData;
 }

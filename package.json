@@ -75,7 +75,7 @@
       "editor/title": [
         {
           "command": "avScriptTools.showGrid",
-          "when": "resourceExtname == .json",
+          "when": "resourceExtname == .json || resourceExtname == .csv",
           "group": "navigation"
         }
       ],

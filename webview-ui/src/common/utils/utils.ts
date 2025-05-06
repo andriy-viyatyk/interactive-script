@@ -59,3 +59,12 @@ export function throttle<T extends (...args: any[]) => void>(func: T, delay: num
         }
     };
 }
+
+export function parseJson<T = any>(jsonString: string): T | undefined {
+    try {
+        return JSON.parse(jsonString) as T;
+    } catch (error) {
+        console.error("Failed to parse JSON:", error);
+        return undefined;
+    }
+}

@@ -1,4 +1,6 @@
+import { WebViewInput } from "../../shared/types";
 import { ViewMessage } from "../../shared/ViewMessage";
+import { parseJson } from "./common/utils/utils";
 
 function sendDebugMessage(message: ViewMessage<any>) {
     window.postMessage(message, "*");
@@ -6,15 +8,22 @@ function sendDebugMessage(message: ViewMessage<any>) {
 
 export async function mockData() {
     try {
-        const response = await fetch('/mock/test.json');
+        const response = await fetch('/mock/test.csv'); // test.json or test.csv
         if (!response.ok) {
             return;
         }
-        const data = await response.json();
+        const data = await response.text();
+        const jsonData = parseJson(data);
 
         // mock input data
-        window.webViewType = "output"; // "grid" | "output"
-        window.jsonData = data;
+        const appInput: WebViewInput = {
+            viewType: "grid",  // "grid" | "output"
+            gridInput: {
+                jsonData: jsonData,
+                csvData: !jsonData && data ? data : undefined,
+            },
+        }
+        window.appInput = appInput;
         window.sendDebugMessage = sendDebugMessage;
         window.isDebug = true;
         window.vscode = {

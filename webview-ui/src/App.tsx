@@ -2,13 +2,11 @@ import GridView from "./components/GridView";
 import { OutputView } from "./components/OutputView/OutputView";
 
 export default function App() {
-    const wnd = window as any;
-
-    if (wnd.webViewType === "grid") {
+    if (window.appInput?.viewType === "grid") {
         return <GridView />;
     }
 
-    if (wnd.webViewType === "output") {
+    if (window.appInput?.viewType === "output") {
         return <OutputView />;
     }
 

@@ -1,10 +1,8 @@
-import { GridColumn } from "../../shared/commands/grid";
+import { WebViewInput } from "../../shared/types";
 
 declare global {
     interface Window {
-        webViewType: string;
-        jsonData: any;
-        gridColumns?: GridColumn[];
+        appInput?: WebViewInput;
         sendDebugMessage: (message: any) => void;
         isDebug: boolean;
         vscode: {
