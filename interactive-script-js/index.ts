@@ -125,7 +125,7 @@ const ui = {
     window: {
         showGrid: (
             data: any[],
-            options?: { title?: string; columns?: GridColumn[] }
+            options?: { title?: UiText; columns?: GridColumn[] }
         ) => send(commands.window.showGrid({ data, ...options })),
 
         showText: (text: string, options?: { language?: string }) =>

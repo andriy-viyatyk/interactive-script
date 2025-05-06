@@ -45,7 +45,7 @@
       },
       {
         "command": "avScriptTools.runScript",
-        "title": "Run TS Script",
+        "title": "Run Script",
         "category": "Interactive Script",
         "icon": {
           "light": "./icons/arrowRight.svg",

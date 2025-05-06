@@ -21,6 +21,7 @@ export async function mockData() {
             gridInput: {
                 jsonData: jsonData,
                 csvData: !jsonData && data ? data : undefined,
+                gridTitle:["Test ", {text: "Grid", styles: {color: "pink"}}],
             },
         }
         window.appInput = appInput;

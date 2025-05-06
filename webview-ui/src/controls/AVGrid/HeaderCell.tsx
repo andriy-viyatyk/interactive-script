@@ -34,11 +34,11 @@ const HeaderCellRoot = styled.div(
                     to bottom,
                     transparent 0%,
                     transparent 20%,
-                    ${color.border.light} 30%,
+                    ${color.border.default} 30%,
                     transparent 40%,
-                    ${color.border.light} 50%,
+                    ${color.border.default} 50%,
                     transparent 60%,
-                    ${color.border.light} 70%,
+                    ${color.border.default} 70%,
                     transparent 80%,
                     transparent 100%
                 )`, // Creates 3 horizontal lines

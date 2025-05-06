@@ -1,10 +1,10 @@
-import { newMessage, ViewMessage } from "../ViewMessage";
+import { newMessage, UiText, ViewMessage } from "../ViewMessage";
 import { GridColumn } from "./output-grid";
 
 // WindowGridCommand
 
 export interface WindowGridData {
-    title?: string;
+    title?: UiText;
     data: any[];
     columns?: GridColumn[];
 }

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { CellFocus } from "../../../controls/AVGrid/avGridTypes";
 import { Button } from "../../../controls/Button";
 import { CloseIcon, OpenWindowIcon, SearchIcon } from "../../../theme/icons";
-import { uiTextToString, ViewMessage } from "../../../../../shared/ViewMessage";
+import { ViewMessage } from "../../../../../shared/ViewMessage";
 import commands from "../../../../../shared/commands";
 import { OutputDialog } from "../OutputDialog/OutputDialog";
 import { OutputDialogHeader } from "../OutputDialog/OutputDialogHeader";
@@ -93,7 +93,7 @@ export function CommandGridView({
                         sendMessage(
                             commands.window.showGrid({
                                 data: item.data?.data ?? [],
-                                title: uiTextToString(item.data?.title),
+                                title: item.data?.title,
                                 columns: item.data?.columns,
                             })
                         );

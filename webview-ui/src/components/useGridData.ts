@@ -68,6 +68,15 @@ export function useGridData(jsonData: any, withSelectColumn?: boolean): GridData
     }, [jsonData, withSelectColumn])
 }
 
+export function removeIdColumn(rows?: any[]): any[] | undefined {
+    if (!rows) return rows;
+    return rows.map((row) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [idColumnKey]: _, ...rest } = row;
+        return rest;
+    });
+}
+
 export function useGridDataWithColumns(jsonData: any, columns?: GridColumn[], withSelectColumn?: boolean): GridData {
     const gridData = useGridData(jsonData, withSelectColumn);
 
@@ -98,16 +107,22 @@ export function useGridDataWithColumns(jsonData: any, columns?: GridColumn[], wi
 }
 
 export function useWorkingData(withColumns = false, delimiter = ','): GridData {
-    let jsonData = window.appInput?.gridInput?.jsonData;
+    const jsonData = window.appInput?.gridInput?.jsonData;
     const gridColumns = window.appInput?.gridInput?.gridColumns;
     const csvData = window.appInput?.gridInput?.csvData;
+    const gridTitle = window.appInput?.gridInput?.gridTitle;
     const isCsv = !jsonData && Boolean(csvData);
 
-    if (isCsv && csvData) {
-        jsonData = csvToRecords(csvData, withColumns, delimiter);
-    }
+    const preparedData = useMemo(() => {
+        if (isCsv && csvData) {
+            return csvToRecords(csvData, withColumns, delimiter);
+        }
+        return jsonData;
+    }, [csvData, delimiter, isCsv, jsonData, withColumns])
+    
 
-    const gridData = useGridDataWithColumns(jsonData, gridColumns);
+    const gridData = useGridDataWithColumns(preparedData, gridColumns);
     gridData.isCsv = isCsv;
+    gridData.title = gridTitle;
     return gridData;
 }

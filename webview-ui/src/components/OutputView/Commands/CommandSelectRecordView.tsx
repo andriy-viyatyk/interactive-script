@@ -3,7 +3,7 @@ import { SelectRecordCommand } from "../../../../../shared/commands/input-select
 import { OutputDialog } from "../OutputDialog/OutputDialog";
 import { OutputDialogHeader } from "../OutputDialog/OutputDialogHeader";
 import AVGrid from "../../../controls/AVGrid/AVGrid";
-import { getRowKey, useGridDataWithColumns } from "../../useGridData";
+import { getRowKey, removeIdColumn, useGridDataWithColumns } from "../../useGridData";
 import { OutputDialogButtons } from "../OutputDialog/OutputDialogButtons";
 import { SetStateAction, useCallback, useMemo } from "react";
 import { ViewMessage } from "../../../../../shared/ViewMessage";
@@ -108,7 +108,15 @@ export function CommandSelectRecordView({
                 },
             };
             updateMessage(newItem);
-            replayMessage(newItem);
+            const replayItem = {
+                ...item,
+                data: {
+                    ...item.data,
+                    resultButton: button,
+                    result: removeIdColumn(item.data?.result),
+                },
+            };
+            replayMessage(replayItem);
         },
         [item, replayMessage, updateMessage]
     );

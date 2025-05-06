@@ -1,4 +1,5 @@
 import { GridColumn } from "./commands/output-grid";
+import { UiText } from "./ViewMessage";
 
 export type WebViewType = "grid" | "output";
 
@@ -8,5 +9,6 @@ export interface WebViewInput {
         jsonData?: any;
         csvData?: string;
         gridColumns?: GridColumn[];
+        gridTitle?: UiText;
     };
 }

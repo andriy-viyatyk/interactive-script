@@ -5,6 +5,7 @@ import { v4 } from "uuid";
 import { Subscription } from "../utils/events";
 import { GridColumn } from "../../shared/commands/output-grid";
 import { WebViewInput, WebViewType } from "../../shared/types";
+import { UiText, uiTextToString } from "../../shared/ViewMessage";
 
 export interface ViewPanel {
     viewType: string;
@@ -48,10 +49,10 @@ export class WebView implements vscode.WebviewViewProvider {
         this.onPanel.send(this);
     }
 
-    createGridPanel = (title: string, data: any, columns?: GridColumn[], isCsv?: boolean) => {
+    createGridPanel = (title: UiText, data: any, columns?: GridColumn[], isCsv?: boolean) => {
         const panel = vscode.window.createWebviewPanel(
             "avScriptTools",
-            title,
+            uiTextToString(title),
             vscode.ViewColumn.One,
             {
                 enableScripts: true,
@@ -70,6 +71,7 @@ export class WebView implements vscode.WebviewViewProvider {
                 jsonData: isCsv ? undefined :data,
                 csvData: isCsv ? data : undefined,
                 gridColumns: columns,
+                gridTitle: title,
             },
         };
         this.createPanelHtml(panel, webViewInput);

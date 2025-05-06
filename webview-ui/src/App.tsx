@@ -1,4 +1,4 @@
-import GridView from "./components/GridView";
+import GridView from "./components/GridView/GridView";
 import { OutputView } from "./components/OutputView/OutputView";
 
 export default function App() {

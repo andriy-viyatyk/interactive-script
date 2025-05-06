@@ -124,17 +124,21 @@ class CodeRunner {
 
         child.on("exit", (code) => {
             if (!isLive()) return;
-            views.messageToOutput(
-                commands.log.log([
-                    {
-                        text: `[ ${fileName} ]`,
-                        styles: { color: "lightseagreen" },
-                    },
-                    ` exit code ${code}`,
-                ])
-            );
-            this.child = null;
-            this.isRunning = false;
+            
+            setTimeout(() => {
+                // some time for the output to be flushed
+                views.messageToOutput(
+                    commands.log.log([
+                        {
+                            text: `[ ${fileName} ]`,
+                            styles: { color: "lightseagreen" },
+                        },
+                        ` exit code ${code}`,
+                    ])
+                );
+                this.child = null;
+                this.isRunning = false;
+            }, 100);
         });
     };
 
