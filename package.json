@@ -21,8 +21,15 @@
   ],
   "main": "./out/src/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "panel": [{
+        "id": "avScriptTools-script-ui",
+        "title": "Script UI",
+        "icon": "./icons/av.svg"
+      }]
+    },
     "views": {
-      "explorer": [
+      "avScriptTools-script-ui": [
         {
           "id": "avScriptTools.bottomPanel",
           "name": "Script UI",
