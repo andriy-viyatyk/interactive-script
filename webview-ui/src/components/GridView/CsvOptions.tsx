@@ -2,13 +2,17 @@ import styled from "@emotion/styled";
 import { Popper } from "../../controls/Popper";
 import { gridViewModel } from "./GridViewModel";
 import color from "../../theme/color";
-import { CheckedIcon, RadioCheckedIcon, RadioUncheckedIcon, UncheckedIcon } from "../../theme/icons";
+import {
+    CheckedIcon,
+    RadioCheckedIcon,
+    RadioUncheckedIcon,
+    UncheckedIcon,
+} from "../../theme/icons";
 import { Button } from "../../controls/Button";
 import ReactDOM from "react-dom";
 import { TPopperModel } from "../../dialogs/types";
 import { DefaultView, ViewPropsRO, Views } from "../../common/classes/view";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { VirtualElement } from "@floating-ui/react";
+import { useCallback, useEffect, useState } from "react";
 import { TComponentState } from "../../common/classes/state";
 import { showPopper } from "../../dialogs/Poppers";
 import { TextField } from "../../controls/TextField";
@@ -33,43 +37,20 @@ const CsvOptionsRoot = styled.div({
         display: "flex",
         alignItems: "center",
         columnGap: 8,
-    }
+    },
 });
 
-const defaultCsvOptionsState = {
-    x: 0,
-    y: 0,
-};
+class CsvOptionsModel extends TPopperModel<null, void> {
+    el = undefined as Element | undefined;
+}
 
-type CsvOptionsState = typeof defaultCsvOptionsState;
-
-class CsvOptionsModel extends TPopperModel<CsvOptionsState, void> {}
-
-const defaultOffset = [8, 0] as [number, number];
+const defaultOffset = [0, 2] as [number, number];
 const showCsvOptionsId = Symbol("ShowCsvOptions");
 
 const delimiters = [",", ";", "\t"];
 
 export function CsvOptions({ model }: ViewPropsRO<CsvOptionsModel>) {
     const gridViewState = gridViewModel.state.use();
-    const { x, y } = model.state.use();
-    const el = useMemo<VirtualElement>(() => {
-        const res: VirtualElement = {
-            getBoundingClientRect() {
-                return {
-                    x,
-                    y,
-                    top: y,
-                    left: x,
-                    bottom: y,
-                    right: x,
-                    width: 0,
-                    height: 0,
-                };
-            },
-        };
-        return res;
-    }, [x, y]);
     const [other, setOther] = useState<string>(gridViewState.delimiter);
 
     const setOtherProxy = useCallback((value: string) => {
@@ -81,16 +62,26 @@ export function CsvOptions({ model }: ViewPropsRO<CsvOptionsModel>) {
     }, []);
 
     useEffect(() => {
-        setOther(old => {
-            if (old && gridViewState.delimiter && old !== gridViewState.delimiter) {
+        setOther((old) => {
+            if (
+                old &&
+                gridViewState.delimiter &&
+                old !== gridViewState.delimiter
+            ) {
                 return gridViewState.delimiter;
             }
             return old;
-        })
+        });
     }, [gridViewState.delimiter]);
 
     return ReactDOM.createPortal(
-        <Popper elementRef={el} offset={defaultOffset} open onClose={model.close}>
+        <Popper
+            elementRef={model.el}
+            offset={defaultOffset}
+            open
+            onClose={model.close}
+            placement="bottom-end"
+        >
             <CsvOptionsRoot className="csv-options-root">
                 <Button
                     size="small"
@@ -106,7 +97,6 @@ export function CsvOptions({ model }: ViewPropsRO<CsvOptionsModel>) {
                 </Button>
                 <div className="delimiter-text">Delimiter:</div>
                 {delimiters.map((delimiter) => (
-
                     <Button
                         key={delimiter}
                         size="small"
@@ -138,13 +128,9 @@ export function CsvOptions({ model }: ViewPropsRO<CsvOptionsModel>) {
 
 Views.registerView(showCsvOptionsId, CsvOptions as DefaultView);
 
-export const showCsvOptions = async (x: number, y: number) => {
-    const state = new TComponentState(defaultCsvOptionsState);
-    state.update((s) => {
-        s.x = x;
-        s.y = y;
-    });
-    const model = new CsvOptionsModel(state);
+export const showCsvOptions = async (el: Element) => {
+    const model = new CsvOptionsModel(new TComponentState(null));
+    model.el = el;
     await showPopper<void>({
         viewId: showCsvOptionsId,
         model,

@@ -112,7 +112,7 @@ export default function GridView() {
                         className="csv-options-button"
                         title="Csv Options"
                         onClick={(e) => {
-                            showCsvOptions(e.clientX, e.clientY);
+                            showCsvOptions(e.currentTarget);
                         }}
                     >
                         csv
@@ -122,8 +122,12 @@ export default function GridView() {
                     size="small"
                     type="flat"
                     title="Copy"
-                    onClick={e => {
-                        showPopupMenu(e.clientX, e.clientY, copyItems)
+                    onClick={(e) => {
+                        showPopupMenu(e.clientX, e.clientY, copyItems, {
+                            elementRef: e.currentTarget,
+                            placement: "bottom-end",
+                            offset: [0, 2],
+                        });
                     }}
                 >
                     <CopyIcon />

@@ -8,11 +8,13 @@ import { TComponentState } from '../common/classes/state';
 import { showPopper } from './Poppers';
 import { CopyIcon } from '../theme/icons';
 import { VirtualElement } from '@floating-ui/react';
+import { PopperProps } from '../controls/Popper';
 
 const defaultPopupMenuState = {
     x: 0,
     y: 0,
     items: [] as MenuItem[],
+    poperProps: undefined as PopperProps | undefined,
 };
 
 type PopupMenuState = typeof defaultPopupMenuState;
@@ -58,8 +60,8 @@ const defaultOffset = [8, 0] as [number, number];
 const showPopupMenuId = Symbol('ShowPopupMenu');
 
 function ShowPopupMenu({ model }: ViewPropsRO<PopupMenuModel>) {
-    const { items, x, y } = model.state.use();
-    const el = useMemo<VirtualElement>(() => {
+    const { items, x, y, poperProps } = model.state.use();
+    const el = useMemo<VirtualElement | Element>(() => {
         const res: VirtualElement = {
             getBoundingClientRect() {
                 return {
@@ -84,6 +86,7 @@ function ShowPopupMenu({ model }: ViewPropsRO<PopupMenuModel>) {
             elementRef={el}
             onClose={() => model.close()}
             offset={defaultOffset}
+            {...poperProps}
         />,
         document.body,
     );
@@ -91,12 +94,13 @@ function ShowPopupMenu({ model }: ViewPropsRO<PopupMenuModel>) {
 
 Views.registerView(showPopupMenuId, ShowPopupMenu as DefaultView);
 
-export const showPopupMenu = async (x: number, y: number, items: MenuItem[]) => {
+export const showPopupMenu = async (x: number, y: number, items: MenuItem[], poperProps?: PopperProps) => {
     const state = new TComponentState(defaultPopupMenuState);
     state.update((s) => {
         s.x = x;
         s.y = y;
         s.items = items;
+        s.poperProps = poperProps;
     });
     const model = new PopupMenuModel(state);
     await model.addDefaultMenus();
