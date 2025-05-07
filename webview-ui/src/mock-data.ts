@@ -8,7 +8,7 @@ function sendDebugMessage(message: ViewMessage<any>) {
 
 export async function mockData() {
     try {
-        const response = await fetch('/mock/test.csv'); // test.json or test.csv
+        const response = await fetch('/mock/test.json'); // test.json or test.csv
         if (!response.ok) {
             return;
         }

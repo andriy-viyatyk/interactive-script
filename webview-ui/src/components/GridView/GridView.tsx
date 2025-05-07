@@ -14,6 +14,8 @@ import { gridViewModel } from "./GridViewModel";
 import { showCsvOptions } from "./CsvOptions";
 import { useCopyItems } from "./useCopyItems";
 import { showPopupMenu } from "../../dialogs/showPopupMenu";
+import { TAVGridContext } from "../../controls/AVGrid/avGridTypes";
+import { useRef } from "react";
 
 const GridViewRoot = styled(GlobalRoot)({
     position: "absolute",
@@ -70,7 +72,8 @@ export default function GridView() {
     const model = gridViewModel;
     const state = model.state.use();
     const data = useWorkingData(state.withColumns, state.delimiter);
-    const copyItems = useCopyItems(data);
+    const gridRef = useRef<TAVGridContext>(undefined)
+    const copyItems = useCopyItems(gridRef);
 
     return (
         <GridViewRoot>
@@ -134,6 +137,7 @@ export default function GridView() {
                 </Button>
             </div>
             <AVGrid
+                ref={gridRef}
                 columns={data.columns}
                 rows={data.rows}
                 getRowKey={getRowKey}

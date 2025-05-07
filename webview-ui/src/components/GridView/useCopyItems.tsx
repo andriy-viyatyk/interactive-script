@@ -1,20 +1,20 @@
-import { useMemo } from "react";
-import { GridData } from "../types";
+import { RefObject, useMemo } from "react";
 import { MenuItem } from "../../controls/PopupMenu";
 import { gridViewModel } from "./GridViewModel";
 import { toClipboard } from "../../common/utils/utils";
 import { recordsToCsv } from "../../common/utils/csvUtils";
 import { recordsToClipboardFormatted } from "../../common/utils/formatedRecords";
 import { removeIdColumn } from "../useGridData";
+import { TAVGridContext } from "../../controls/AVGrid/avGridTypes";
 
-export function useCopyItems(gridData: GridData): MenuItem[] {
+export function useCopyItems(gridRef: RefObject<TAVGridContext | undefined>): MenuItem[] {
     const delimiter = gridViewModel.state.use((s) => s.delimiter);
     return useMemo(
         (): MenuItem[] => [
             {
                 label: "Copy as JSON",
                 onClick: () => {
-                    const rowsToCopy = removeIdColumn(gridData.rows);
+                    const rowsToCopy = removeIdColumn(gridRef.current?.rows ?? []);
                     toClipboard(JSON.stringify(rowsToCopy, null, 4));
                 },
             },
@@ -23,8 +23,8 @@ export function useCopyItems(gridData: GridData): MenuItem[] {
                 onClick: () => {
                     toClipboard(
                         recordsToCsv(
-                            gridData.rows,
-                            gridData.columns.map((c) => c.key.toString()),
+                            gridRef.current?.rows ?? [],
+                            gridRef.current?.columns.map((c) => c.key.toString()) ?? [],
                             { delimiter }
                         )
                     );
@@ -33,10 +33,10 @@ export function useCopyItems(gridData: GridData): MenuItem[] {
             {
                 label: "Copy formated",
                 onClick: () => {
-                    recordsToClipboardFormatted(gridData.rows, gridData.columns);
+                    recordsToClipboardFormatted(gridRef.current?.rows ?? [], gridRef.current?.columns ?? []);
                 }
             }
         ],
-        [gridData, delimiter]
+        [delimiter, gridRef]
     );
 }
