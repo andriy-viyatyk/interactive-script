@@ -11,6 +11,7 @@ import {
     FilterTableIcon,
 } from '../../theme/icons';
 import { Button } from '../Button';
+import { useFilters } from './filters/useFilters';
 
 const HeaderCellRoot = styled.div(
     {
@@ -52,6 +53,11 @@ const HeaderCellRoot = styled.div(
         },
         '& .column-filter-button': {
             display: 'none',
+            position: 'absolute',
+            right: 10,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            backgroundColor: color.background.dark,
         },
         '&:hover': {
             '& .column-filter-button': {
@@ -82,6 +88,7 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
     const headerRef = useRef<HTMLElement>(undefined);
     const resizingRef = useRef(false);
     const hasResized = useRef(false);
+    const { showFilterPoper } = useFilters();
 
     const handleClick = () => {
         if (hasResized.current) {
@@ -167,33 +174,37 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
         canDrop: () => !column.isStatusColumn,
     });
 
-    const filterClick = useCallback(() => {
-        if (column.filterType) {
-            // showFilterPoper(
-            //     {
-            //         columnKey: column.key as string,
-            //         columnName: column.name,
-            //         type: column.filterType,
-            //         displayFormat: column.displayFormat,
-            //     },
-            //     headerRef.current,
-            //     {
-            //         x: e.clientX,
-            //         y: e.clientY,
-            //     },
-            //     {
-            //         x: 4,
-            //         y: 0,
-            //     }
-            // );
-        }
-    }, [
-        column.filterType,
-        // column.displayFormat,
-        // column.key,
-        // column.name,
-        // showFilterPoper,
-    ]);
+    const filterClick = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
+            if (column.filterType) {
+                showFilterPoper(
+                    {
+                        columnKey: column.key as string,
+                        columnName: column.name,
+                        type: column.filterType,
+                        displayFormat: column.displayFormat,
+                    },
+                    headerRef.current,
+                    {
+                        x: e.clientX,
+                        y: e.clientY,
+                    },
+                    {
+                        x: 4,
+                        y: 0,
+                    }
+                );
+            }
+        },
+        [
+            column.filterType,
+            column.displayFormat,
+            column.key,
+            column.name,
+            showFilterPoper,
+        ]
+    );
 
     return (
         <HeaderCellRoot
@@ -222,6 +233,7 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
             {Boolean(column.filterType) && !context.disableFiltering && (
                 <Button
                     size="small"
+                    type="icon"
                     className="column-filter-button"
                     onClick={filterClick}
                 >

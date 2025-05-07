@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import clsx from "clsx";
 
 import color from "../../theme/color";
-import { getRowKey, useWorkingData } from "../useGridData";
+import { getRowKey } from "../useGridData";
 import { TextField } from "../../controls/TextField";
 import { Button } from "../../controls/Button";
 import { CloseIcon, CopyIcon, SearchIcon } from "../../theme/icons";
@@ -15,7 +15,8 @@ import { showCsvOptions } from "./CsvOptions";
 import { useCopyItems } from "./useCopyItems";
 import { showPopupMenu } from "../../dialogs/showPopupMenu";
 import { TAVGridContext } from "../../controls/AVGrid/avGridTypes";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { FiltersProvider } from "../../controls/AVGrid/filters/useFilters";
 
 const GridViewRoot = styled(GlobalRoot)({
     position: "absolute",
@@ -71,80 +72,90 @@ const GridViewRoot = styled(GlobalRoot)({
 export default function GridView() {
     const model = gridViewModel;
     const state = model.state.use();
-    const data = useWorkingData(state.withColumns, state.delimiter);
-    const gridRef = useRef<TAVGridContext>(undefined)
+    const gridRef = useRef<TAVGridContext>(undefined);
     const copyItems = useCopyItems(gridRef);
 
+    useEffect(() => {
+        model.updateGridData();
+    }, [model]);
+
     return (
-        <GridViewRoot>
-            <div className="app-header">
-                <UiTextView uiText={data.title} className="title-text" />
-                <FlexSpace />
-                <TextField
-                    value={state.search}
-                    onChange={model.setSearch}
-                    width={200}
-                    className={clsx("search-field", {
-                        "search-field-focus": state.search,
-                    })}
-                    endButtons={[
-                        ...(state.search
-                            ? [
-                                  <Button
-                                      size="small"
-                                      type="icon"
-                                      key="clear-search"
-                                      onClick={model.clearSearch}
-                                      className="clear-search-button"
-                                  >
-                                      <CloseIcon />
-                                  </Button>,
-                              ]
-                            : []),
-                        <SearchIcon
-                            key="search-icon"
-                            className="search-icon"
-                        />,
-                    ]}
-                />
-                {Boolean(data.isCsv) && (
+        <FiltersProvider
+            filters={state.filters}
+            setFilters={model.setFilters}
+            onGetOptions={model.onGetOptions}
+        >
+            <GridViewRoot>
+                <div className="app-header">
+                    <UiTextView uiText={state.title} className="title-text" />
+                    <FlexSpace />
+                    <TextField
+                        value={state.search}
+                        onChange={model.setSearch}
+                        width={200}
+                        className={clsx("search-field", {
+                            "search-field-focus": state.search,
+                        })}
+                        endButtons={[
+                            ...(state.search
+                                ? [
+                                      <Button
+                                          size="small"
+                                          type="icon"
+                                          key="clear-search"
+                                          onClick={model.clearSearch}
+                                          className="clear-search-button"
+                                      >
+                                          <CloseIcon />
+                                      </Button>,
+                                  ]
+                                : []),
+                            <SearchIcon
+                                key="search-icon"
+                                className="search-icon"
+                            />,
+                        ]}
+                    />
+                    {Boolean(state.isCsv) && (
+                        <Button
+                            size="mini"
+                            type="flat"
+                            key="csv-options"
+                            className="csv-options-button"
+                            title="Csv Options"
+                            onClick={(e) => {
+                                showCsvOptions(e.currentTarget);
+                            }}
+                        >
+                            csv
+                        </Button>
+                    )}
                     <Button
-                        size="mini"
+                        size="small"
                         type="flat"
-                        key="csv-options"
-                        className="csv-options-button"
-                        title="Csv Options"
+                        title="Copy"
                         onClick={(e) => {
-                            showCsvOptions(e.currentTarget);
+                            showPopupMenu(e.clientX, e.clientY, copyItems, {
+                                elementRef: e.currentTarget,
+                                placement: "bottom-end",
+                                offset: [0, 2],
+                            });
                         }}
                     >
-                        csv
+                        <CopyIcon />
                     </Button>
-                )}
-                <Button
-                    size="small"
-                    type="flat"
-                    title="Copy"
-                    onClick={(e) => {
-                        showPopupMenu(e.clientX, e.clientY, copyItems, {
-                            elementRef: e.currentTarget,
-                            placement: "bottom-end",
-                            offset: [0, 2],
-                        });
-                    }}
-                >
-                    <CopyIcon />
-                </Button>
-            </div>
-            <AVGrid
-                ref={gridRef}
-                columns={data.columns}
-                rows={data.rows}
-                getRowKey={getRowKey}
-                focus={state.focus}
-                setFocus={model.setFocus}
-                searchString={state.search}
-            />
-        </GridViewRoot>
+                </div>
+                <AVGrid
+                    ref={gridRef}
+                    columns={state.columns}
+                    rows={state.rows}
+                    getRowKey={getRowKey}
+                    focus={state.focus}
+                    setFocus={model.setFocus}
+                    searchString={state.search}
+                    filters={state.filters}
+                />
+            </GridViewRoot>
+        </FiltersProvider>
     );
 }

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Column, TRowCompare, TSortDirection } from "./avGridTypes";
+import { Column, TFilter, TRowCompare, TSortDirection } from "./avGridTypes";
 import { filterRows } from "./avGridUtils";
 
 export interface useRowsProps<R> {
@@ -8,14 +8,15 @@ export interface useRowsProps<R> {
     rowCompare?: TRowCompare<R>;
     sortDirection?: TSortDirection;
     searchString?: string;
+    filters?: TFilter[];
 }
 
 export function useRows<R>(props: useRowsProps<R>){
-    const {rows, columns, rowCompare, searchString, sortDirection } = props;
+    const {rows, columns, rowCompare, searchString, sortDirection, filters } = props;
 
     const filtered = useMemo(
-        () => filterRows(rows, columns, searchString),
-        [rows, columns, searchString]
+        () => filterRows(rows, columns, searchString, filters),
+        [rows, columns, searchString, filters]
     );
 
     const sorted = useMemo(() => {

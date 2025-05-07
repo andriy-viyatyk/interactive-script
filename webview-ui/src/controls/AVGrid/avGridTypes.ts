@@ -34,6 +34,7 @@ export interface TAVGridContext<R = any> {
     cellEdit: IState<CellEdit>
     editRow?: (columnKey: string, rowKey: string, value: any) => void;
     readonly?: boolean;
+    searchString?: string;
 }
 
 export interface TCellRendererProps<R = any> extends RenderCellParams {
@@ -59,7 +60,30 @@ export type TDisplayFormat =
     | `date:${string}`
     | `utcToLocal:${string}`;
 export type TAlignment = 'left' | 'center' | 'right';
-export type TFilterType = 'text';
+export type TFilterType = 'options';
+
+export interface TFilter {
+    columnKey: string;
+    columnName: string;
+    type: TFilterType;
+    displayFormat?: TDisplayFormat;
+}
+
+export interface TAnyFilter extends TFilter {
+    value: any;
+}
+
+export interface TDisplayOption<T = any> {
+    value: T;
+    label: string;
+}
+
+export type TOptionsFilterValue = TDisplayOption[];
+
+export interface TOptionsFilter extends TFilter {
+    type: "options";
+    value?: TOptionsFilterValue;
+}
 
 export interface Column<R = any> {
     key: keyof R | string;

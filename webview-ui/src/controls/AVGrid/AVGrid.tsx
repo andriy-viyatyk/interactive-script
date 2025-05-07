@@ -19,6 +19,7 @@ import {
     TAVGridContext,
     TCellRenderer,
     TCellRendererProps,
+    TFilter,
 } from "./avGridTypes";
 import { RefType, RenderCellFunc, RerenderInfo } from "../RenderGrid/types";
 import { AVGridProvider } from "./useAVGridContext";
@@ -38,6 +39,7 @@ import { useEditing } from "./useEditing";
 import { useCopyPaste } from "./useCopyPaste";
 import { HighlightedTextProvider } from "../useHighlightedText";
 import { useContextMenu } from "./useContextMenu";
+import { FilterPoper } from "./filters/FilterPoper";
 
 const RenderGridStyled = styled(RenderGrid)(
     {
@@ -214,6 +216,7 @@ export interface AVGridProps<R> {
     grawToWidth?: CSSProperties["height"];
     searchString?: string;
     readonly?: boolean;
+    filters?: TFilter[];
 }
 
 function AVGridComponent<R = any>(
@@ -244,6 +247,7 @@ function AVGridComponent<R = any>(
         onDeleteRows,
         searchString,
         readonly,
+        filters,
     } = props;
 
     const renderGridRef = useRef<RenderGridModel>(null);
@@ -274,6 +278,7 @@ function AVGridComponent<R = any>(
         rowCompare,
         sortDirection: sortColumn?.direction,
         searchString,
+        filters,
     });
 
     useEffect(() => {
@@ -381,6 +386,7 @@ function AVGridComponent<R = any>(
             cellEdit,
             editRow,
             readonly,
+            searchString,
         }),
         [
             update,
@@ -410,6 +416,7 @@ function AVGridComponent<R = any>(
             cellEdit,
             editRow,
             readonly,
+            searchString,
         ]
     );
 
@@ -467,6 +474,7 @@ function AVGridComponent<R = any>(
                     grawToHeight={props.grawToHeight}
                     grawToWidth={props.grawToWidth}
                 />
+                <FilterPoper />
             </AVGridProvider>
         </HighlightedTextProvider>
     );

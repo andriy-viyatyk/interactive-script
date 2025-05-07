@@ -72,7 +72,7 @@ export function Popper(props: PopperProps) {
             ? [
                 floadingOffset({mainAxis: offset[1], crossAxis: offset[0]}),
                 flip({
-                    fallbackPlacements: ["left-start"]
+                    fallbackPlacements: ["bottom-start", "bottom-end", "top-start", "top-end"],
                   }),
               ]
             : [],
@@ -102,12 +102,12 @@ export function Popper(props: PopperProps) {
     }
 
     return (
-        <div
+        <PopperRoot
             ref={refs.setFloating}
             className={className}
             style={{...floatingStyles, zIndex: 1000}}
         >
             {children}
-        </div>
+        </PopperRoot>
     );
 }
