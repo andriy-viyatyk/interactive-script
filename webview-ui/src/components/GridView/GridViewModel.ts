@@ -7,6 +7,8 @@ import { TGlobalState } from "../../common/classes/state";
 const defaultGridViewState = {
     focus: undefined as CellFocus | undefined,
     search: "",
+    withColumns: false,
+    delimiter: ",",
 };
 
 type GridViewState = typeof defaultGridViewState;
@@ -27,6 +29,18 @@ class GridViewModel extends TModel<GridViewState> {
     clearSearch = () => {
         this.state.update((s) => {
             s.search = "";
+        });
+    };
+
+    toggleWithColumns = () => {
+        this.state.update((s) => {
+            s.withColumns = !s.withColumns;
+        });
+    }
+
+    setDelimiter = (delimiter: string) => {
+        this.state.update((s) => {
+            s.delimiter = delimiter || ",";
         });
     };
 }

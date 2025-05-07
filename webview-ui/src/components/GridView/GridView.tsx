@@ -5,12 +5,15 @@ import color from "../../theme/color";
 import { getRowKey, useWorkingData } from "../useGridData";
 import { TextField } from "../../controls/TextField";
 import { Button } from "../../controls/Button";
-import { CloseIcon, SearchIcon } from "../../theme/icons";
+import { CloseIcon, CopyIcon, SearchIcon } from "../../theme/icons";
 import AVGrid from "../../controls/AVGrid/AVGrid";
 import { GlobalRoot } from "../GlobalRoot";
 import { UiTextView } from "../OutputView/UiTextView";
 import { FlexSpace } from "../../controls/FlexSpace";
 import { gridViewModel } from "./GridViewModel";
+import { showCsvOptions } from "./CsvOptions";
+import { useCopyItems } from "./useCopyItems";
+import { showPopupMenu } from "../../dialogs/showPopupMenu";
 
 const GridViewRoot = styled(GlobalRoot)({
     position: "absolute",
@@ -64,9 +67,10 @@ const GridViewRoot = styled(GlobalRoot)({
 });
 
 export default function GridView() {
-    const data = useWorkingData();
     const model = gridViewModel;
     const state = model.state.use();
+    const data = useWorkingData(state.withColumns, state.delimiter);
+    const copyItems = useCopyItems(data);
 
     return (
         <GridViewRoot>
@@ -103,14 +107,27 @@ export default function GridView() {
                 {Boolean(data.isCsv) && (
                     <Button
                         size="mini"
-                        type="icon"
+                        type="flat"
                         key="csv-options"
                         className="csv-options-button"
                         title="Csv Options"
+                        onClick={(e) => {
+                            showCsvOptions(e.clientX, e.clientY);
+                        }}
                     >
                         csv
                     </Button>
                 )}
+                <Button
+                    size="small"
+                    type="flat"
+                    title="Copy"
+                    onClick={e => {
+                        showPopupMenu(e.clientX, e.clientY, copyItems)
+                    }}
+                >
+                    <CopyIcon />
+                </Button>
             </div>
             <AVGrid
                 columns={data.columns}
