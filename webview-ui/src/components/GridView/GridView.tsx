@@ -15,7 +15,7 @@ import { showCsvOptions } from "./CsvOptions";
 import { useCopyItems } from "./useCopyItems";
 import { showPopupMenu } from "../../dialogs/showPopupMenu";
 import { TAVGridContext } from "../../controls/AVGrid/avGridTypes";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FiltersProvider } from "../../controls/AVGrid/filters/useFilters";
 import { FilterBar } from "../../controls/AVGrid/filters/FilterBar";
 
@@ -67,18 +67,27 @@ const GridViewRoot = styled(GlobalRoot)({
         "& .search-field-focus input": {
             borderColor: color.misc.blue,
         },
+        "& .records-count": {
+            color: color.text.light,
+        },
     },
 });
 
 export default function GridView() {
-    const model = gridViewModel;
-    const state = model.state.use();
     const gridRef = useRef<TAVGridContext>(undefined);
+    const model = gridViewModel;
+    model.gridRef = gridRef.current;
+    const state = model.state.use();
     const copyItems = useCopyItems(gridRef);
+    const [/* unused */, setRefresh] = useState(0)
 
     useEffect(() => {
         model.updateGridData();
     }, [model]);
+
+    const onVisibleRowsChanged = useCallback(() => {
+        setTimeout(() => setRefresh(new Date().getTime()), 5);
+    }, []);
 
     return (
         <FiltersProvider
@@ -90,6 +99,7 @@ export default function GridView() {
                 <div className="app-header">
                     <UiTextView uiText={state.title} className="title-text" />
                     <FlexSpace />
+                    <span className="records-count">{model.recordsCount}</span>
                     <TextField
                         value={state.search}
                         onChange={model.setSearch}
@@ -156,6 +166,7 @@ export default function GridView() {
                     setFocus={model.setFocus}
                     searchString={state.search}
                     filters={state.filters}
+                    onVisibleRowsChanged={onVisibleRowsChanged}
                 />
             </GridViewRoot>
         </FiltersProvider>

@@ -217,6 +217,7 @@ export interface AVGridProps<R> {
     searchString?: string;
     readonly?: boolean;
     filters?: TFilter[];
+    onVisibleRowsChanged?: () => void;
 }
 
 function AVGridComponent<R = any>(
@@ -248,6 +249,7 @@ function AVGridComponent<R = any>(
         searchString,
         readonly,
         filters,
+        onVisibleRowsChanged,
     } = props;
 
     const renderGridRef = useRef<RenderGridModel>(null);
@@ -283,6 +285,7 @@ function AVGridComponent<R = any>(
 
     useEffect(() => {
         update({ all: true });
+        onVisibleRowsChanged?.();
     }, [rows, update]);
 
     const { selected, allSelected } = useSelected({

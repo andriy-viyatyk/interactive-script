@@ -1,6 +1,6 @@
 import { SetStateAction } from "react";
 import { TModel } from "../../common/classes/model";
-import { CellFocus, Column, TFilter } from "../../controls/AVGrid/avGridTypes";
+import { CellFocus, Column, TAVGridContext, TFilter } from "../../controls/AVGrid/avGridTypes";
 import { resolveState } from "../../common/utils/utils";
 import { TGlobalState } from "../../common/classes/state";
 import { TOnGetFilterOptions } from "../../controls/AVGrid/filters/useFilters";
@@ -23,6 +23,8 @@ const defaultGridViewState = {
 type GridViewState = typeof defaultGridViewState;
 
 class GridViewModel extends TModel<GridViewState> {
+    gridRef: TAVGridContext | undefined = undefined;
+
     setFocus = (focus?: SetStateAction<CellFocus | undefined>) => {
         this.state.update((s) => {
             s.focus = focus ? resolveState(focus, () => s.focus) : undefined;
@@ -91,6 +93,14 @@ class GridViewModel extends TModel<GridViewState> {
 			value: i,
 			label: i?.toString(),
 		}));
+    }
+
+    get recordsCount() {
+        const rows = this.state.get().rows.length;
+        const visibleRows = this.gridRef?.rows.length ?? rows;
+        return (visibleRows === rows)
+            ? `[${rows} rows]`
+            : `[${visibleRows} of ${rows} rows]`;
     }
 }
 
