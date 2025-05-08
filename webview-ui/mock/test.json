@@ -4,349 +4,399 @@
         "name": "John Doe",
         "age": 28,
         "email": "johndoe@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 2,
         "name": "Jane Smith",
         "age": 34,
         "email": "janesmith@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 3,
         "name": "Alice Johnson",
         "age": 25,
         "email": "alicejohnson@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 4,
         "name": "Bob Brown",
         "age": 40,
         "email": "bobbrown@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": false
     },
     {
         "id": 5,
         "name": "Charlie Davis",
         "age": 30,
         "email": "charliedavis@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 6,
         "name": "Emily Wilson",
         "age": 27,
         "email": "emilywilson@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 7,
         "name": "Frank Thomas",
         "age": 35,
         "email": "frankthomas@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 8,
         "name": "Grace Lee",
         "age": 29,
         "email": "gracelee@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": false
     },
     {
         "id": 9,
         "name": "Henry White",
         "age": 32,
         "email": "henrywhite@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 10,
         "name": "Ivy Green",
         "age": 26,
         "email": "ivygreen@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 11,
         "name": "Jack Black",
         "age": 31,
         "email": "jackblack@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 12,
         "name": "Karen Adams",
         "age": 33,
         "email": "karenadams@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 13,
         "name": "Leo Scott",
         "age": 24,
         "email": "leoscott@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 14,
         "name": "Mia Turner",
         "age": 28,
         "email": "miaturner@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": false
     },
     {
         "id": 15,
         "name": "Noah Harris",
         "age": 36,
         "email": "noahharris@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 16,
         "name": "Olivia Clark",
         "age": 29,
         "email": "oliviaclark@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 17,
         "name": "Paul Martinez",
         "age": 37,
         "email": "paulmartinez@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 18,
         "name": "Quinn Lewis",
         "age": 30,
         "email": "quinnlewis@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 19,
         "name": "Rachel Walker",
         "age": 27,
         "email": "rachelwalker@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 20,
         "name": "Sam Young",
         "age": 34,
         "email": "samyoung@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 21,
         "name": "Tina Hall",
         "age": 25,
         "email": "tinahall@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 22,
         "name": "Uma Allen",
         "age": 32,
         "email": "umaallen@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": false
     },
     {
         "id": 23,
         "name": "Victor King",
         "age": 38,
         "email": "victorking@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 24,
         "name": "Wendy Wright",
         "age": 29,
         "email": "wendywright@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 25,
         "name": "Xander Lopez",
         "age": 31,
         "email": "xanderlopez@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 26,
         "name": "Yara Hill",
         "age": 26,
         "email": "yarahill@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 27,
         "name": "Zane Baker",
         "age": 33,
         "email": "zanebaker@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 28,
         "name": "Abby Carter",
         "age": 28,
         "email": "abbycarter@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 29,
         "name": "Ben Foster",
         "age": 35,
         "email": "benfoster@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 30,
         "name": "Cathy Morgan",
         "age": 29,
         "email": "cathymorgan@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": false
     },
     {
         "id": 31,
         "name": "David Reed",
         "age": 32,
         "email": "davidreed@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 32,
         "name": "Ella Bell",
         "age": 27,
         "email": "ellabell@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": false
     },
     {
         "id": 33,
         "name": "Finn Cooper",
         "age": 36,
         "email": "finncooper@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 34,
         "name": "Gina Perez",
         "age": 30,
         "email": "ginaperez@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 35,
         "name": "Hank Rivera",
         "age": 28,
         "email": "hankrivera@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 36,
         "name": "Iris Sanders",
         "age": 34,
         "email": "irissanders@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": false
     },
     {
         "id": 37,
         "name": "Jake Brooks",
         "age": 25,
         "email": "jakebrooks@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 38,
         "name": "Kara Powell",
         "age": 40,
         "email": "karapowell@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": false
     },
     {
         "id": 39,
         "name": "Liam Ward",
         "age": 30,
         "email": "liamward@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 40,
         "name": "Mona Hughes",
         "age": 27,
         "email": "monahughes@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 41,
         "name": "Nate Price",
         "age": 35,
         "email": "nateprice@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 42,
         "name": "Olga Barnes",
         "age": 29,
         "email": "olgabarnes@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 43,
         "name": "Peter Ross",
         "age": 32,
         "email": "peterross@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 44,
         "name": "Quincy Diaz",
         "age": 26,
         "email": "quincydiaz@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 45,
         "name": "Rita Myers",
         "age": 33,
         "email": "ritamyers@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 46,
         "name": "Steve Long",
         "age": 28,
         "email": "stevelong@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     },
     {
         "id": 47,
         "name": "Tara Fisher",
         "age": 36,
         "email": "tarafisher@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": true
     },
     {
         "id": 48,
         "name": "Umar Patel",
         "age": 29,
         "email": "umarpatel@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": false
     },
     {
         "id": 49,
         "name": "Vera Kim",
         "age": 31,
         "email": "verakim@example.com",
-        "status": "Active"
+        "status": "Active",
+        "isSelected": false
     },
     {
         "id": 50,
         "name": "Will Stone",
         "age": 26,
         "email": "willstone@example.com",
-        "status": "Inactive"
+        "status": "Inactive",
+        "isSelected": true
     }
 ]

@@ -5,47 +5,55 @@ import styled from "@emotion/styled";
 import { TShowFilterPoper, useFilters } from "./useFilters";
 import { TFilter, TOptionsFilter } from "../avGridTypes";
 import { formatDispayValue } from "../avGridUtils";
-import { ChevronDownIcon, ChevronUpIcon, CloseIcon } from "../../../theme/icons";
+import {
+    ChevronDownIcon,
+    ChevronUpIcon,
+    CloseIcon,
+} from "../../../theme/icons";
 import { Chip } from "../../Chip";
 import { Button } from "../../Button";
+import color from "../../../theme/color";
 
 const ChipRoot = styled(Chip)({
     cursor: "pointer",
+    border: `solid 1px ${color.border.default}`,
+    borderRadius: 4,
+    color: color.text.light,
+    padding: "2px 0 2px 4px",
     "& .filter-chip-label": {
         display: "flex",
         alignItems: "center",
         "& .filter-chip-labels": {
             flex: "1 1 auto",
-            color: '#100817',
             marginLeft: 4,
             textOverflow: "ellipsis",
             overflow: "hidden",
             paddingRight: 2,
+            color: color.text.default,
         },
         "& .filter-chip-open-icon": {
-            height: 16,
+            display: "inline-block",
             padding: "0 4px",
-            borderRight: `solid 1px #BDBEC7`,
+            borderRight: `solid 1px ${color.border.default}`,
+            width: 16,
+            height: 16,
         },
         "&.disabled": {
-            color: '#6C6F7F',
+            color: color.icon.disabled,
         },
         "& .empty-label": {
             fontStyle: "italic",
         },
     },
     "&.filter-open": {
-        outline: `solid 1px #D3D2DA`,
-        backgroundColor: '#F1F0F4',
+        outline: `solid 1px ${color.border.active}`,
     },
 });
 
 const FilterBarRoot = styled.div({
-    padding: 8,
-    minHeight: 40,
-    border: `solid 1px rgb(224, 224, 224)`,
-    backgroundColor: "white",
-    margin: 8,
+    padding: "2px 4px",
+    borderBottom: `solid 1px ${color.border.light}`,
+    backgroundColor: color.background.dark,
     display: "flex",
     alignItems: "center",
     "&.no-filters": {
@@ -58,7 +66,9 @@ const FilterBarRoot = styled.div({
         columnGap: 8,
         flexWrap: "wrap",
     },
-    "& .clear-filters-button": {},
+    "& .clear-filters-button": {
+        marginRight: 4,
+    },
 });
 
 const maxFilterLabelCharCount = 25;
@@ -89,7 +99,7 @@ function optionsFilterValues(filter: TOptionsFilter, maxCharCount: number) {
         }
 
         res.push(
-            <React.Fragment key={ ++idx }>
+            <React.Fragment key={++idx}>
                 {values.length ? ` (+${values.length})` : ""}
             </React.Fragment>
         );
@@ -122,8 +132,10 @@ export function FilterChip(props: FilterChipProps) {
 
     useEffect(() => {
         liveRef.current = true;
-        return () => { liveRef.current = false; }
-    }, [])
+        return () => {
+            liveRef.current = false;
+        };
+    }, []);
 
     const handleDelete = useCallback(() => {
         onDelete(filter);
@@ -139,28 +151,46 @@ export function FilterChip(props: FilterChipProps) {
                     x: e.clientX,
                     y: e.clientY,
                 },
-                { x: 0, y: -2 }
+                { x: 0, y: 2 }
             );
-            if (liveRef.current) { setOpen(false); }
+            if (liveRef.current) {
+                setOpen(false);
+            }
         },
         [filter, showFilterPoper]
     );
 
     const label = (
-        <span className={clsx("filter-chip-label", { "disabled": disabled })}>
-            {filter.columnName}
+        <span className={clsx("filter-chip-label", { disabled: disabled })}>
+            {filter.columnName}:
             <span className="filter-chip-labels">
                 {filterValues(filter, maxFilterLabelCharCount)}
             </span>
-            <span className="filter-chip-open-icon">
-                {open ? <ChevronUpIcon /> : <ChevronDownIcon />}
-            </span>
+            {open ? (
+                <ChevronUpIcon className="filter-chip-open-icon" />
+            ) : (
+                <ChevronDownIcon className="filter-chip-open-icon" />
+            )}
+            {Boolean(props.onDelete) && (
+                <Button
+                    size="small"
+                    type="icon"
+                    className="filter-chip-delete-button"
+                    onClick={handleDelete}
+                    disabled={disabled}
+                    title="Remove filter"
+                >
+                    <CloseIcon />
+                </Button>
+            )}
         </span>
     );
 
     return (
         <ChipRoot
-            ref={(ref) => {chipRef.current = ref as HTMLElement}}
+            ref={(ref) => {
+                chipRef.current = ref as HTMLElement;
+            }}
             label={label}
             className={clsx({ "filter-open": open })}
             onDelete={handleDelete}
@@ -205,10 +235,11 @@ export function FilterBar(props: FilterBarProps) {
             </div>
             <Button
                 size="small"
+                type="icon"
                 className="clear-filters-button"
                 onClick={() => setFilters([])}
                 disabled={disabled}
-                title="Reset filters"
+                title="Remove all filters"
             >
                 <CloseIcon />
             </Button>

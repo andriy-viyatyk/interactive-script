@@ -17,6 +17,7 @@ import { showPopupMenu } from "../../dialogs/showPopupMenu";
 import { TAVGridContext } from "../../controls/AVGrid/avGridTypes";
 import { useEffect, useRef } from "react";
 import { FiltersProvider } from "../../controls/AVGrid/filters/useFilters";
+import { FilterBar } from "../../controls/AVGrid/filters/FilterBar";
 
 const GridViewRoot = styled(GlobalRoot)({
     position: "absolute",
@@ -145,6 +146,7 @@ export default function GridView() {
                         <CopyIcon />
                     </Button>
                 </div>
+                <FilterBar className="filter-bar" />
                 <AVGrid
                     ref={gridRef}
                     columns={state.columns}

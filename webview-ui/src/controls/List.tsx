@@ -36,12 +36,10 @@ const ItemRoot = styled.div({
     },
     flexDirection: 'row',
     columnGap: 4,
-    // lineHeight: '24px',
     display: 'inline-flex',
     alignItems: 'center',
     "& .list-icon": {
         margin: 1,
-        marginRight: 6,
         color: color.icon.default,
     },
     fontSize: 14,

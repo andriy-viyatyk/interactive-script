@@ -1,16 +1,9 @@
 import { useCallback, useMemo } from 'react';
-import styled from '@emotion/styled';
 
 import { defaultOptionGetLabel } from './utils';
 import { List } from './List';
 import { Button } from './Button';
 import { CheckedIcon, UncheckedIcon } from '../theme/icons';
-
-const ListRoot = styled(List)({
-    "& .ctrl-list-icon": {
-        marginRight: 0,
-    },
-}) as typeof List;
 
 export interface ListMultiselectProps<O = any> {
     options: readonly O[];
@@ -83,7 +76,7 @@ export function ListMultiselect<O = any>(props: Readonly<ListMultiselectProps<O>
     );
 
     return (
-        <ListRoot
+        <List
             options={options}
             getLabel={getLabel}
             getIcon={getIcon}

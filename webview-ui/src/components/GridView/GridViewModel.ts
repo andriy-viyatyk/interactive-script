@@ -89,7 +89,7 @@ class GridViewModel extends TModel<GridViewState> {
 		options.sort(defaultCompare());
 		return options.map(i => ({
 			value: i,
-			label: i,
+			label: i?.toString(),
 		}));
     }
 }
