@@ -204,7 +204,7 @@ export function useFilters() {
 
     return filtersContext === undefined
         ? {
-            filters: [],
+            filters: [] as TFilter[],
             setFilters: () => { },
             showFilterPoper: () => { },
             onGetOptions: () => [],

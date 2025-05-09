@@ -6,6 +6,9 @@ import { List } from "./List";
 import { CheckedIcon, UncheckedIcon } from "../theme/icons";
 
 const ListRoot = styled(List)({
+    "& .check-icon": {
+        flexShrink: 0,
+    }
 }) as typeof List;
 
 export interface ListMultiselectProps<O = any> {
@@ -66,9 +69,9 @@ export function ListMultiselect<O = any>(
                     ? selected.includes(o)
                     : false);
             return checked ? (
-                <CheckedIcon />
+                <CheckedIcon className="check-icon"/>
             ) : (
-                <UncheckedIcon />
+                <UncheckedIcon className="check-icon"/>
             );
         },
         [selected, selectedAll, withSelectAll, getSelected]

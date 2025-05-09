@@ -69,7 +69,7 @@ export function CommandGridView({
     }, []);
 
     return (
-        <CommandGridViewRoot className="command-grid" onKeyDown={handleKeyDown}>
+        <CommandGridViewRoot className="command-grid" onKeyDown={handleKeyDown} tabIndex={0}>
             <OutputDialogHeader title={item.data?.title}>
                 <TextField
                     ref={searchRef}

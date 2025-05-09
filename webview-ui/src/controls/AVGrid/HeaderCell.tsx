@@ -58,6 +58,9 @@ const HeaderCellRoot = styled.div(
             top: "50%",
             transform: "translateY(-50%)",
             backgroundColor: color.background.dark,
+            "&.columnFiltered": {
+                display: "flex",
+            }
         },
         "&:hover": {
             "& .column-filter-button": {
@@ -92,6 +95,10 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
     const resizingRef = useRef(false);
     const hasResized = useRef(false);
     const { showFilterPoper } = useFilters();
+    const filter = useFilters();
+    const columnFiltered = filter.filters.find(
+        (f) => f.columnKey === column.key
+    );
 
     const handleClick = () => {
         if (hasResized.current) {
@@ -237,7 +244,7 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
                 <Button
                     size="small"
                     type="icon"
-                    className="column-filter-button"
+                    className={clsx("column-filter-button", {columnFiltered})}
                     onClick={filterClick}
                 >
                     <FilterTableIcon />

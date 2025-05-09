@@ -9,6 +9,7 @@ import { defaultOptionGetLabel } from "./utils";
 import { CheckIcon } from "../theme/icons";
 import { CircularProgress } from "./CircularProgress";
 import color from "../theme/color";
+import { OverflowTooltipText } from "./OverflowTooltipText";
 
 const NoRowsRoot = styled.div({
     display: 'flex',
@@ -39,6 +40,7 @@ const ItemRoot = styled.div({
     columnGap: 6,
     display: 'inline-flex',
     alignItems: 'center',
+    overflow: 'hidden',
     "&.selected": {
     },
     "&.hovered": {
@@ -147,9 +149,7 @@ export function List<O = any>(props: Readonly<ListProps<O>>) {
                 onMouseEnter={() => onMouseHover?.(options[index])}
             >
                 {Boolean(icon) && icon}
-                <span className="item-text" title={label}>
-                    {label}
-                </span>
+                <OverflowTooltipText className="item-text">{label}</OverflowTooltipText>
                 {isSelected &&
                     <CheckIcon className="selectedCheckIcon"/>
                 }

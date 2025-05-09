@@ -5,7 +5,7 @@ import { OutputDialogHeader } from "../OutputDialog/OutputDialogHeader";
 import AVGrid from "../../../controls/AVGrid/AVGrid";
 import { getRowKey, removeIdColumn, useGridDataWithColumns } from "../../useGridData";
 import { OutputDialogButtons } from "../OutputDialog/OutputDialogButtons";
-import { SetStateAction, useCallback, useMemo } from "react";
+import { SetStateAction, useCallback, useMemo, useRef } from "react";
 import { ViewMessage } from "../../../../../shared/ViewMessage";
 import { resolveState } from "../../../common/utils/utils";
 import { HighlightedTextProvider } from "../../../controls/useHighlightedText";
@@ -56,6 +56,7 @@ export function CommandSelectRecordView({
 }: Readonly<CommandSelectRecordViewProps>) {
     const multiple = item.data?.multiple ?? false;
     const readonly = Boolean(item.data?.resultButton);
+    const searchRef = useRef<HTMLInputElement>(null);
     const data = useGridDataWithColumns(
         item.data?.records,
         item.data?.columns,
@@ -121,10 +122,21 @@ export function CommandSelectRecordView({
         [item, replayMessage, updateMessage]
     );
 
+    const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+        if (event.key === "f" && event.ctrlKey) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (searchRef.current) {
+                searchRef.current.focus();
+            }
+        }
+    }, []);
+
     return (
-        <CommandSelectRecordViewRoot>
+        <CommandSelectRecordViewRoot onKeyDown={handleKeyDown} tabIndex={0}>
             <OutputDialogHeader title={item.data?.title}>
                 <TextField
+                    ref={searchRef}
                     value={search}
                     onChange={setSearch}
                     className="search-field"
