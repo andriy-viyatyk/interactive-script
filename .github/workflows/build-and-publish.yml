@@ -1,0 +1,76 @@
+name: Build and Publish
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+
+      # Install root dependencies
+      - name: Install root dependencies
+        run: npm install
+
+      # Build webview-ui
+      - name: Install webview-ui dependencies
+        run: npm install
+        working-directory: ./webview-ui
+
+      - name: Build webview-ui
+        run: npm run build
+        working-directory: ./webview-ui
+
+      # Build extension
+      - name: Build extension
+        run: npm run compile
+
+      # Package extension
+      - name: Package extension
+        run: npx vsce package
+
+      # Build library
+      - name: Install library dependencies
+        run: npm install
+        working-directory: ./interactive-script-js
+
+      - name: Build library
+        run: npm run build
+        working-directory: ./interactive-script-js
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install library dependencies
+        run: npm install
+        working-directory: ./interactive-script-js
+
+      - name: Build library
+        run: npm run build
+        working-directory: ./interactive-script-js
+
+      - name: Publish to npm
+        run: npm publish --access public
+        working-directory: ./interactive-script-js
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
