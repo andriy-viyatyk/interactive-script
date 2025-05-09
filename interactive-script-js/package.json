@@ -1,15 +1,36 @@
 {
     "name": "interactive-script-js",
     "version": "0.1.0",
+    "description": "A library for creating interactive UI elements in JavaScript/TypeScript scripts inside VS Code.",
     "main": "dist/interactive-script-js/index.js",
     "types": "dist/interactive-script-js/index.d.ts",
     "scripts": {
-      "build": "tsc"
+        "build": "tsc"
     },
     "files": [
-      "dist"
+        "dist"
     ],
     "author": "Andriy Viyatyk",
-    "license": "ISC"
-  }
-  
+    "license": "ISC",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/andriy-viyatyk/interactive-script"
+    },
+    "homepage": "https://github.com/andriy-viyatyk/interactive-script#readme",
+    "bugs": {
+        "url": "https://github.com/andriy-viyatyk/interactive-script/issues"
+    },
+    "keywords": [
+        "interactive",
+        "ui",
+        "vscode",
+        "script",
+        "typescript",
+        "javascript",
+        "console",
+        "component"
+    ],
+    "dependencies": {
+        "uuid": "^11.1.0"
+    }
+}

@@ -1,13 +1,13 @@
 {
-  "name": "vscode-grid-viever",
+  "name": "interactive-script",
   "displayName": "Interactive Script",
   "description": "Provides interactive UI elements for the JS and TS scripts.",
-  "publisher": "Andriy Viyatyk",
+  "publisher": "andriy-viyatyk",
   "author": "Andriy Viyatyk",
   "version": "1.0.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/your-repo-name.git"
+    "url": "https://github.com/andriy-viyatyk/interactive-script.git"
   },
   "icon": "icon.png",
   "engines": {
