@@ -3,7 +3,7 @@ import ui, { styledText } from "interactive-script-js";
 async function styledTextDemo() {
     ui.text("Styled Text Demo").color("lightseagreen").fontSize(18).print();
 
-    ui.log("You can style text using syntax: ui.text('text').color('color').fontSize(18).print()");
+    ui.log("You can style text using syntax: ui.text('text').color('pink').fontSize(18).print()");
     ui.log("It works for:");
     ui.text("ui.text()");
     ui.log("ui.log()");

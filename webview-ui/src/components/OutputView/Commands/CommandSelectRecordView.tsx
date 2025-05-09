@@ -160,13 +160,14 @@ export function CommandSelectRecordView({
                         columns={data.columns}
                         rows={data.rows}
                         getRowKey={getRowKey}
-                        grawToHeight={400}
-                        grawToWidth="100%"
+                        growToHeight={400}
+                        growToWidth="100%"
                         selected={selected}
                         setSelected={multiple ? setSelected : undefined}
                         onClick={multiple ? undefined : rowClick}
                         readonly={readonly}
                         searchString={search}
+                        disableFiltering
                     />
                 </HighlightedTextProvider>
             </div>

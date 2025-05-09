@@ -78,8 +78,8 @@ export interface RenderGridProps {
     qaData?: any;
     whiteSpaceY?: number;
     extraElement?: React.ReactNode;
-    grawToHeight?: CSSProperties['height'];
-    grawToWidth?: CSSProperties['height'];
+    growToHeight?: CSSProperties['height'];
+    growToWidth?: CSSProperties['height'];
 }
 
 function prepareBlockStyles(

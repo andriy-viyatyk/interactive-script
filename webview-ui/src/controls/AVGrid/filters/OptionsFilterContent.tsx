@@ -1,7 +1,7 @@
-import React, { CSSProperties, useCallback, useMemo, useState } from 'react';
+import React, { CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 
-import { ListMultiselect } from "../../CtrlListMultiselect";
+import { ListMultiselect } from "../../ListMultiselect";
 import { TDisplayOption, TFilterType, TOptionsFilter } from "../avGridTypes";
 import { TOnGetFilterOptions, useFilters } from "./useFilters";
 import { useAVGridContext } from '../useAVGridContext';
@@ -13,13 +13,13 @@ import { Button } from '../../Button';
 const OptionsFilterContentRoot = styled.div<{width: CSSProperties["width"]}>(props => ({
     width: props.width,
     "& .list-container": {
-        height: 240,
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
+        padding: '0 4px',
     },
     "& .inputWrapper": {
-        padding: "8px 8px 12px 8px",
+        padding: "4px 4px 8px 4px",
         "& input": {
             width: "100%",
             minWidth: 40,
@@ -32,7 +32,7 @@ const OptionsFilterContentRoot = styled.div<{width: CSSProperties["width"]}>(pro
         alignItems: "center",
         justifyContent: "flex-end",
         columnGap: 12,
-        padding: 8,
+        padding: 4,
         "& .button__container": {
             width: 86,
             flex: "1 1 auto",
@@ -56,7 +56,6 @@ interface OptionsFilterContentProps {
 
 export function OptionsFilterContent(props: Readonly<OptionsFilterContentProps>) {
     const { filter, onApplyFilter, width = minWidth, onGetOptions } = props;
-    // const classes = useStyles({width: Math.max(width, minWidth)});
     const [text, setText] = useState<string>("");
     const [selected, setSelected] = useState<TDisplayOption[]>(
         filter.type === 'options' && Array.isArray(filter.value) 
@@ -67,6 +66,10 @@ export function OptionsFilterContent(props: Readonly<OptionsFilterContentProps>)
 
     const { filters } = useFilters();
     const { columns } = useAVGridContext();
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, [])
 
     const optionsOrPromise = useMemo(() => {
         return onGetOptions(
@@ -135,6 +138,7 @@ export function OptionsFilterContent(props: Readonly<OptionsFilterContentProps>)
                     loading={loading}
                     getOptionClass={getOptionClass}
                     getSelected={getSelected}
+                    growToHeight={240}
                 />
             </div>  
             <div className="buttonsContainer">

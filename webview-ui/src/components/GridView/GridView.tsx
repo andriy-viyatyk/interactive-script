@@ -79,7 +79,8 @@ export default function GridView() {
     model.gridRef = gridRef.current;
     const state = model.state.use();
     const copyItems = useCopyItems(gridRef);
-    const [/* unused */, setRefresh] = useState(0)
+    const [, /* unused */ setRefresh] = useState(0);
+    const searchRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         model.updateGridData();
@@ -89,18 +90,28 @@ export default function GridView() {
         setTimeout(() => setRefresh(new Date().getTime()), 5);
     }, []);
 
+    const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === "f" && e.ctrlKey) {
+            e.preventDefault();
+            if (searchRef.current) {
+                searchRef.current.focus();
+            }
+        }
+    }, []);
+
     return (
         <FiltersProvider
             filters={state.filters}
             setFilters={model.setFilters}
             onGetOptions={model.onGetOptions}
         >
-            <GridViewRoot>
+            <GridViewRoot onKeyDown={handleKeyDown}>
                 <div className="app-header">
                     <UiTextView uiText={state.title} className="title-text" />
                     <FlexSpace />
                     <span className="records-count">{model.recordsCount}</span>
                     <TextField
+                        ref={searchRef}
                         value={state.search}
                         onChange={model.setSearch}
                         width={200}

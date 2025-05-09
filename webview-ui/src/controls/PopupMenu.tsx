@@ -34,7 +34,8 @@ const PopupMenuRoot = styled(PopperRoot)<{ height?: CSSProperties['height'] }>(
             },
             '& .popup-menu-item-label': {},
             '&:hover': {
-                backgroundColor: color.background.light,
+                backgroundColor: color.background.selection,
+                color: color.text.selection,
             },
             '&.disabled': {
                 '& .popup-menu-item-label': {
@@ -72,7 +73,7 @@ export interface PopupMenuProps extends PopperProps {
 const columnWidth = () => '100%' as Percent;
 const rowHeight = 24;
 const maxHeight = 500;
-const whiteSpaceY = 2;
+const whiteSpaceY = 0;
 
 export function PopupMenu(props: PopupMenuProps) {
     const { items: itemsProps, onClose: propsOnClose, ...popperProps } = props;

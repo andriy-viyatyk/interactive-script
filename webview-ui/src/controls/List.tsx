@@ -22,7 +22,7 @@ const NoRowsRoot = styled.div({
         height: 16,
         margin: 4,
         "& svg": {
-            color: `${color.icon.default} !important`,
+            color: `${color.icon.light} !important`,
         }
     }
 });
@@ -30,33 +30,24 @@ const NoRowsRoot = styled.div({
 const ItemRoot = styled.div({
     paddingLeft: 4,
     cursor: 'pointer',
-    backgroundColor: color.background.default,
+    color: color.text.default,
     '&:hover': {
-        filter: 'brightness(0.97)',
+        backgroundColor: color.background.selection,
+        color: color.text.selection,
     },
     flexDirection: 'row',
-    columnGap: 4,
+    columnGap: 6,
     display: 'inline-flex',
     alignItems: 'center',
-    "& .list-icon": {
-        margin: 1,
-        color: color.icon.default,
-    },
-    fontSize: 14,
     "&.selected": {
-        color: color.background.dark,
     },
     "&.hovered": {
-        backgroundColor: color.background.dark,
     },
     "& .item-text": {
         flex: '1 1',
         whiteSpace: 'nowrap',
-        // lineHeight: '24px',
-        color: color.text.default,
     },
     "& .item-selectedCheckIcon": {
-        color: color.icon.default,
         position: 'absolute',
         right: 6,
         bottom: 8,
@@ -94,6 +85,7 @@ export interface ListProps<O> {
     rowHeight?: number;
     rowRenderer?: ListOptionRenderer<O>;
     className?: string;
+    growToHeight?: CSSProperties['height'];
 }
 
 const columnWidth = () => '100%' as Percent;
@@ -102,7 +94,7 @@ export function List<O = any>(props: Readonly<ListProps<O>>) {
     const gridRef = useRef<RenderGridModel | null>(null);
     const {options, rowHeight, getSelected, getHovered, rowRenderer, onClick, getIcon,
         getLabel: getLabelProps, getOptionClass, loading, emptyMessage, onMouseHover,
-        className} = props;
+        className, growToHeight} = props;
 
     useEffect(() => {
         gridRef.current?.update({all: true});
@@ -150,11 +142,11 @@ export function List<O = any>(props: Readonly<ListProps<O>>) {
                 className={clsx({
                     selected: isSelected,
                     hovered: isHovered,
-                }, optionClass)}
+                }, "list-item", optionClass)}
                 onClick={() => optionClick(options[index], index)}
                 onMouseEnter={() => onMouseHover?.(options[index])}
             >
-                {Boolean(icon) && <span className='list-icon'>{icon}</span>}
+                {Boolean(icon) && icon}
                 <span className="item-text" title={label}>
                     {label}
                 </span>
@@ -192,6 +184,8 @@ export function List<O = any>(props: Readonly<ListProps<O>>) {
             renderCell={renderCell}
             overscanRow={2}
             fitToWidth
+            className={className}
+            growToHeight={growToHeight}
         />
     )
 }

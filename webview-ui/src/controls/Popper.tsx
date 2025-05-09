@@ -23,6 +23,7 @@ export interface PopperProps extends PopperPosition {
     className?: string;
     open?: boolean;
     onClose?: () => void;
+    onKeyDown?: (event: React.KeyboardEvent) => void;
 }
 
 export function Popper(props: PopperProps) {
@@ -36,6 +37,7 @@ export function Popper(props: PopperProps) {
         open,
         offset,
         onClose,
+        onKeyDown,
     } = props;
 
     const placeRef = useMemo<Element | VirtualElement | undefined>(() => {
@@ -106,6 +108,7 @@ export function Popper(props: PopperProps) {
             ref={refs.setFloating}
             className={className}
             style={{...floatingStyles, zIndex: 1000}}
+            onKeyDown={onKeyDown}
         >
             {children}
         </PopperRoot>

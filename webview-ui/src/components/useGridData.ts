@@ -143,7 +143,7 @@ export function useGridData(
 export function useGridDataWithColumns(
     jsonData: any,
     columns?: GridColumn[],
-    withSelectColumn?: boolean
+    withSelectColumn?: boolean,
 ): GridData {
     return useMemo(() => {
         return getGridDataWithColumns(jsonData, columns, withSelectColumn);

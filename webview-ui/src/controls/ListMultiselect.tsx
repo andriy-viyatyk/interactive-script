@@ -1,9 +1,12 @@
-import { useCallback, useMemo } from 'react';
+import { CSSProperties, useCallback, useMemo } from "react";
+import styled from "@emotion/styled";
 
-import { defaultOptionGetLabel } from './utils';
-import { List } from './List';
-import { Button } from './Button';
-import { CheckedIcon, UncheckedIcon } from '../theme/icons';
+import { defaultOptionGetLabel } from "./utils";
+import { List } from "./List";
+import { CheckedIcon, UncheckedIcon } from "../theme/icons";
+
+const ListRoot = styled(List)({
+}) as typeof List;
 
 export interface ListMultiselectProps<O = any> {
     options: readonly O[];
@@ -14,9 +17,12 @@ export interface ListMultiselectProps<O = any> {
     getOptionClass?: (value: O, index?: number) => string;
     loading?: boolean;
     getSelected?: (value: O) => boolean;
+    growToHeight?: CSSProperties["height"];
 }
 
-export function ListMultiselect<O = any>(props: Readonly<ListMultiselectProps<O>>) {
+export function ListMultiselect<O = any>(
+    props: Readonly<ListMultiselectProps<O>>
+) {
     const {
         options: propsOptions,
         selected,
@@ -26,6 +32,7 @@ export function ListMultiselect<O = any>(props: Readonly<ListMultiselectProps<O>
         getOptionClass,
         loading,
         getSelected,
+        growToHeight,
     } = props;
 
     const getLabel = useCallback(
@@ -33,8 +40,8 @@ export function ListMultiselect<O = any>(props: Readonly<ListMultiselectProps<O>
             return withSelectAll && idx === 0
                 ? (o as string)
                 : propsGetLabel
-                    ? propsGetLabel(o, idx)
-                    : defaultOptionGetLabel(o);
+                ? propsGetLabel(o, idx)
+                : defaultOptionGetLabel(o);
         },
         [propsGetLabel, withSelectAll]
     );
@@ -42,7 +49,7 @@ export function ListMultiselect<O = any>(props: Readonly<ListMultiselectProps<O>
     const { options, selectedAll } = useMemo(() => {
         const selectedAll: boolean =
             Boolean(propsOptions.length) &&
-            (propsOptions.length === (selected?.length ?? 0));
+            propsOptions.length === (selected?.length ?? 0);
         const options = withSelectAll
             ? (["Select All", ...propsOptions] as O[])
             : propsOptions;
@@ -53,10 +60,16 @@ export function ListMultiselect<O = any>(props: Readonly<ListMultiselectProps<O>
         (o: O, idx?: number) => {
             const checked =
                 (idx === 0 && withSelectAll && selectedAll) ||
-                (getSelected ? getSelected(o) : selected ? selected.includes(o) : false);
-            return <Button size='small' type='icon'>
-                {checked ? <CheckedIcon /> : <UncheckedIcon />}
-            </Button>;
+                (getSelected
+                    ? getSelected(o)
+                    : selected
+                    ? selected.includes(o)
+                    : false);
+            return checked ? (
+                <CheckedIcon />
+            ) : (
+                <UncheckedIcon />
+            );
         },
         [selected, selectedAll, withSelectAll, getSelected]
     );
@@ -66,23 +79,34 @@ export function ListMultiselect<O = any>(props: Readonly<ListMultiselectProps<O>
             const oLabel = getLabel(o);
             if (withSelectAll && idx === 0) {
                 setSelected?.(selectedAll ? [] : [...propsOptions]);
-            } else if (selected?.find(i => getLabel(i) === oLabel)) {
+            } else if (selected?.find((i) => getLabel(i) === oLabel)) {
                 setSelected?.(selected.filter((i) => getLabel(i) !== oLabel));
             } else {
-                setSelected?.([...(selected?.filter(i => getLabel(i) !== oLabel) ?? []), o]);
+                setSelected?.([
+                    ...(selected?.filter((i) => getLabel(i) !== oLabel) ?? []),
+                    o,
+                ]);
             }
         },
-        [propsOptions, selected, selectedAll, setSelected, withSelectAll, getLabel]
+        [
+            propsOptions,
+            selected,
+            selectedAll,
+            setSelected,
+            withSelectAll,
+            getLabel,
+        ]
     );
 
     return (
-        <List
+        <ListRoot
             options={options}
             getLabel={getLabel}
             getIcon={getIcon}
             onClick={onClick}
             getOptionClass={getOptionClass}
             loading={loading}
+            growToHeight={growToHeight}
         />
     );
 }

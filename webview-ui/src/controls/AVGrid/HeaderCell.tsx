@@ -1,36 +1,36 @@
-import React, { useCallback, useRef } from 'react';
-import styled from '@emotion/styled';
-import clsx from 'clsx';
-import { useDrag, useDrop } from 'react-dnd';
+import React, { useCallback, useRef } from "react";
+import styled from "@emotion/styled";
+import clsx from "clsx";
+import { useDrag, useDrop } from "react-dnd";
 
-import color from '../../theme/color';
-import { TCellRendererProps, TSortDirection } from './avGridTypes';
+import color from "../../theme/color";
+import { TCellRendererProps, TSortDirection } from "./avGridTypes";
 import {
     FilterArrowDownIcon,
     FilterArrowUpIcon,
     FilterTableIcon,
-} from '../../theme/icons';
-import { Button } from '../Button';
-import { useFilters } from './filters/useFilters';
+} from "../../theme/icons";
+import { Button } from "../Button";
+import { useFilters } from "./filters/useFilters";
 
 const HeaderCellRoot = styled.div(
     {
-        position: 'relative',
-        alignItems: 'center',
+        position: "relative",
+        alignItems: "center",
         backgroundColor: color.grid.headerCellBackground,
         paddingRight: 10,
-        boxSizing: 'border-box',
-        '&.header-resizible': {
-            '&::after': {
+        boxSizing: "border-box",
+        "&.header-resizible": {
+            "&::after": {
                 content: '""',
-                cursor: 'col-resize',
-                position: 'absolute',
+                cursor: "col-resize",
+                position: "absolute",
                 insetBlockStart: 0,
                 insetInlineEnd: 0,
                 insetBlockEnd: 0,
-                inlineSize: '10px',
+                inlineSize: "10px",
             },
-            '&:hover::after': {
+            "&:hover::after": {
                 background: `linear-gradient(
                     to bottom,
                     transparent 0%,
@@ -43,42 +43,45 @@ const HeaderCellRoot = styled.div(
                     transparent 80%,
                     transparent 100%
                 )`, // Creates 3 horizontal lines
-                backgroundSize: '4px 100%', // Restrict dashes to 4px width
-                backgroundPosition: 'center', // Center the dashes horizontally
-                backgroundRepeat: 'no-repeat',
+                backgroundSize: "4px 100%", // Restrict dashes to 4px width
+                backgroundPosition: "center", // Center the dashes horizontally
+                backgroundRepeat: "no-repeat",
             },
         },
-        '& .flex-space': {
-            flex: '1 1 auto',
+        "& .flex-space": {
+            flex: "1 1 auto",
         },
-        '& .column-filter-button': {
-            display: 'none',
-            position: 'absolute',
+        "& .column-filter-button": {
+            display: "none",
+            position: "absolute",
             right: 10,
-            top: '50%',
-            transform: 'translateY(-50%)',
+            top: "50%",
+            transform: "translateY(-50%)",
             backgroundColor: color.background.dark,
         },
-        '&:hover': {
-            '& .column-filter-button': {
-                display: 'flex',
+        "&:hover": {
+            "& .column-filter-button": {
+                display: "flex",
             },
         },
-        '& .header-cell-title': {
+        "& .header-cell-title": {
             marginRight: 4,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
+            overflow: "hidden",
+            textOverflow: "ellipsis",
         },
+        "& .sort-icon": {
+            color: color.icon.light,
+        }
     },
-    { label: 'HeaderCellRoot' },
+    { label: "HeaderCellRoot" }
 );
 
 function SortIcon({ direction }: { direction?: TSortDirection }) {
-    if (direction === 'asc') {
-        return <FilterArrowDownIcon width={16} height={16} />;
+    if (direction === "asc") {
+        return <FilterArrowDownIcon width={16} height={16} className="sort-icon" />;
     }
-    if (direction === 'desc') {
-        return <FilterArrowUpIcon width={16} height={16} />;
+    if (direction === "desc") {
+        return <FilterArrowUpIcon width={16} height={16} className="sort-icon" />;
     }
     return null;
 }
@@ -101,17 +104,17 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
 
         context.setSortColumn((old) => {
             if (old?.key === (column.key as string)) {
-                return old.direction === 'desc'
+                return old.direction === "desc"
                     ? undefined
-                    : { key: column.key as string, direction: 'desc' };
+                    : { key: column.key as string, direction: "desc" };
             }
-            return { key: column.key as string, direction: 'asc' };
+            return { key: column.key as string, direction: "asc" };
         });
         context.update({ all: true });
     };
 
     function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
-        if (event.pointerType === 'mouse' && event.buttons !== 1) {
+        if (event.pointerType === "mouse" && event.buttons !== 1) {
             return;
         }
 
@@ -135,24 +138,24 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
         }
 
         function onLostPointerCapture() {
-            currentTarget.removeEventListener('pointermove', onPointerMove);
+            currentTarget.removeEventListener("pointermove", onPointerMove);
             currentTarget.removeEventListener(
-                'lostpointercapture',
-                onLostPointerCapture,
+                "lostpointercapture",
+                onLostPointerCapture
             );
             resizingRef.current = false;
         }
 
         currentTarget.setPointerCapture(pointerId);
-        currentTarget.addEventListener('pointermove', onPointerMove);
+        currentTarget.addEventListener("pointermove", onPointerMove);
         currentTarget.addEventListener(
-            'lostpointercapture',
-            onLostPointerCapture,
+            "lostpointercapture",
+            onLostPointerCapture
         );
     }
 
     const [{ isDragging }, drag] = useDrag({
-        type: 'COLUMN_DRAG',
+        type: "COLUMN_DRAG",
         item: { key: column.key },
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
@@ -163,7 +166,7 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
     });
 
     const [{ isOver }, drop] = useDrop({
-        accept: ['COLUMN_DRAG', 'FREEZE_DRAG'],
+        accept: ["COLUMN_DRAG", "FREEZE_DRAG"],
         drop({ key: dropKey }: { key: string }) {
             context.onColumnsReorder(dropKey, column.key as string);
         },
@@ -215,20 +218,20 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
             }}
             key={key}
             style={style}
-            className={clsx('header-cell', {
-                'header-resizible': column.resizible,
-                'is-dragging': isDragging,
-                'is-over': isOver,
+            className={clsx("header-cell", {
+                "header-resizible": column.resizible,
+                "is-dragging": isDragging,
+                "is-over": isOver,
             })}
             onPointerDown={column.resizible ? onPointerDown : undefined}
             onClick={handleClick}
             qa-cell={`${col}:header`}
             qa-column={column.key}
         >
-            <span className="header-cell-title">{column?.name}</span>
             {Boolean(
-                context.sortColumn && column.key === context.sortColumn.key,
+                context.sortColumn && column.key === context.sortColumn.key
             ) && <SortIcon direction={context.sortColumn?.direction} />}
+            <span className="header-cell-title">{column?.name}</span>
             <span className="flex-space" />
             {Boolean(column.filterType) && !context.disableFiltering && (
                 <Button

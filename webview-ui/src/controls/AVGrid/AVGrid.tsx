@@ -212,8 +212,8 @@ export interface AVGridProps<R> {
     fitToWidth?: boolean;
     onAddRows?: (count: number, insertIndex?: number) => R[];
     onDeleteRows?: (rowKeys: string[]) => void;
-    grawToHeight?: CSSProperties["height"];
-    grawToWidth?: CSSProperties["height"];
+    growToHeight?: CSSProperties["height"];
+    growToWidth?: CSSProperties["height"];
     searchString?: string;
     readonly?: boolean;
     filters?: TFilter[];
@@ -474,8 +474,8 @@ function AVGridComponent<R = any>(
                     contentProps={contentProps}
                     fitToWidth={fitToWidth}
                     extraElement={extraElement}
-                    grawToHeight={props.grawToHeight}
-                    grawToWidth={props.grawToWidth}
+                    growToHeight={props.growToHeight}
+                    growToWidth={props.growToWidth}
                 />
                 <FilterPoper />
             </AVGridProvider>

@@ -26,13 +26,15 @@ interface FilterContentProps {
 function FilterContent(props: FilterContentProps) {
     const { filter, onApplyFilter, onGetOptions, width } = props;
     const { columns } = useAVGridContext();
-    const filterType = columns.find(c => c.key === filter.columnKey)?.filterType ?? filter.type;
+    const filterType =
+        columns.find((c) => c.key === filter.columnKey)?.filterType ??
+        filter.type;
 
     switch (filterType) {
         case "options":
             return (
                 <OptionsFilterContent
-                    filter={filter as (TOptionsFilter)}
+                    filter={filter as TOptionsFilter}
                     onApplyFilter={onApplyFilter}
                     onGetOptions={onGetOptions}
                     width={width}
@@ -55,6 +57,15 @@ export function FilterPoper() {
         [poperData]
     );
 
+    const handleKeyDown = useCallback(
+        (e: React.KeyboardEvent) => {
+            if (e.key === "Escape") {
+                poperData?.closeFilterPoper();
+            }
+        },
+        [poperData]
+    );
+
     if (!poperData) {
         return null;
     }
@@ -69,7 +80,12 @@ export function FilterPoper() {
             y={position?.y}
             placement="bottom-start"
             onClose={closeFilterPoper}
-            offset={adjustPosition ? [adjustPosition.x, adjustPosition.y] : undefined}
+            offset={
+                adjustPosition
+                    ? [adjustPosition.x, adjustPosition.y]
+                    : undefined
+            }
+            onKeyDown={handleKeyDown}
         >
             <FilterContent
                 filter={filter}
