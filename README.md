@@ -138,3 +138,87 @@ ISC
 
 ---
 
+# 📝 How to set up a script project with `interactive-script-js`
+
+Follow these steps to create a new script project using **interactive-script-js**.
+
+### ✅ 1. Create an empty folder and initialize a Node.js project:
+
+```bash
+mkdir my-script-project
+cd my-script-project
+npm init -y
+```
+
+---
+
+## ✨ Using **TypeScript**
+
+### ✅ 2. Install dependencies:
+
+You’ll need `interactive-script-js` and `ts-node`:
+
+```bash
+npm install interactive-script-js
+npm install --save-dev typescript ts-node
+```
+
+(Alternatively, you can install `ts-node` globally if you plan to run multiple scripts this way: `npm install -g ts-node`)
+
+---
+
+### ✅ 3. Create a `tsconfig.json` file:
+
+Add this `tsconfig.json` in your project folder:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "strict": true
+  }
+}
+```
+
+---
+
+### ✅ 4. Create your script: `test.ts`
+
+```ts
+import ui from 'interactive-script-js';
+
+ui.log('Hello World from TypeScript!');
+```
+
+### ✅ 5. Run the script from 'Script UI' tab in VSCode (provided by 'Interactive Script' extension):
+
+---
+
+## ✨ Using **JavaScript**
+
+### ✅ 2. Install `interactive-script-js`:
+
+```bash
+npm install interactive-script-js
+```
+
+(no extra tools needed except nodejs)
+
+---
+
+### ✅ 3. Create your script: `test.js`
+
+Since `interactive-script-js` is compiled as an ES module with a `default` export, use this pattern in CommonJS (Node.js) JavaScript (import ui as default):
+
+```js
+const ui = require('interactive-script-js').default;
+
+ui.log('Hello World from JavaScript!');
+```
+
+✅ That’s it!
+
+---
+
