@@ -3,6 +3,8 @@
 
 **Interactive Script** is a Visual Studio Code extension that lets you run Node.js scripts interactively inside VS Code, using a dedicated **"Script UI"** panel. Your scripts can dynamically output styled text, interactive dialogs, grids, progress indicators, and more — all rendered inside the editor, without leaving VS Code.
 
+[![Demo Video](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/demo.gif)
+
 ---
 
 ## ✨ Key Features
