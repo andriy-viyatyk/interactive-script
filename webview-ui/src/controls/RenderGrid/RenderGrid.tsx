@@ -20,6 +20,7 @@ const iFrameStyle: React.CSSProperties = {
     overflow: 'hidden',
     pointerEvents: 'none',
     zIndex: -1,
+    border: 'none',
 };
 
 const RenderGridRoot = styled.div(
@@ -88,8 +89,8 @@ const RenderGrid = React.forwardRef<RenderGridModel, RenderGridProps>(function R
                 flex: '1 1 auto',
                 position: 'relative',
                 overflow: 'hidden',
-                height: props.grawToHeight ? 'unset' : 100,
-                maxHeight: props.grawToHeight ?? 'unset',
+                height: props.growToHeight ? 'unset' : 100,
+                maxHeight: props.growToHeight ?? 'unset',
                 ...model.blockStyles?.root,
             }}
             {...(model.props.contentProps || {})}
@@ -107,10 +108,10 @@ const RenderGrid = React.forwardRef<RenderGridModel, RenderGridProps>(function R
                 id="avg-container"
                 ref={model.containerRef.ref as RefType<HTMLDivElement>}
                 style={{
-                    width: props.grawToWidth ? 'unset' : size.width,
-                    height: props.grawToHeight ? 'unset' : size.height,
-                    maxHeight: props.grawToHeight ?? 'unset',
-                    maxWidth: props.grawToWidth ?? 'unset',
+                    width: props.growToWidth ? 'unset' : size.width,
+                    height: props.growToHeight ? 'unset' : size.height,
+                    maxHeight: props.growToHeight ?? 'unset',
+                    maxWidth: props.growToWidth ?? 'unset',
                     overflowY: 'auto',
                     overflowX: model.props.fitToWidth ? 'hidden' : 'auto',
                     ...model.blockStyles?.container,

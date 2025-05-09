@@ -1,7 +1,7 @@
 import moment from "moment";
 
 import { isNullOrUndefined } from "../../common/utils/utils";
-import { Column, TDisplayFormat } from "./avGridTypes";
+import { Column, TDisplayFormat, TFilter, TOptionsFilter } from "./avGridTypes";
 import { recordsToCsv } from "../../common/utils/csvUtils";
 
 export const defaultCompare =
@@ -27,7 +27,7 @@ export const defaultCompare =
         }
 
         if (typeof leftV === "boolean" && typeof rightV === "boolean") {
-            if (leftV === rightV) return 0; 
+            if (leftV === rightV) return 0;
             return leftV ? 1 : -1;
         }
 
@@ -94,6 +94,45 @@ export function formatDispayValue(
     return "";
 }
 
+function filtersMatch<R>(row: R, filters?: TFilter[]) {
+    let match = true;
+
+    if (filters?.length) {
+        for (const filter of filters) {
+            const rowValue = row[filter.columnKey as keyof R];
+
+            switch (filter.type) {
+                case "options": {
+                    const optFilter = filter as TOptionsFilter;
+                    if (optFilter.value?.length) {
+                        if (rowValue instanceof Date) {
+                            if (
+                                !optFilter.value.find((o) =>
+                                    o instanceof Date
+                                        ? o.getTime() ===
+                                          (rowValue as Date).getTime()
+                                        : o.value === rowValue
+                                )
+                            ) {
+                                match = false;
+                            }
+                        } else if (
+                            !optFilter.value.find((o) => o.value === rowValue)
+                        ) {
+                            match = false;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (!match) break;
+        }
+    }
+
+    return match;
+}
+
 function searchStringMatch<R>(
     row: R,
     columns: Column<R>[],
@@ -117,21 +156,24 @@ function searchStringMatch<R>(
 export function filterRows<R>(
     rows: readonly R[],
     columns: Column<R>[],
-    searchString?: string
+    searchString?: string,
+    filters?: TFilter[]
 ): readonly R[] {
-    if (!searchString?.length) {
+    if (!searchString?.length && !filters?.length) {
         return rows;
     }
     const searchLower = searchString
         ?.toLowerCase()
         .split(" ")
         .filter((s) => s);
+
     const filtered = rows.filter((r) => {
         if (!r) return false;
-        const sMatch = searchLower.every((s) =>
+        const sMatch = !searchLower?.length || searchLower.every((s) =>
             searchStringMatch(r, columns, s)
         );
-        return sMatch;
+        const match = sMatch && (!filters?.length || filtersMatch(r, filters));
+        return match;
     });
 
     return filtered;

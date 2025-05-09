@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { GridCommand } from "../../../../../shared/commands/output-grid";
 import { getRowKey, useGridDataWithColumns } from "../../useGridData";
 import AVGrid from "../../../controls/AVGrid/AVGrid";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { CellFocus } from "../../../controls/AVGrid/avGridTypes";
 import { Button } from "../../../controls/Button";
 import { CloseIcon, OpenWindowIcon, SearchIcon } from "../../../theme/icons";
@@ -56,11 +56,23 @@ export function CommandGridView({
     const [focus, setFocus] = useState<CellFocus | undefined>(undefined);
     const { search, setSearch, gridWrapperRef, gridWrapperHeight } =
         useGridSearchHeight();
+    const searchRef = useRef<HTMLInputElement>(null);
+
+    const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+        if (event.key === "f" && event.ctrlKey) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (searchRef.current) {
+                searchRef.current.focus();
+            }
+        }
+    }, []);
 
     return (
-        <CommandGridViewRoot className="command-grid">
+        <CommandGridViewRoot className="command-grid" onKeyDown={handleKeyDown}>
             <OutputDialogHeader title={item.data?.title}>
                 <TextField
+                    ref={searchRef}
                     value={search}
                     onChange={setSearch}
                     className="search-field"
@@ -114,9 +126,10 @@ export function CommandGridView({
                         getRowKey={getRowKey}
                         focus={focus}
                         setFocus={setFocus}
-                        grawToHeight={400}
-                        grawToWidth="100%"
+                        growToHeight={400}
+                        growToWidth="100%"
                         searchString={search}
+                        disableFiltering
                     />
                 </HighlightedTextProvider>
             </div>

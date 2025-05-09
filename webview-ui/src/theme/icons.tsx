@@ -11,9 +11,9 @@ const SvgIcon = forwardRef<SVGSVGElement, SvgIconProps>(function SvgIcon(
 ) {
     const {
         children,
-        viewBox = "0 0 24 24",
-        width = 24,
-        height = 24,
+        viewBox = "0 0 16 16",
+        width = 16,
+        height = 16,
         ...otherProps
     } = props;
 
@@ -142,13 +142,33 @@ export const FilterArrowUpIcon = createIcon(16)(
     </>
 );
 
-export const FilterTableIcon = createIcon(16)(
-    <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M0.879776 1.78956C0.961705 1.61298 1.13867 1.5 1.33333 1.5H14.6667C14.8613 1.5 15.0383 1.61298 15.1202 1.78956C15.2022 1.96614 15.1742 2.17422 15.0485 2.32286L9.83333 8.48974V14C9.83333 14.1733 9.74361 14.3342 9.5962 14.4253C9.44879 14.5164 9.26472 14.5247 9.10973 14.4472L6.44306 13.1139C6.27367 13.0292 6.16667 12.8561 6.16667 12.6667V8.48974L0.95155 2.32286C0.825851 2.17422 0.797847 1.96614 0.879776 1.78956ZM2.41099 2.5L7.04845 7.9838C7.12478 8.07407 7.16667 8.18846 7.16667 8.30667V12.3576L8.83333 13.191V8.30667C8.83333 8.18846 8.87522 8.07407 8.95155 7.9838L13.589 2.5H2.41099Z"
-        fill="currentColor"
-    />
+export const FilterTableIcon = createIcon(24)(
+    <>
+        <path
+            d="M4 7H20"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+        />
+        <path
+            d="M7 12L17 12"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+        />
+        <path
+            d="M11 17H13"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+        />
+    </>
 );
 
 export const SearchIcon = createIcon(24)(
@@ -363,6 +383,7 @@ export const CheckedIcon = createIcon(16)(
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
         />
     </>
 );
@@ -395,4 +416,26 @@ export const RadioCheckedIcon = createIcon(16)(
 
 export const RadioUncheckedIcon = createIcon(16)(
     <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" />
+);
+
+export const ChevronUpIcon = createIcon(16)(
+    <>
+        <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M12.8373 10.8243C12.6203 11.0586 12.2686 11.0586 12.0516 10.8243L8 6.44853L3.94839 10.8243C3.73143 11.0586 3.37968 11.0586 3.16272 10.8243C2.94576 10.59 2.94576 10.2101 3.16272 9.97574L7.60716 5.17574C7.82412 4.94142 8.17588 4.94142 8.39284 5.17574L12.8373 9.97574C13.0542 10.2101 13.0542 10.59 12.8373 10.8243Z"
+            fill="currentColor"
+        />
+    </>
+);
+
+export const ChevronDownIcon = createIcon(16)(
+    <>
+        <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M3.16272 5.17574C3.37968 4.94142 3.73143 4.94142 3.94839 5.17574L8 9.55147L12.0516 5.17574C12.2686 4.94142 12.6203 4.94142 12.8373 5.17574C13.0542 5.41005 13.0542 5.78995 12.8373 6.02426L8.39284 10.8243C8.17588 11.0586 7.82412 11.0586 7.60716 10.8243L3.16272 6.02426C2.94576 5.78995 2.94576 5.41005 3.16272 5.17574Z"
+            fill="currentColor"
+        />
+    </>
 );

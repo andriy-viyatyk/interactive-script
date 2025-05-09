@@ -70,6 +70,10 @@ const vscode = {
     },
     button: {
         secondaryBackground: "var(--vscode-button-secondaryBackground, #313131)",
+        background: "var(--vscode-button-background, #0078d4)",
+        hoverBackground: "var(--vscode-button-hoverBackground, #026ec1)",
+        activeSelectionForeground: "var(--vscode-button-activeSelectionForeground, #ffffff)",
+        foreground: "var(--vscode-button-foreground, #ffffff)",
     },
 }
 
@@ -78,17 +82,21 @@ const color = {
         default: vscode.editor.background, 
         dark: vscode.sidebar.background, 
         light: vscode.button.secondaryBackground,
+        selection: vscode.button.background,
     },
     text: {
         default: vscode.editor.foreground,
         dark: vscode.editor.foreground,
         light: vscode.editorInlayHint.foreground,
+        selection: vscode.button.foreground,
     },
     icon: {
         default: vscode.icon.foreground,
         dark: vscode.icon.foreground,
         light: vscode.editorInlayHint.foreground,
         disabled: vscode.icon.disabled,
+        selection: vscode.button.foreground,
+        active: vscode.button.hoverBackground,
     },
     border: {
         active: vscode.focusBorder, 
