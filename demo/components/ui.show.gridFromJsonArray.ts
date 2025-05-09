@@ -11,7 +11,8 @@ async function gridDemo() {
 
     ui.log("");
     ui.text("You can define title and columns by passing options: ui.show.gridFromJsonArray(data, { title, columns }):");
-    ui.show.gridFromJsonArray(generateRows(10000), {
+    ui.show.gridFromJsonArray({
+        data: generateRows(10000),
         title: styledText("Grid").color("yellow").then(" title").value,
         columns: [
             { title: "Name", key: "name", width: 200 },

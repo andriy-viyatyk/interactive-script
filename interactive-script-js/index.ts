@@ -1,7 +1,7 @@
 import commands from "../shared/commands";
 import { isUiText, UiText } from "../shared/ViewMessage";
 import { ConfirmCommand, ConfirmData } from "../shared/commands/input-confirm";
-import { GridColumn } from "../shared/commands/output-grid";
+import { GridColumn, GridData } from "../shared/commands/output-grid";
 import { TextInputCommand, TextInputData } from "../shared/commands/input-text";
 import { ButtonsCommand, ButtonsData } from "../shared/commands/input-buttons";
 import { send, responseHandler } from "./src/handlers";
@@ -16,6 +16,8 @@ import { CheckboxesCommand, CheckboxesData } from "../shared/commands/input-chec
 import { RadioboxesCommand, RadioboxesData } from "../shared/commands/input-radioboxes";
 import { TextData } from "../shared/commands/output-text";
 import { SelectRecordCommand, SelectRecordData } from "../shared/commands/input-selectRecord";
+import { ProgressData } from "../shared/commands/output-progress";
+import { WindowGridData, WindowTextData } from "../shared/commands/window";
 
 const ui = {
     ping: () => responseHandler.send(commands.ping()),
@@ -107,10 +109,12 @@ const ui = {
 
     },
     show: {
-        gridFromJsonArray: (
-            data: any[],
-            options?: { title?: UiText; columns?: GridColumn[] }
-        ) => send(commands.grid.fromJsonArray(data, options)),
+        gridFromJsonArray: (data: any[] | GridData) => {
+            const message = Array.isArray(data)
+                ? commands.grid.fromJsonArray({ data })
+                : commands.grid.fromJsonArray(data);
+            send(message);
+        },
 
         textBlock: (data: string | TextData) => {
             const message = typeof data === "string"
@@ -119,17 +123,27 @@ const ui = {
             send(message);
         },
 
-        progress: (label: UiText, max?: number, value?: number) =>
-            new Progress(send(commands.progress({ label, max, value }))),
+        progress: (label: UiText | ProgressData) => {
+            const message = isUiText(label)
+                ? commands.progress({ label })
+                : commands.progress(label);
+            return new Progress(send(message));
+        }
     },
     window: {
-        showGrid: (
-            data: any[],
-            options?: { title?: UiText; columns?: GridColumn[] }
-        ) => send(commands.window.showGrid({ data, ...options })),
+        showGrid: (data: any[] | WindowGridData) => {
+            const message = Array.isArray(data)
+                ? commands.window.showGrid({ data })
+                : commands.window.showGrid(data);
+            send(message);
+        },
 
-        showText: (text: string, options?: { language?: string }) =>
-            send(commands.window.showText({ text, ...options })),
+        showText: (text: string | WindowTextData) => {
+            const message = typeof text === "string"
+                ? commands.window.showText({ text })
+                : commands.window.showText(text);
+            send(message);
+        },
     },
 };
 

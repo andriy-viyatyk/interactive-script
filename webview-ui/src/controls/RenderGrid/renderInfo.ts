@@ -14,6 +14,7 @@ import {
     RenderRect,
     RenderSize,
     RerenderInfoPrepared,
+    RowAlign,
 } from './types';
 
 export const renderInfoInitialState: RenderInputPrepared = {
@@ -636,6 +637,7 @@ export function calcScrollOffsetY(
     row: number,
     renderInfo: RenderInputPrepared,
     currOffset: RenderPoint,
+    rowAlign: RowAlign = "nearest"
 ) {
     const cell = {
         top: getStarts(renderInfo.rowStarts, row),
@@ -649,10 +651,22 @@ export function calcScrollOffsetY(
         size.height -
         renderInfo.innerSize.stickyBottomHeight -
         renderInfo.input.scrollBarHeight;
-    if (res.y + visibleHeight < cell.bottom) {
-        res.y = cell.bottom - visibleHeight;
-    } else if (res.y > cell.top - renderInfo.innerSize.stickyTopHeight) {
+
+    if (rowAlign === "nearest") {
+        if (res.y + visibleHeight < cell.bottom) {
+            res.y = cell.bottom - visibleHeight;
+        } else if (res.y > cell.top - renderInfo.innerSize.stickyTopHeight) {
+            res.y = cell.top - renderInfo.innerSize.stickyTopHeight;
+        }
+    }
+    else if (rowAlign === "top") {
         res.y = cell.top - renderInfo.innerSize.stickyTopHeight;
+    }
+    else if(rowAlign === "bottom") {
+        res.y = cell.bottom - visibleHeight;
+    }
+    else if(rowAlign === "center") {
+        res.y = cell.top - renderInfo.innerSize.stickyTopHeight + (cell.bottom - cell.top - visibleHeight) / 2;
     }
 
     return res;

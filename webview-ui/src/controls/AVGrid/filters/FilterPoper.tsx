@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 
 import { TOnGetFilterOptions, useFilters } from "./useFilters";
@@ -12,6 +12,9 @@ const PopperRoot = styled(Popper)({
     flexDirection: "column",
     overflow: "visible",
     borderRadius: 6,
+    "& .filter-poper-content": {
+        flex: "1 1 auto",
+    },
 });
 
 const minWidth = 184;
@@ -21,10 +24,13 @@ interface FilterContentProps {
     onApplyFilter: (filter: TFilter) => void;
     onGetOptions: TOnGetFilterOptions;
     width?: number;
+    className?: string;
+    resized?: boolean;
 }
 
 function FilterContent(props: FilterContentProps) {
-    const { filter, onApplyFilter, onGetOptions, width } = props;
+    const { filter, onApplyFilter, onGetOptions, width, className, resized } =
+        props;
     const { columns } = useAVGridContext();
     const filterType =
         columns.find((c) => c.key === filter.columnKey)?.filterType ??
@@ -39,6 +45,8 @@ function FilterContent(props: FilterContentProps) {
                     onGetOptions={onGetOptions}
                     width={width}
                     columnFilterType={filterType}
+                    className={className}
+                    resized={resized}
                 />
             );
         default:
@@ -48,6 +56,11 @@ function FilterContent(props: FilterContentProps) {
 
 export function FilterPoper() {
     const { poperData, onGetOptions } = useFilters();
+    const [resized, setResized] = useState(false);
+
+    useEffect(() => {
+        setResized(false);
+    }, [poperData]);
 
     const onApplyFilter = useCallback(
         (filter: TFilter) => {
@@ -86,12 +99,18 @@ export function FilterPoper() {
                     : undefined
             }
             onKeyDown={handleKeyDown}
+            resizable
+            onResize={() => {
+                setResized(true);
+            }}
         >
             <FilterContent
                 filter={filter}
                 onApplyFilter={onApplyFilter}
                 onGetOptions={onGetOptions}
                 width={Math.max(minWidth, anchorEl?.clientWidth ?? 0)}
+                className="filter-poper-content"
+                resized={resized}
             />
         </PopperRoot>
     );

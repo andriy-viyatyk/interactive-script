@@ -52,7 +52,8 @@ async function demoMain() {
 
     ui.log("");
     ui.log("You can display a grid using array of objects with: ui.show.gridFromJsonArray(data, options):");
-    ui.show.gridFromJsonArray(someJsonForGrid, {
+    ui.show.gridFromJsonArray({
+        data: someJsonForGrid,
         title: [{text: "Titles", styles: {color: 'lime'},}, " also can be styled"],
         columns: [
             { title: "Name", key: "name" },

@@ -40,7 +40,7 @@ export function CommandButtonsView({
     };
 
     return (
-        <CommandButtonsViewRoot className="dialog-buttons this-buttons">
+        <CommandButtonsViewRoot className="dialog-buttons this-buttons" active={!item.data?.result}>
             <OutputDialogButtons
                 className="dialog-buttons-container"
                 buttons={item.data?.buttons}

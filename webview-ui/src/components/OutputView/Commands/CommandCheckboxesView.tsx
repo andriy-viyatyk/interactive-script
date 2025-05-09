@@ -70,7 +70,7 @@ export function CommandCheckboxesView({
     );
 
     return (
-        <CommandCheckboxesViewRoot className="dialog-checkboxes">
+        <CommandCheckboxesViewRoot className="dialog-checkboxes" active={!item.data?.resultButton}>
             <OutputDialogHeader title={item.data?.title} />
             <div className="checkboxes-container" style={item.data?.bodyStyles}>
                 {checkboxes.map((checkbox, index) => (

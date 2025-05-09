@@ -133,7 +133,7 @@ export function CommandSelectRecordView({
     }, []);
 
     return (
-        <CommandSelectRecordViewRoot onKeyDown={handleKeyDown} tabIndex={0}>
+        <CommandSelectRecordViewRoot onKeyDown={handleKeyDown} tabIndex={0} active={!item.data?.resultButton}>
             <OutputDialogHeader title={item.data?.title}>
                 <TextField
                     ref={searchRef}

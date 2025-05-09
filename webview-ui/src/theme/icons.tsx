@@ -439,3 +439,13 @@ export const ChevronDownIcon = createIcon(16)(
         />
     </>
 );
+
+export const ResizeHandleIcon = createIcon(24)(
+    <path
+        d="M21 15L15 21M21 8L8 21"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    />
+);

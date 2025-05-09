@@ -179,6 +179,7 @@ export function useFocus({
                         colIndex !== oldSelection.colEnd
                     ) {
                         renderGridRef.current?.update({ all: true });
+                        renderGridRef.current?.scrollToRow(rowIndex + 1, "center");
                         return {
                             ...oldFocus,
                             selection: {

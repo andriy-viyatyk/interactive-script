@@ -20,12 +20,8 @@ export function isGridCommand(message: ViewMessage): message is GridCommand {
     return message.command === "output.grid";
 }
 
-const fromJsonArray = (data: any[], options?: {title?: UiText, columns?: GridColumn[]}) => {
-    return newMessage("output.grid", {
-        title: options?.title,
-        data: data,
-        columns: options?.columns,
-    }) as GridCommand;
+const fromJsonArray = (data: GridData) => {
+    return newMessage("output.grid", data) as GridCommand;
 }
 
 export default {

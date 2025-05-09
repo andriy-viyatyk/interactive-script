@@ -68,7 +68,7 @@ export function CommandTextInputView({
     const readOnly = Boolean(item.data?.resultButton);
 
     return (
-        <CommandTextInputViewRoot className="command-text-input">
+        <CommandTextInputViewRoot className="command-text-input" active={!item.data?.resultButton}>
             <OutputDialogHeader title={item.data?.title} />
             <TextAreaField
                 className={clsx("text-area-field", { readOnly, multiline: text.indexOf("\n") > -1 })}

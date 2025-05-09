@@ -8,7 +8,8 @@ async function showGridDemo() {
     ui.text("You can open json array as grid in new window.");
     await ui.dialog.buttons(["Show me"]);
 
-    ui.window.showGrid(generateRows(10000), {
+    ui.window.showGrid({
+        data: generateRows(10000),
         title: "Data from your script",
     });
 

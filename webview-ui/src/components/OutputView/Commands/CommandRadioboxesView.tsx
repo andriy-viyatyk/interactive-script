@@ -67,7 +67,7 @@ export function CommandRadioboxesView({
     );
 
     return (
-        <CommandRadioboxesViewRoot className="dialog-radioboxes">
+        <CommandRadioboxesViewRoot className="dialog-radioboxes" active={!item.data?.resultButton}>
             <OutputDialogHeader title={item.data?.title} />
             <div className="radioboxes-container" style={item.data?.bodyStyles}>
                 {radioboxes.map((radio, index) => (

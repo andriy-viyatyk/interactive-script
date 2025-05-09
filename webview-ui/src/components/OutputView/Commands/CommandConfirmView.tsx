@@ -33,7 +33,7 @@ export function CommandConfirmView({
     };
 
     return (
-        <CommandConfirmViewRoot className="command-confirm">
+        <CommandConfirmViewRoot className="command-confirm" active={!item.data?.result}>
             <OutputDialogHeader title={item.data?.title} />
             <div className="message">
                 <UiTextView uiText={item.data?.message} />

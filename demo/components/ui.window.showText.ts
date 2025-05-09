@@ -8,7 +8,8 @@ async function showTextDemo() {
     ui.text("You can open text in new window.");
     await ui.dialog.buttons(["Show me"]);
 
-    ui.window.showText(longText, {
+    ui.window.showText({
+        text: longText,
         language: "plaintext",
     });
 

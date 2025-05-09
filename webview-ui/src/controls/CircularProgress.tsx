@@ -23,7 +23,7 @@ function CircularProgressComponent(props: CircularProgressProps) {
 
 	useEffect(() => {
 		const intervalId = setInterval(() => {
-			setCurrStep(s => s + 1);
+			setCurrStep(s => s - 1);
 		}, stepInterval);
 		return () => {
 			clearInterval(intervalId);

@@ -9,6 +9,7 @@ import {
     RenderPoint,
     RenderSizeOptional,
     RerenderInfo,
+    RowAlign,
 } from './types';
 import {
     renderInfoInitialState,
@@ -479,11 +480,11 @@ export default class RenderGridModel extends TComponentModel<
         }
     }
 
-    async scrollToRow(row: number) {
+    async scrollToRow(row: number, rowAlign: RowAlign = "nearest") {
         const container = await this.containerRef.async;
         const info = await this.renderInfo.async;
 
-        const newOffset = calcScrollOffsetY(row, info, this.offsetRef);
+        const newOffset = calcScrollOffsetY(row, info, this.offsetRef, rowAlign);
         if (container) {
             container.scrollTop = newOffset.y;
         }

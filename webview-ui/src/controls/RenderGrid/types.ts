@@ -17,6 +17,7 @@ export type RenderSizeOptional = {
 export type Percent = `${number}%`;
 export type ElementLength = number | ((v: number) => number | Percent);
 export type RenderCellMap = { [key: RenderCellKey]: ReactNode };
+export type RowAlign = "top" | "center" | "bottom" | "nearest";
 
 export type RenderRect = {
     top: number;
