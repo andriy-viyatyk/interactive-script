@@ -59,6 +59,8 @@ You can also open JSON or CSV files as an interactive grid in the editor:
 
 Grids can also be opened programmatically via `ui.window.showGrid(jsonArray)` from within a script.
 
+![Example snippet output](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/grid-viewer.png)
+
 ---
 
 ### Why use Interactive Script?
@@ -100,7 +102,7 @@ await ui.dialog.confirm("Do you like it?");
 
 Output:
 
-![Example snippet output](images/example-snippet.png)
+![Example snippet output](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/example-snippet.png)
 
 ---
 

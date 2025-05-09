@@ -9,5 +9,6 @@ package-lock.json
 interactive-script-js
 shared/
 demo/
+images/
 
 *.map
