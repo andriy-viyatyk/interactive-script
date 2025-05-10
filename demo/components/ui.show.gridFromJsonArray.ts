@@ -10,7 +10,7 @@ async function gridDemo() {
     await ui.dialog.buttons(["Next"]);
 
     ui.log("");
-    ui.text("You can define title and columns by passing options: ui.show.gridFromJsonArray(data, { title, columns }):");
+    ui.text("You can define title and columns by passing options: ui.show.gridFromJsonArray({data, title, columns }):");
     ui.show.gridFromJsonArray({
         data: generateRows(10000),
         title: styledText("Grid").color("yellow").then(" title").value,
