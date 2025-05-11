@@ -1,31 +1,33 @@
 import ping from './ping';
 import log from './log';
 import clear from './clear';
-import confirm from './input-confirm';
-import grid from './output-grid';
+import inputConfirm from './input-confirm';
+import outputGrid from './output-grid';
 import window from './window';
-import text from './output-text';
-import textInput from './input-text';
-import buttons from './input-buttons';
-import progress from './output-progress';
-import checkboxes from './input-checkboxes';
-import radioboxes from './input-radioboxes';
-import selectRecord from './input-selectRecord';
+import outputText from './output-text';
+import inputText from './input-text';
+import inputButtons from './input-buttons';
+import outputProgress from './output-progress';
+import inputCheckboxes from './input-checkboxes';
+import inputRadioboxes from './input-radioboxes';
+import inputSelectRecord from './input-selectRecord';
+import inputDate from './input-date';
 
 const commands = {
     ping,
     log,
     clear,
-    confirm,
-    grid,
+    inputConfirm,
+    outputGrid,
     window,
-    text,
-    textInput,
-    buttons,
-    progress,
-    checkboxes,
-    radioboxes,
-    selectRecord,
+    outputText,
+    inputText,
+    inputButtons,
+    outputProgress,
+    inputCheckboxes,
+    inputRadioboxes,
+    inputSelectRecord,
+    inputDate,
 }
 
 export default commands;

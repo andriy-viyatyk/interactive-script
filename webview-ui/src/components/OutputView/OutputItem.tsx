@@ -21,6 +21,8 @@ import { isRadioboxesCommand } from "../../../../shared/commands/input-radioboxe
 import { CommandRadioboxesView } from "./Commands/CommandRadioboxesView";
 import { isSelectRecordCommand } from "../../../../shared/commands/input-selectRecord";
 import { CommandSelectRecordView } from "./Commands/CommandSelectRecordView";
+import { isDateInputCommand } from "../../../../shared/commands/input-date";
+import { CommandDateInputView } from "./Commands/CommandDateInputView";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
@@ -93,6 +95,8 @@ export const OutputItem = forwardRef(function OutputItemComponent(
         el = <CommandRadioboxesView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     } else if (isSelectRecordCommand(item)) {
         el = <CommandSelectRecordView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
+    } else if (isDateInputCommand(item)) {
+        el = <CommandDateInputView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     }
 
     return (

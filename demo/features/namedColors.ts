@@ -5,7 +5,6 @@ namedColors.forEach((color) => {
     ui.text("         ").background(color)
         .then(" - ")
         .then(color).color(color)
-        .then("  ")
-        .then(`(${color})`)
+        .then(`  (${color})`)
         .print();
 });

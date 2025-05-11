@@ -18,6 +18,7 @@ import { TextData } from "../shared/commands/output-text";
 import { SelectRecordCommand, SelectRecordData } from "../shared/commands/input-selectRecord";
 import { ProgressData } from "../shared/commands/output-progress";
 import { WindowGridData, WindowTextData } from "../shared/commands/window";
+import { DateInputCommand, DateInputData } from "../shared/commands/input-date";
 
 const ui = {
     ping: () => responseHandler.send(commands.ping()),
@@ -37,8 +38,8 @@ const ui = {
     dialog: {
         buttons: async (buttons: UiText[] | ButtonsData) => {
             const message = Array.isArray(buttons)
-                ? commands.buttons({ buttons })
-                : commands.buttons(buttons);
+                ? commands.inputButtons({ buttons })
+                : commands.inputButtons(buttons);
             const response = await responseHandler.send(message);
             if (response) {
                 return (response as ButtonsCommand).data?.result;
@@ -49,8 +50,8 @@ const ui = {
 
         confirm: async (params: UiText | ConfirmData) => {
             const message = isUiText(params)
-                ? commands.confirm({ message: params })
-                : commands.confirm(params);
+                ? commands.inputConfirm({ message: params })
+                : commands.inputConfirm(params);
             const response = await responseHandler.send(message);
             if (response) {
                 return (response as ConfirmCommand).data?.result;
@@ -61,8 +62,8 @@ const ui = {
 
         textInput: async (params: UiText | TextInputData) => {
             const message = isUiText(params)
-                ? commands.textInput({ title: params })
-                : commands.textInput(params);
+                ? commands.inputText({ title: params })
+                : commands.inputText(params);
             const response = await responseHandler.send(message);
             if (response) {
                 return (response as TextInputCommand).data;
@@ -71,10 +72,25 @@ const ui = {
             }
         },
 
+        dateInput: async (params?: UiText | DateInputData) => {
+            const message = isUiText(params)
+                ? commands.inputDate({ title: params })
+                : commands.inputDate(params ?? {});
+            const response = await responseHandler.send(message);
+            if (response) {
+                if (response.data && response.data.result) {
+                    response.data.result = new Date(response.data.result);
+                }
+                return (response as DateInputCommand).data;
+            } else {
+                return undefined;
+            }
+        },
+
         checkboxes: async (params: UiText[] | CheckboxesData) => {
             const message = Array.isArray(params)
-                ? commands.checkboxes({ items: params.map((item) => ({ label: item })) })
-                : commands.checkboxes(params);
+                ? commands.inputCheckboxes({ items: params.map((item) => ({ label: item })) })
+                : commands.inputCheckboxes(params);
             const response = await responseHandler.send(message);
             if (response) {
                 return (response as CheckboxesCommand).data;
@@ -85,8 +101,8 @@ const ui = {
 
         radioboxes: async (params: UiText[] | RadioboxesData) => {
             const message = Array.isArray(params)
-                ? commands.radioboxes({ items: params })
-                : commands.radioboxes(params);
+                ? commands.inputRadioboxes({ items: params })
+                : commands.inputRadioboxes(params);
             const response = await responseHandler.send(message);
             if (response) {
                 return (response as RadioboxesCommand).data;
@@ -97,8 +113,8 @@ const ui = {
 
         selectRecord: async (records: any[] | SelectRecordData) => {
             const message = Array.isArray(records)
-                ? commands.selectRecord({ records })
-                : commands.selectRecord(records);
+                ? commands.inputSelectRecord({ records })
+                : commands.inputSelectRecord(records);
             const response = await responseHandler.send(message);
             if (response) {
                 return (response as SelectRecordCommand).data;
@@ -111,22 +127,22 @@ const ui = {
     show: {
         gridFromJsonArray: (data: any[] | GridData) => {
             const message = Array.isArray(data)
-                ? commands.grid.fromJsonArray({ data })
-                : commands.grid.fromJsonArray(data);
+                ? commands.outputGrid.fromJsonArray({ data })
+                : commands.outputGrid.fromJsonArray(data);
             send(message);
         },
 
         textBlock: (data: string | TextData) => {
             const message = typeof data === "string"
-                ? commands.text({ text: data })
-                : commands.text(data);
+                ? commands.outputText({ text: data })
+                : commands.outputText(data);
             send(message);
         },
 
         progress: (label: UiText | ProgressData) => {
             const message = isUiText(label)
-                ? commands.progress({ label })
-                : commands.progress(label);
+                ? commands.outputProgress({ label })
+                : commands.outputProgress(label);
             return new Progress(send(message));
         }
     },

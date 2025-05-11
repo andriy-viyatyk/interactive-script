@@ -44,7 +44,7 @@ class ResponseHandler {
         }
     }
 
-    send = <T>(message: ViewMessage): Promise<ViewMessage<T>> => {
+    send = <T>(message: ViewMessage<T>): Promise<ViewMessage<T>> => {
         if (!this.uiCheckRun) {
             this.uiCheckRun = true;
             this.runUiCheck();
