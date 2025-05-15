@@ -1,5 +1,5 @@
 
-# 🎬 Interactive Script
+# Interactive Script
 
 **Interactive Script** is a Visual Studio Code extension that lets you run Node.js scripts interactively inside VS Code, using a dedicated **"Script UI"** panel. Your scripts can dynamically output styled text, interactive dialogs, grids, progress indicators, and more — all rendered inside the editor, without leaving VS Code.
 
@@ -7,18 +7,18 @@
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-- 🚀 Adds a **"Script UI"** view in the bottom panel of VS Code
-- ▶️ Shows a **"Run"** button when a `.js` or `.ts` file is active, to execute the script
-- 🖥️ Spawns a Node.js or ts-node process, streaming `stdout` and `stdin` to/from the **Script UI** panel
-- 🧩 Requires the [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) library to build interactive scripts with:
+- Adds a **"Script UI"** view in the bottom panel of VS Code
+- Shows a **"Run"** button when a `.js` or `.ts` file is active, to execute the script
+- Spawns a Node.js or ts-node process, streaming `stdout` and `stdin` to/from the **Script UI** panel
+- Requires the [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) library to build interactive scripts with:
   - Styled log output (`ui.log`, `ui.error`, `ui.warn`, `ui.success`, etc.)
   - Interactive dialogs: buttons, confirms, text inputs, checkboxes, radio buttons
   - Embedded grids and text blocks in the panel
   - Programmatically opening a grid or text block in a central editor tab
   - Progress bars
-- 📊 Integrated **interactive grid viewer** that can open JSON or CSV files as a powerful filterable, sortable grid (from button or API)
+- Integrated **interactive grid viewer** that can open JSON or CSV files as a powerful filterable, sortable grid (from button or API)
 
 ---
 
@@ -43,16 +43,16 @@ if (pressedButton === "Yes") {
 }
 ```
 
-✅ The script’s outputs (styled logs, dialogs, grids, etc.) appear inside **"Script UI"**, interacting with the user live.
+The script’s outputs (styled logs, dialogs, grids, etc.) appear inside **"Script UI"**, interacting with the user live.
 
 ---
 
-## 🖥️ Grid Viewer
+## Grid Viewer
 
 You can also open JSON or CSV files as an interactive grid in the editor:
 
-- 📁 A **button in the top right corner** of VS Code (visible when a JSON or CSV file is active) allows you to open that file in a grid view.
-- 📊 The grid supports:
+- A **button in the top right corner** of VS Code (visible when a JSON or CSV file is active) allows you to open that file in a grid view.
+- The grid supports:
   - Column resizing and moving
   - Sorting
   - Column filtering with multi-select
@@ -67,10 +67,10 @@ Grids can also be opened programmatically via `ui.window.showGrid(jsonArray)` fr
 
 ### Why use Interactive Script?
 
-- ✅ Perfect for creating **internal developer tools** inside VS Code
-- ✅ Ideal for building **interactive scripts** that guide users through data selection, queries, and workflows
-- ✅ Lets you build **custom UI-driven flows** (dialogs, grids, inputs) without needing to create a full VS Code extension or web app
-- ⚠️ Not intended for rendering rich text documents — behaves more like an **interactive terminal** with UI components rather than a formatted document viewer
+- Perfect for creating **internal developer tools** inside VS Code
+- Ideal for building **interactive scripts** that guide users through data selection, queries, and workflows
+- Lets you build **custom UI-driven flows** (dialogs, grids, inputs) without needing to create a full VS Code extension or web app
+- Not intended for rendering rich text documents — behaves more like an **interactive terminal** with UI components rather than a formatted document viewer
 
 ---
 
@@ -108,7 +108,7 @@ Output:
 
 ---
 
-## 📚 Using \`interactive-script-js\`
+## Using \`interactive-script-js\`
 
 Your scripts must import [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) to communicate with the extension’s UI.
 
@@ -124,23 +124,23 @@ See the demo script for examples.
 
 ---
 
-## 💻 Contributing
+## Contributing
 
 Pull requests and feedback are welcome! Please file issues or feature requests via [GitHub Issues](https://github.com/andriy-viyatyk/interactive-script).
 
 ---
 
-## 📄 License
+## License
 
 ISC
 
 ---
 
-# 📝 How to set up a script project with `interactive-script-js`
+# How to set up a script project with `interactive-script-js`
 
 Follow these steps to create a new script project using **interactive-script-js**.
 
-### ✅ 1. Create an empty folder and initialize a Node.js project:
+### 1. Create an empty folder and initialize a Node.js project:
 
 ```bash
 mkdir my-script-project
@@ -150,9 +150,9 @@ npm init -y
 
 ---
 
-## ✨ Using **TypeScript**
+## Using **TypeScript**
 
-### ✅ 2. Install dependencies:
+### 2. Install dependencies:
 
 You’ll need `interactive-script-js` and `ts-node`:
 
@@ -165,7 +165,7 @@ npm install --save-dev typescript ts-node
 
 ---
 
-### ✅ 3. Create a `tsconfig.json` file:
+### 3. Create a `tsconfig.json` file:
 
 Add this `tsconfig.json` in your project folder:
 
@@ -182,7 +182,7 @@ Add this `tsconfig.json` in your project folder:
 
 ---
 
-### ✅ 4. Create your script: `test.ts`
+### 4. Create your script: `test.ts`
 
 ```ts
 import ui from 'interactive-script-js';
@@ -190,13 +190,13 @@ import ui from 'interactive-script-js';
 ui.log('Hello World from TypeScript!');
 ```
 
-### ✅ 5. Run the script from 'Script UI' tab in VSCode (provided by 'Interactive Script' extension):
+### 5. Run the script from 'Script UI' tab in VSCode (provided by 'Interactive Script' extension):
 
 ---
 
-## ✨ Using **JavaScript**
+## Using **JavaScript**
 
-### ✅ 2. Install `interactive-script-js`:
+### 2. Install `interactive-script-js`:
 
 ```bash
 npm install interactive-script-js
@@ -206,7 +206,7 @@ npm install interactive-script-js
 
 ---
 
-### ✅ 3. Create your script: `test.js`
+### 3. Create your script: `test.js`
 
 Since `interactive-script-js` is compiled as an ES module with a `default` export, use this pattern in CommonJS (Node.js) JavaScript (import ui as default):
 
@@ -216,7 +216,7 @@ const ui = require('interactive-script-js').default;
 ui.log('Hello World from JavaScript!');
 ```
 
-✅ That’s it!
+That’s it!
 
 ---
 

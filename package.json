@@ -60,6 +60,15 @@
         }
       },
       {
+        "command": "avScriptTools.runScriptSeparate",
+        "title": "Run Script Separate",
+        "category": "Interactive Script",
+        "icon": {
+          "light": "./icons/arrowUp.svg",
+          "dark": "./icons/arrowUp.svg"
+        }
+      },
+      {
         "command": "avScriptTools.stopScript",
         "title": "Stop Script",
         "category": "Interactive Script",
@@ -98,9 +107,14 @@
           "group": "navigation@2"
         },
         {
+          "command": "avScriptTools.runScriptSeparate",
+          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js)",
+          "group": "navigation@3"
+        },
+        {
           "command": "avScriptTools.clearConsole",
           "when": "view == avScriptTools.bottomPanel",
-          "group": "navigation@3"
+          "group": "navigation@4"
         }
       ]
     }

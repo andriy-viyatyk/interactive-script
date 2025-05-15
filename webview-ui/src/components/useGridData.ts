@@ -4,13 +4,15 @@ import { Column } from "../controls/AVGrid/avGridTypes";
 import { GridColumn } from "../../../shared/commands/output-grid";
 import SelectColumn from "../controls/AVGrid/SelectColumn";
 import { csvToRecords } from "../common/utils/csvUtils";
+import { PackedGridArray, packedGridArrayType } from "../../../shared/PackedGridArray";
 
 const charWidth = 8; // Approximate width of a character in pixels
 const maxColumnWidth = 300; // Maximum column width in pixels
 
 function detectColumns(data: any[], withSelectColumn?: boolean): Column[] {
     const columnsMap = new Map<string, Column>();
-    data.forEach((row) => {
+    data.forEach((row, idx) => {
+        if (idx > 1000) return; // Limit to 1000 rows for performance
         Object.keys(row).forEach((key) => {
             let column = columnsMap.get(key);
             if (!column) {
@@ -57,6 +59,10 @@ export function getGridData(
 
     if (jsonData) {
         if (Array.isArray(jsonData)) {
+            columns = detectColumns(jsonData, withSelectColumn);
+            rows = jsonData;
+        } else if (jsonData instanceof Object && jsonData.type === packedGridArrayType) {
+            jsonData = PackedGridArray.unpackArray(jsonData);
             columns = detectColumns(jsonData, withSelectColumn);
             rows = jsonData;
         } else if (jsonData instanceof Object) {

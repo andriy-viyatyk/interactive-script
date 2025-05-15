@@ -23,6 +23,11 @@ export async function mockData() {
                 csvData: !jsonData && data ? data : undefined,
                 gridTitle:["Test ", {text: "Grid", styles: {color: "pink"}}],
             },
+            outputInput: {
+                title: "[test.ts]",
+                filePath: "d:/projects/interactive-script/test/test.ts",
+                withHeader: true,
+            },
         }
         window.appInput = appInput;
         window.sendDebugMessage = sendDebugMessage;

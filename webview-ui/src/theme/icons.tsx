@@ -449,3 +449,32 @@ export const ResizeHandleIcon = createIcon(24)(
         stroke-linejoin="round"
     />
 );
+
+export const ARightIcon = createIcon(24)(
+    <path
+        d="M5 3 L20 12 L5 21 L5 3"
+        stroke="#00BFC8"
+        strokeWidth="2"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+    />
+);
+
+export const StopIcon = createIcon(24)(
+    <rect
+        x="4"
+        y="4"
+        width="16"
+        height="16"
+        fill="none"
+        stroke="#ce9178"
+        strokeWidth="1"
+    />
+);
+
+export const ClearConsoleIcon = createIcon(16)(
+    <path 
+        d="M10 12.6l.7.7 1.6-1.6 1.6 1.6.8-.7L13 11l1.7-1.6-.8-.8-1.6 1.7-1.6-1.7-.7.8 1.6 1.6-1.6 1.6zM1 4h14V3H1v1zm0 3h14V6H1v1zm8 2.5V9H1v1h8v-.5zM9 13v-1H1v1h8z" 
+        fill="currentColor"    
+    />
+);

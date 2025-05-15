@@ -1,39 +1,61 @@
-import * as vscode from 'vscode';
-import codeRunner from './CodeRunner';
+import * as vscode from "vscode";
+import codeRunner from "./CodeRunner";
 
 export function activateCodeRunner(context: vscode.ExtensionContext) {
-  const runTsFileDisposable = vscode.commands.registerCommand('avScriptTools.runScript', () => {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
-      vscode.window.showErrorMessage("No active editor.");
-      return;
+    const getActiveScriptFile = () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showErrorMessage("No active editor.");
+            return;
+        }
+
+        const filePath = editor.document.uri.fsPath;
+        if (!(filePath.endsWith(".ts") || filePath.endsWith(".js"))) {
+            vscode.window.showErrorMessage(
+                "Active file is not a TypeScript or JavaScript file."
+            );
+            return;
+        }
+
+        return filePath;
     }
 
-    const filePath = editor.document.uri.fsPath;
-    if (!(filePath.endsWith('.ts') || filePath.endsWith('.js'))) {
-      vscode.window.showErrorMessage("Active file is not a TypeScript or JavaScript file.");
-      return;
-    }
+    const runTsFileDisposable = vscode.commands.registerCommand(
+        "avScriptTools.runScript",
+        () => {
+            const filePath = getActiveScriptFile();
+            if (filePath) {
+                codeRunner.runFile(filePath);
+            }
+        }
+    );
 
-    if (codeRunner.isRunning) {
-      vscode.window.showErrorMessage("Script is already running.");
-      return;
-    }
+    const runTsFileSeparateDisposable = vscode.commands.registerCommand(
+        "avScriptTools.runScriptSeparate",
+        () => {
+            const filePath = getActiveScriptFile();
+            if (filePath) {
+                codeRunner.runFile(filePath, true);
+            }
+        }
+    );
 
-    codeRunner.runFile(filePath);
-  });
+    const stopTsFileDisposable = vscode.commands.registerCommand(
+        "avScriptTools.stopScript",
+        () => {
+            codeRunner.stop();
+        }
+    );
 
-  const stopTsFileDisposable = vscode.commands.registerCommand('avScriptTools.stopScript', () => {
-    if (codeRunner.isRunning) {
-      codeRunner.stop();
-    }
-  });
+    const clearConsoleDisposable = vscode.commands.registerCommand(
+        "avScriptTools.clearConsole",
+        () => {
+            codeRunner.clear();
+        }
+    );
 
-  const clearConsoleDisposable = vscode.commands.registerCommand('avScriptTools.clearConsole', () => {
-    codeRunner.clear();
-  });
-
-  context.subscriptions.push(runTsFileDisposable);
-  context.subscriptions.push(stopTsFileDisposable);
-  context.subscriptions.push(clearConsoleDisposable);
+    context.subscriptions.push(runTsFileDisposable);
+    context.subscriptions.push(runTsFileSeparateDisposable);
+    context.subscriptions.push(stopTsFileDisposable);
+    context.subscriptions.push(clearConsoleDisposable);
 }

@@ -1,6 +1,9 @@
 import { v4 } from "uuid";
 
 export type Command =
+    | "view.ready"
+    | "script.start"
+    | "script.stop"
     | "ping"
     | "clear"
     | "log.text"

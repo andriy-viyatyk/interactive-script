@@ -1,7 +1,7 @@
 import commands from "../shared/commands";
 import { isUiText, UiText } from "../shared/ViewMessage";
 import { ConfirmCommand, ConfirmData } from "../shared/commands/input-confirm";
-import { GridColumn, GridData } from "../shared/commands/output-grid";
+import { GridData } from "../shared/commands/output-grid";
 import { TextInputCommand, TextInputData } from "../shared/commands/input-text";
 import { ButtonsCommand, ButtonsData } from "../shared/commands/input-buttons";
 import { send, responseHandler } from "./src/handlers";
@@ -19,6 +19,8 @@ import { SelectRecordCommand, SelectRecordData } from "../shared/commands/input-
 import { ProgressData } from "../shared/commands/output-progress";
 import { WindowGridData, WindowTextData } from "../shared/commands/window";
 import { DateInputCommand, DateInputData } from "../shared/commands/input-date";
+import { PackedGridArray } from "../shared/PackedGridArray";
+import { TextBlock } from "./src/objects/TextBlock";
 
 const ui = {
     ping: () => responseHandler.send(commands.ping()),
@@ -136,7 +138,7 @@ const ui = {
             const message = typeof data === "string"
                 ? commands.outputText({ text: data })
                 : commands.outputText(data);
-            send(message);
+            return new TextBlock(send(message));
         },
 
         progress: (label: UiText | ProgressData) => {
@@ -165,4 +167,4 @@ const ui = {
 
 export default ui;
 
-export { Progress, StyledText, styledText, namedColors };
+export { Progress, StyledText, styledText, namedColors, PackedGridArray };

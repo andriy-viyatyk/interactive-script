@@ -1,208 +1,64 @@
 import * as vscode from "vscode";
-import * as cp from "child_process";
 import * as path from "path";
 import views from "../web-view/Views";
-import { contextScriptRunning } from "../constants";
-import { commandLine } from "../../shared/constants";
-import commands from "../../shared/commands";
-import { ViewMessage } from "../../shared/ViewMessage";
-import {
-    isWindowGridCommand,
-    isWindowTextCommand,
-    WindowGridCommand,
-    WindowTextCommand,
-} from "../../shared/commands/window";
+import { RunningProcess } from "./RunningProcess";
 import vars from "../vars";
+import { WebView } from "../web-view/WebView";
+import commands from "../../shared/commands";
+import { contextScriptRunning } from "../constants";
 
 class CodeRunner {
-    private _isRunning: boolean = false;
-    private child: cp.ChildProcessWithoutNullStreams | null = null;
-    private viewsSubscribed = false;
-
-    get isRunning() {
-        return this._isRunning;
+    private runningProcess: Map<string, RunningProcess> = new Map();
+    
+    private get bottomPanelId() {
+        return views.output?.id;
     }
 
-    set isRunning(value: boolean) {
-        this._isRunning = value;
-        vscode.commands.executeCommand(
-            "setContext",
-            contextScriptRunning,
-            value
-        );
+    runProcessWithView = (filePath: string, view: WebView) => {
+        const id = view.id;
+        const process = new RunningProcess(view, () => {
+            this.runningProcess.delete(id);
+        });
+        this.runningProcess.set(id, process);
+        process.run(filePath);
+    }
 
-        if (this.child) {
-            this.child.kill("SIGINT");
-            this.child = null;
+    private runSeparate = async (filePath: string) => {
+        if (vars.extensionContext) {
+            const view = views.createView(vars.extensionContext, "output");
+            view.createOutputPanel(filePath);
+            await view.whenReady;
+            this.runProcessWithView(filePath, view);
         }
     }
 
-    handleCommand = (line: string): boolean => {
-        if (line.startsWith(commandLine)) {
-            const command = line.substring(commandLine.length).trim();
-            let commandObj: any = null;
-            try {
-                commandObj = JSON.parse(command);
-            } catch (error) {
-                views.messageToOutput(
-                    commands.log.error(`Error parsing command: ${error}`)
-                );
-                return false;
-            }
-            if (commandObj?.command) {
-                if (isWindowGridCommand(commandObj)) {
-                    this.handleWindowGridCommand(commandObj);
-                } else if (isWindowTextCommand(commandObj)) {
-                    this.handleWindowTextCommand(commandObj);
-                } else {
-                    views.messageToOutput(commandObj);
-                }
-                return true;
-            }
-        }
-        return false;
-    };
-
-    onReplayMessage = (message?: ViewMessage) => {
-        if (!message) return;
-
-        if (isWindowGridCommand(message)) {
-            this.handleWindowGridCommand(message);
+    runFile = (filePath: string, inSeparateOutput?: boolean) => {
+        if (inSeparateOutput) {
+            this.runSeparate(filePath);
             return;
         }
 
-        if (isWindowTextCommand(message)) {
-            this.handleWindowTextCommand(message);
+        const existingProcess = this.runningProcess.get(this.bottomPanelId ?? "");
+        if (existingProcess) {
+            vscode.window.showErrorMessage("Script is already running.");
             return;
         }
 
-        if (!this.child) return;
-
-        this.child.stdin.write(`${commandLine}${JSON.stringify(message)}\n`);
-    };
-
-    handleProcess = (
-        child: cp.ChildProcessWithoutNullStreams,
-        fileName: string
-    ) => {
-        if (!this.viewsSubscribed) {
-            views.onOutputMessage.subscribe(this.onReplayMessage);
-            this.viewsSubscribed = true;
+        if (views.output) {
+            this.runProcessWithView(filePath, views.output);
         }
-
-        const isLive = () => child === this.child;
-
-        const onLine = (line: string) => {
-            if (this.handleCommand(line)) return;
-
-            views.messageToOutput(commands.log.log(line));
-        };
-
-        const onError = (error: string) => {
-            views.messageToOutput(commands.log.error(error));
-        };
-
-        child.stdout.on("data", (data: Buffer) => {
-            if (!isLive()) return;
-            const text = data.toString();
-            const lines = text.split("\n");
-            if (lines.length && lines[lines.length - 1] === "") {
-                lines.pop();
-            }
-            lines.forEach(onLine);
-        });
-
-        child.stderr.on("data", (data: Buffer) => {
-            if (!isLive()) return;
-            const text = data.toString();
-            const lines = text.trim().split("\n");
-            if (lines.length && lines[lines.length - 1] === "") {
-                lines.pop();
-            }
-            lines.forEach(onError);
-        });
-
-        child.on("exit", (code) => {
-            if (!isLive()) return;
-            
-            setTimeout(() => {
-                // some time for the output to be flushed
-                views.messageToOutput(
-                    commands.log.log([
-                        {
-                            text: `[ ${fileName} ]`,
-                            styles: { color: "lightseagreen" },
-                        },
-                        ` exit code ${code}`,
-                    ])
-                );
-                this.child = null;
-                this.isRunning = false;
-            }, 100);
-        });
-    };
-
-    runFile = (filePath: string) => {
-        this.isRunning = true;
-
-        const fileExtension = path.extname(filePath);
-        const command = fileExtension === ".js" ? "node" : "ts-node";
-        const fileName = path.basename(filePath);
-
-        views.messageToOutput(
-            commands.log.log([
-                { text: `[ ${fileName} ]`, styles: { color: "lightseagreen" } },
-                ` ${command} "${filePath}"`,
-            ])
-        );
-
-        let workDirectory = path.dirname(filePath);
-        const workspaceFolders = vscode.workspace.workspaceFolders;
-        if (workspaceFolders && workspaceFolders.length > 0) {
-            workDirectory = workspaceFolders[0].uri.fsPath;
-        }
-
-        this.child = cp.spawn(command, [`"${filePath}"`], {
-            cwd: workDirectory,
-            shell: true,
-        });
-
-        this.handleProcess(this.child, fileName);
     };
 
     stop = () => {
-        if (this.child) {
-            this.child.kill("SIGKILL");
+        const existingProcess = this.runningProcess.get(this.bottomPanelId ?? "");
+        if (existingProcess) {
+            existingProcess.stop();
         }
     };
 
     clear = () => {
-        views.messageToOutput(commands.clear());
-    };
-
-    private readonly handleWindowGridCommand = (message: WindowGridCommand) => {
-        setTimeout(() => {
-            if (vars.extensionContext) {
-                const view = views.createView(vars.extensionContext, "grid");
-                view.createGridPanel(
-                    message.data?.title ?? "Data",
-                    message.data?.data ?? [],
-                    message.data?.columns
-                );
-            }
-        }, 0);
-    };
-
-    private readonly handleWindowTextCommand = async (
-        message: WindowTextCommand
-    ) => {
-        if (vars.extensionContext) {
-            const document = await vscode.workspace.openTextDocument({
-                content: message.data?.text ?? "",
-                language: message.data?.language ?? "plaintext",
-            });
-
-            await vscode.window.showTextDocument(document, { preview: true });
+        if (views.output) {
+            views.output.messageToOutput(commands.clear());
         }
     };
 }

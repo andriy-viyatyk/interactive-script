@@ -11,4 +11,9 @@ export interface WebViewInput {
         gridColumns?: GridColumn[];
         gridTitle?: UiText;
     };
+    outputInput?: {
+        withHeader?: boolean;
+        title?: string;
+        filePath?: string;
+    }
 }

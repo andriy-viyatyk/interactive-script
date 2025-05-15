@@ -12,6 +12,8 @@ import inputCheckboxes from './input-checkboxes';
 import inputRadioboxes from './input-radioboxes';
 import inputSelectRecord from './input-selectRecord';
 import inputDate from './input-date';
+import viewReady from './view-ready';
+import script from './script';
 
 const commands = {
     ping,
@@ -28,6 +30,8 @@ const commands = {
     inputRadioboxes,
     inputSelectRecord,
     inputDate,
+    viewReady,
+    script,
 }
 
 export default commands;

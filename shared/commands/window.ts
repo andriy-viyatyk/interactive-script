@@ -1,3 +1,4 @@
+import { PackedGridData } from "../PackedGridArray";
 import { newMessage, UiText, ViewMessage } from "../ViewMessage";
 import { GridColumn } from "./output-grid";
 
@@ -5,7 +6,7 @@ import { GridColumn } from "./output-grid";
 
 export interface WindowGridData {
     title?: UiText;
-    data: any[];
+    data: any[] | PackedGridData;
     columns?: GridColumn[];
 }
 
