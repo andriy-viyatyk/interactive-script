@@ -37,6 +37,10 @@ const ui = {
     success: (message: UiText) =>
         new StyledLogCommand(send(commands.log.success(message))),
     clear: () => send(commands.clear()),
+    output: {
+         append: (message: string) => send(commands.output.append(message)),
+         clear: () => send(commands.output.clear()),
+    },
     dialog: {
         buttons: async (buttons: UiText[] | ButtonsData) => {
             const message = Array.isArray(buttons)
@@ -163,6 +167,26 @@ const ui = {
             send(message);
         },
     },
+    on: {
+        consoleLog: (callback: (message: string) => void) => {
+            const message = commands.onConsole.log();
+            const subscription = responseHandler.subscribe(message, (response) => {
+                if (response.data) {
+                    callback(response.data);
+                }
+            });
+            return subscription;
+        },
+        consoleError: (callback: (message: string) => void) => {
+            const message = commands.onConsole.error();
+            const subscription = responseHandler.subscribe(message, (response) => {
+                if (response.data) {
+                    callback(response.data);
+                }
+            });
+            return subscription;
+        },
+    }
 };
 
 export default ui;

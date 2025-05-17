@@ -13,7 +13,6 @@ type ResponseHandlerResolve = (message: ViewMessage) => void;
 class ResponseHandler {
     private rl: readline.Interface | undefined;
     private readonly commandMap: Map<string, ResponseHandlerResolve> = new Map();
-    private uiCheckRun = false;
 
     private createRl() {
         if (!this.rl) {
@@ -37,7 +36,9 @@ class ResponseHandler {
         if (message) {
             const resolve = this.commandMap.get(message.commandId);
             if (resolve) {
-                this.commandMap.delete(message.commandId);
+                if (!message.isEvent) {
+                    this.commandMap.delete(message.commandId);
+                }
                 resolve(message);
                 this.closeRlIfIdle();
             }
@@ -45,40 +46,25 @@ class ResponseHandler {
     }
 
     send = <T>(message: ViewMessage<T>): Promise<ViewMessage<T>> => {
-        if (!this.uiCheckRun) {
-            this.uiCheckRun = true;
-            this.runUiCheck();
-        }
-
-        const messageToSend: ViewMessage = { ...message, isResponseRequired: true };
         return new Promise<ViewMessage<T>>((resolve) => {
             this.createRl();
-            this.commandMap.set(messageToSend.commandId, resolve);
-            console.log(messageToString(messageToSend));
+            this.commandMap.set(message.commandId, resolve);
+            console.log(messageToString(message));
         });
     }
 
-    runUiCheck = async () => {
-        const message = commands.ping();
-        const uiPromise = this.send(message);
-        const timeoutPromise = new Promise(resolve => setTimeout(resolve, 1000));
-        const whenAny = (await Promise.race([uiPromise, timeoutPromise]) as any);
-        
-        if (whenAny?.command === "ping") {
-            return true;
+    subscribe = <T>(message: ViewMessage<T>, update: (message: ViewMessage<T>) => any) => {
+        this.createRl();
+        const messageToSend = { ...message, isEvent: true };
+        this.commandMap.set(message.commandId, update);
+        console.log(messageToString(messageToSend));
+
+        return {
+            unsubscribe: () => {
+                this.commandMap.delete(message.commandId);
+                this.closeRlIfIdle();
+            }
         }
-    
-        console.error(`
-    **************************************************************************************************************
-        UI not available.
-
-        This module "interactive-script-js" is designed to be run by "Interactive Script" VSCode extension.
-        If you have this extension installed, please run script from "SCRIPT UI" tab ('run' button in tab header).
-        If you can't find "SCRIPT UI" tab, find it in VSCode menu: View => Open View => <search by 'SCRIPT UI'>.
-
-        Otherwise we have problem. You can try to reinstall "Interactive Script" extension and/or restart VSCode.
-    ***************************************************************************************************************    
-        `);
     }
 }
 

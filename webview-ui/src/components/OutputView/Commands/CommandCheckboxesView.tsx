@@ -60,7 +60,7 @@ export function CommandCheckboxesView({
                 data: {
                     ...item.data,
                     resultButton: button,
-                    result: item.data?.items.filter((i) => i.checked).map((i) => i.label),
+                    result: item.data?.items.filter((i) => i.checked).map((i) => uiTextToString(i.label)),
                 } as CheckboxesData,
             };
             replayMessage(message);

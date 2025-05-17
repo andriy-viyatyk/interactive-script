@@ -17,6 +17,9 @@ import { ViewMessage } from "../../shared/ViewMessage";
 import { SubscriptionObject } from "../utils/events";
 import { isScriptStopCommand } from "../../shared/commands/script";
 import { handleWindowGridCommand, handleWindowTextCommand } from "../utils/common-commands";
+import { isOnConsoleCommand, isOnConsoleLogCommand, OnConsoleCommand } from "../../shared/commands/on-console";
+import { isOutputClearCommand, isOutputCommand } from "../../shared/commands/output";
+import { clearOutput, writeOutput } from "../utils/output-channel";
 
 export class RunningProcess extends vscode.Disposable {
     private child: cp.ChildProcessWithoutNullStreams | null = null;
@@ -24,6 +27,8 @@ export class RunningProcess extends vscode.Disposable {
     private view?: WebView;
     private viewIsBottomPanel = false;
     private subscriptions: SubscriptionObject[] = [];
+    private onConsoleLog: OnConsoleCommand | undefined;
+    private onConsoleError: OnConsoleCommand | undefined;
 
     constructor(view: WebView, callOnDispose: () => any) {
         super(callOnDispose);
@@ -76,10 +81,22 @@ export class RunningProcess extends vscode.Disposable {
     private onLine = (line: string) => {
         if (this.handleCommand(line)) return;
 
+        if (this.onConsoleLog) {
+            const message = {...this.onConsoleLog, data: line };
+            this.sendToProcess(message);
+            return;
+        }
+
         this.view?.messageToOutput(commands.log.log(line));
     };
 
     private onError = (error: string) => {
+        if (this.onConsoleError) {
+            const message = {...this.onConsoleError, data: error };
+            this.sendToProcess(message);
+            return;
+        }
+
         this.view?.messageToOutput(commands.log.error(error));
     };
 
@@ -122,6 +139,14 @@ export class RunningProcess extends vscode.Disposable {
         }, 100);
     };
 
+    private sendToProcess = (message: ViewMessage<any>) => {
+        if (this.child) {
+            this.child.stdin.write(
+                `${commandLine}${JSON.stringify(message)}\n`
+            );
+        }
+    }
+
     private onWebViewMessage = (message?: ViewMessage<any>) => {
         if (message?.command) {
             if (isScriptStopCommand(message)) {
@@ -129,11 +154,7 @@ export class RunningProcess extends vscode.Disposable {
                 return;
             }
 
-            if (!this.child) return;
-
-            this.child.stdin.write(
-                `${commandLine}${JSON.stringify(message)}\n`
-            );
+            this.sendToProcess(message);
         }
     };
 
@@ -185,6 +206,16 @@ export class RunningProcess extends vscode.Disposable {
                     handleWindowGridCommand(commandObj);
                 } else if (isWindowTextCommand(commandObj)) {
                     handleWindowTextCommand(commandObj);
+                } else if (isOnConsoleCommand(commandObj)) {
+                    if (isOnConsoleLogCommand(commandObj)) {
+                        this.onConsoleLog = commandObj;
+                    } else {
+                        this.onConsoleError = commandObj;
+                    }
+                } if (isOutputCommand(commandObj)) {
+                    writeOutput(commandObj.data ?? "");
+                } if (isOutputClearCommand(commandObj)) {
+                    clearOutput();
                 } else {
                     this.view?.messageToOutput(commandObj);
                 }

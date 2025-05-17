@@ -14,6 +14,8 @@ import inputSelectRecord from './input-selectRecord';
 import inputDate from './input-date';
 import viewReady from './view-ready';
 import script from './script';
+import onConsole from './on-console';
+import output from './output';
 
 const commands = {
     ping,
@@ -32,6 +34,8 @@ const commands = {
     inputDate,
     viewReady,
     script,
+    onConsole,
+    output,
 }
 
 export default commands;

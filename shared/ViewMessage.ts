@@ -6,6 +6,8 @@ export type Command =
     | "script.stop"
     | "ping"
     | "clear"
+    | "output"
+    | "output.clear"
     | "log.text"
     | "log.log"
     | "log.info"
@@ -23,29 +25,28 @@ export type Command =
     | "output.text"
     | "output.progress"
     | "window.grid"
-    | "window.text";
+    | "window.text"
+    | "on.console.log"
+    | "on.console.error";
 
 export interface ViewMessage<T = any> {
     command: Command;
     commandId: string;
     data?: T;
-    isResponse?: boolean;
-    error?: string;
-    isResponseRequired?: boolean;
+    isEvent?: boolean;
 }
 
 export function newMessage<T>(
     command: Command,
     data?: T,
-    commandId?: string
+    commandId?: string,
+    isEvent?: boolean
 ): ViewMessage<T> {
     return {
         command,
         commandId: commandId || v4(),
         data,
-        isResponse: Boolean(commandId),
-        error: undefined,
-        isResponseRequired: false,
+        isEvent
     };
 }
 
