@@ -20,6 +20,7 @@ import { handleWindowGridCommand, handleWindowTextCommand } from "../utils/commo
 import { isOnConsoleCommand, isOnConsoleLogCommand, OnConsoleCommand } from "../../shared/commands/on-console";
 import { isOutputClearCommand, isOutputCommand } from "../../shared/commands/output";
 import { clearOutput, writeOutput } from "../utils/output-channel";
+import { getPythonPath } from "../utils/python-utils";
 
 export class RunningProcess extends vscode.Disposable {
     private child: cp.ChildProcessWithoutNullStreams | null = null;
@@ -141,9 +142,9 @@ export class RunningProcess extends vscode.Disposable {
 
     private sendToProcess = (message: ViewMessage<any>) => {
         if (this.child) {
-            this.child.stdin.write(
-                `${commandLine}${JSON.stringify(message)}\n`
-            );
+            const line = `${commandLine}${JSON.stringify(message)}\n`;
+            console.log("sendToProcess", line);
+            this.child.stdin.write(line);
         }
     }
 
@@ -158,18 +159,24 @@ export class RunningProcess extends vscode.Disposable {
         }
     };
 
-    run = (filePath: string) => {
+    run = async (filePath: string) => {
         this.isRunning = true;
         this.view?.messageToOutput(commands.script.start(filePath));
 
         const fileExtension = path.extname(filePath);
-        const command = fileExtension === ".js" ? "node" : "ts-node";
+        let command = "node";
+        if (fileExtension === ".ts") {
+            command = "ts-node";
+        }
+        if (fileExtension == ".py") {
+            command = await getPythonPath();
+        }
         this.fileName = path.basename(filePath);
 
         this.view?.messageToOutput(
             commands.log.log([
                 { text: `[ ${this.fileName} ]`, styles: { color: "lightseagreen" } },
-                ` ${command} "${filePath}"`,
+                ` "${command}" "${filePath}"`,
             ])
         );
 
@@ -179,7 +186,7 @@ export class RunningProcess extends vscode.Disposable {
             workDirectory = workspaceFolders[0].uri.fsPath;
         }
 
-        this.child = cp.spawn(command, [`"${filePath}"`], {
+        this.child = cp.spawn(`"${command}"`, [`"${filePath}"`], {
             cwd: workDirectory,
             shell: true,
         });

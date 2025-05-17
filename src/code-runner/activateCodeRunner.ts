@@ -10,9 +10,9 @@ export function activateCodeRunner(context: vscode.ExtensionContext) {
         }
 
         const filePath = editor.document.uri.fsPath;
-        if (!(filePath.endsWith(".ts") || filePath.endsWith(".js"))) {
+        if (!(filePath.endsWith(".ts") || filePath.endsWith(".js") || filePath.endsWith(".py"))) {
             vscode.window.showErrorMessage(
-                "Active file is not a TypeScript or JavaScript file."
+                "Active file is not a TypeScript, JavaScript or Python file."
             );
             return;
         }

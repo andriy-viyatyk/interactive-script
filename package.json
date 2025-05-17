@@ -98,7 +98,7 @@
       "view/title": [
         {
           "command": "avScriptTools.runScript",
-          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js) && !avScriptTools.scriptRunning",
+          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py) && !avScriptTools.scriptRunning",
           "group": "navigation@1"
         },
         {
@@ -108,7 +108,7 @@
         },
         {
           "command": "avScriptTools.runScriptSeparate",
-          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js)",
+          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py)",
           "group": "navigation@3"
         },
         {
