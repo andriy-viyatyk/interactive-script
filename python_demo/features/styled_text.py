@@ -13,7 +13,7 @@ async def styled_text_demo():
     ui.warn("ui.warn()")
     ui.error("ui.error()")
     ui.text("The difference only in base color")
-    ui.log("");
+    ui.log("")
 
     ui.text("You can define text ") \
         .then("color").color("yellow") \

@@ -10,7 +10,7 @@ async def confirm_dialog_demo():
     pressedButton = await ui.dialog.confirm("Single confirm message with default buttons.")
     ui.log("You pressed: ").then(pressedButton).color("lime").print()
 
-    ui.log("");
+    ui.log("")
     pressedButton = await ui.dialog.confirm({
         "title": "Dialog title",
         "message": "Dialog with title, message and custom buttons.",
@@ -18,7 +18,7 @@ async def confirm_dialog_demo():
     })
     ui.log("You pressed: ").then(pressedButton).color("lime").print()
 
-    ui.log("");
+    ui.log("")
     pressedButton = await ui.dialog.confirm({
         "title": styled_text("Dialog").color("yellow").then(" title").value,
         "message": styled_text("Dialog with ").then("styled text").color("lime").then(" in title, message and custom buttons.").value,

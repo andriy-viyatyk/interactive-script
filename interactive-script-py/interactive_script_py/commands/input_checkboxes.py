@@ -43,6 +43,7 @@ class CheckboxesData:
         self.buttons = data.get("buttons", self.buttons)
         self.bodyStyles = data.get("bodyStyles", self.bodyStyles)
         self.result = data.get("result", self.result)
+        self.resultButton = data.get("resultButton", self.resultButton)
 
 @dataclass
 class CheckboxesCommand(ViewMessage):

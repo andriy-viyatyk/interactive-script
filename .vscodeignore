@@ -10,7 +10,7 @@ interactive-script-js
 interactive-script-py
 shared/
 demo/
-python-demo/
+python_demo/
 images/
 pyrightconfig.json
 

@@ -5,6 +5,9 @@ from .commands.log import LogCommand
 from .commands.input_confirm import ConfirmCommand
 from .commands.input_buttons import ButtonsCommand
 from .commands.input_checkboxes import CheckboxesCommand
+from .commands.input_date import DateInputCommand
+from .commands.input_radioboxes import RadioboxesCommand
+from .commands.output_grid import GridCommand
 
 MESSAGE_TYPE_MAPPING: Dict[str, type[ViewMessage]] = {
     "log.text": LogCommand,
@@ -16,6 +19,9 @@ MESSAGE_TYPE_MAPPING: Dict[str, type[ViewMessage]] = {
     "input.confirm": ConfirmCommand,
     "input.buttons": ButtonsCommand,
     "input.checkboxes": CheckboxesCommand,
+    "input.date": DateInputCommand,
+    "input.radioboxes": RadioboxesCommand,
+    "output.grid": GridCommand,
     # Add mappings for other command types here
 }
 

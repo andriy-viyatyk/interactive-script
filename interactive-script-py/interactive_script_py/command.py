@@ -1,4 +1,5 @@
 from dataclasses import asdict, dataclass, field
+from datetime import date, datetime
 import json
 from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, TypedDict, Union
 from uuid import uuid4
@@ -65,7 +66,18 @@ class ViewMessage:
     isEvent: Optional[bool] = False
     
     def to_json(self) -> str:
-        return json.dumps(asdict(self))
+        return json.dumps(asdict(self), default=self._serialize_json)
+    
+    @staticmethod
+    def _serialize_json(obj):
+        if isinstance(obj, date):
+            return obj.isoformat()
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        try:
+            return obj.__dict__  # Try to serialize objects with a __dict__
+        except AttributeError:
+            raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
     
     def init(self, data: Dict[str, Any]):
         self.command = data.get("command", "")
