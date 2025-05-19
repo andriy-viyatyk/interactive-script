@@ -49,16 +49,13 @@ class GridCommand(ViewMessage):
         self.data.init(data.get("data", {}))
         
         
-def gridFromArray(params: Union[List[Any], GridDataParam]) -> GridCommand:
+def grid_from_list(params: Union[List[Any], GridDataParam]) -> GridCommand:
     grid_data = GridData()
     if isinstance(params, list):  # Check if it's a list of data
-        print("params is a list")
         grid_data.init({"data": params})
     elif isinstance(params, dict):  # Check if it's GridData (which is a dict)
         grid_data.init(params)
         
-    print("grid_data.columns", grid_data.columns)
-    
     message = GridCommand(
         command="output.grid",
         data=grid_data

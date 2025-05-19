@@ -1,5 +1,6 @@
+import asyncio
 import json
-from typing import Dict, Optional
+from typing import Any, Awaitable, Callable, Dict, Optional
 from .command import ViewMessage, command_line
 from .commands.log import LogCommand
 from .commands.input_confirm import ConfirmCommand
@@ -8,6 +9,11 @@ from .commands.input_checkboxes import CheckboxesCommand
 from .commands.input_date import DateInputCommand
 from .commands.input_radioboxes import RadioboxesCommand
 from .commands.output_grid import GridCommand
+from .commands.output_progress import ProgressCommand
+from .commands.output_text import TextCommand
+from .commands.input_text import TextInputCommand
+from .commands.window_show_grid import WindowGridCommand
+from .commands.window_show_text import WindowTextCommand
 
 MESSAGE_TYPE_MAPPING: Dict[str, type[ViewMessage]] = {
     "log.text": LogCommand,
@@ -21,8 +27,12 @@ MESSAGE_TYPE_MAPPING: Dict[str, type[ViewMessage]] = {
     "input.checkboxes": CheckboxesCommand,
     "input.date": DateInputCommand,
     "input.radioboxes": RadioboxesCommand,
+    "input.text": TextInputCommand,
     "output.grid": GridCommand,
-    # Add mappings for other command types here
+    "output.progress": ProgressCommand,
+    "output.text": TextCommand,
+    "window.grid": WindowGridCommand,
+    "window.text": WindowTextCommand,
 }
 
 def message_to_string(message: ViewMessage) -> str:
@@ -48,3 +58,12 @@ def message_from_string(line: str) -> Optional[ViewMessage]:
                 return None
         except json.JSONDecodeError:
             return None
+
+def watch(promise: Awaitable[Any], callback: Callable[[], Any]):
+    async def _watch():
+        try:
+            await promise
+        finally:
+            callback()
+
+    asyncio.create_task(_watch())

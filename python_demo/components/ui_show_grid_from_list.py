@@ -7,12 +7,12 @@ async def grid_demo():
 
     ui.log("")
     ui.text("You can display a grid using array of objects with: ui.show.gridFromList(data, options):")
-    ui.show.gridFromList(generate_class_rows(10000))
+    ui.show.grid_from_list(generate_class_rows(10000))
     await ui.dialog.buttons(["Next"])
 
     ui.log("")
     ui.text("You can define title and columns by passing options: ui.show.gridFromList({data, title, columns }):")
-    ui.show.gridFromList({
+    ui.show.grid_from_list({
         "data": generate_rows(10000),
         "title": styled_text("Grid").color("yellow").then(" title").value,
         "columns": [

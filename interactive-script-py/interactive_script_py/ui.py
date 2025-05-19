@@ -6,9 +6,15 @@ from .commands.input_buttons import buttons, ButtonsDataParam
 from .commands.input_checkboxes import checkboxes, CheckboxesDataParam, CheckboxesData
 from .commands.input_date import date_input, DateInputDataParam, DateInputData
 from .commands.input_radioboxes import radioboxes, RadioboxesDataParam, RadioboxesData
-from .commands.output_grid import gridFromArray, GridDataParam, GridData
+from .commands.input_text import textInput, TextInputDataParam, TextInputData
+from .commands.output_grid import grid_from_list, GridDataParam, GridData
+from .commands.output_progress import progress, ProgressDataParam
+from .commands.output_text import text_block, TextDataParam
+from .commands.window_show_grid import show_grid
+from .commands.window_show_text import show_text, WindowTextDataParam
 from .response_handler import send, response_handler
 from .objects.styled_text import StyledLogCommand
+from .objects.progress import Progress
 
 class DialogNamespace:
     async def confirm(self, text: Union[UiText, ConfirmDataParam]) -> str:
@@ -31,10 +37,27 @@ class DialogNamespace:
         response = await response_handler.send(date_input(params))
         return response.data
     
+    async def text_input(self, params: Union[UiText, TextInputDataParam]) -> TextInputData:
+        response = await response_handler.send(textInput(params))
+        return response.data
+
 class ShowNamespace:
-    def gridFromList(self, params: Union[List[Any], GridDataParam]):
-        return send(gridFromArray(params))
-        
+    def grid_from_list(self, params: Union[List[Any], GridDataParam]):
+        return send(grid_from_list(params))
+    
+    def progress(self, params: Union[UiText, ProgressDataParam]):
+        return Progress(send(progress(params)))
+    
+    def text_block(self, params: Union[str, TextDataParam]):
+        return send(text_block(params))
+    
+class WindowNamespace:
+    def show_grid(self, params: Union[List[Any], GridDataParam]):
+        return send(show_grid(params))
+    
+    def show_text(self, params: Union[str, WindowTextDataParam]):
+        return send(show_text(params))
+       
 
 class UiNamespace:
     def text(self, text: UiText) -> StyledLogCommand:
@@ -51,5 +74,6 @@ class UiNamespace:
         return StyledLogCommand(send(log.success(text)))
     dialog = DialogNamespace()
     show = ShowNamespace()
+    window = WindowNamespace()
 
 ui = UiNamespace()
