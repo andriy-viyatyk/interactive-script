@@ -1,18 +1,16 @@
-
 # Interactive Script
 
-**Interactive Script** is a Visual Studio Code extension that lets you run Node.js scripts interactively inside VS Code, using a dedicated **"Script UI"** panel. Your scripts can dynamically output styled text, interactive dialogs, grids, progress indicators, and more — all rendered inside the editor, without leaving VS Code.
+**Interactive Script** is a Visual Studio Code extension that lets you run Node.js **and now Python** scripts interactively inside VS Code, using a dedicated **"Script UI"** panel. Your scripts can dynamically output styled text, interactive dialogs, grids, progress indicators, and more — all rendered inside the editor, without leaving VS Code.
 
-[![Demo Video](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/demo.gif)
+[![Demo Video](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/demo.gif)](https://github.com/andriy-viyatyk/interactive-script)
 
----
 
 ## Key Features
 
 - Adds a **"Script UI"** view in the bottom panel of VS Code
-- Shows a **"Run"** button when a `.js` or `.ts` file is active, to execute the script
-- Spawns a Node.js or ts-node process, streaming `stdout` and `stdin` to/from the **Script UI** panel
-- Requires the [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) library to build interactive scripts with:
+- Shows a **"Run"** button when a `.js`, `.ts`, or `.py` file is active, to execute the script
+- Spawns a Node.js, ts-node, or Python process, streaming `stdout` and `stdin` to/from the **Script UI** panel
+- Requires the [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) or [`interactive-script-py`](https://pypi.org/project/interactive-script-py/) library to build interactive scripts with:
   - Styled log output (`ui.log`, `ui.error`, `ui.warn`, `ui.success`, etc.)
   - Interactive dialogs: buttons, confirms, text inputs, checkboxes, radio buttons
   - Embedded grids and text blocks in the panel
@@ -20,32 +18,49 @@
   - Progress bars
 - Integrated **interactive grid viewer** that can open JSON or CSV files as a powerful filterable, sortable grid (from button or API)
 
----
+## How to use
 
-### How to use
-
-1. Open a `.js` or `.ts` file in VS Code.
+1. Open a `.js`, `.ts`, or `.py` file in VS Code.
 2. Open the **"Script UI"** panel (located in the bottom panel).
 3. Click the **"Run"** button in the header of the **"Script UI"** panel to execute the active file.
-4. If your script uses the [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) library, it can send messages to the panel and receive input from the user through the `ui` object.
+4. If your script uses [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) (JavaScript/TypeScript) or [`interactive-script-py`](https://pypi.org/project/interactive-script-py/) (Python), it can send messages to the panel and receive input from the user through the `ui` object.
 
-Example:
+#### JavaScript / TypeScript Example:
 
-```
+```ts
 import ui from "interactive-script-js";
 
-ui.log("Hello from interactive script!");
-const pressedButton = await ui.dialog.confirm("Do you like this extension?");
-if (pressedButton === "Yes") {
-    ui.success("Great! 🎉");
-} else {
-    ui.warn("Maybe next time.");
+async function demo() {
+    ui.log("Hello from interactive script!");
+    const pressedButton = await ui.dialog.confirm("Do you like this extension?");
+    if (pressedButton === "Yes") {
+        ui.success("Great! 🎉");
+    } else {
+        ui.warn("Maybe next time.");
+    }
 }
+
+demo();
+```
+
+#### Python Example:
+
+```python
+import asyncio
+from interactive_script_py import ui
+
+async def demo():
+    ui.log("Hello from Python!")
+    pressed = await ui.dialog.confirm("Do you like this extension?")
+    if pressed == "Yes":
+        ui.success("Awesome!")
+    else:
+        ui.warn("That's okay!")
+        
+asyncio.run(demo())
 ```
 
 The script’s outputs (styled logs, dialogs, grids, etc.) appear inside **"Script UI"**, interacting with the user live.
-
----
 
 ## Grid Viewer
 
@@ -63,29 +78,33 @@ Grids can also be opened programmatically via `ui.window.showGrid(jsonArray)` fr
 
 ![Example snippet output](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/grid-viewer.png)
 
----
 
-### Why use Interactive Script?
+## Why use Interactive Script?
 
 - Perfect for creating **internal developer tools** inside VS Code
 - Ideal for building **interactive scripts** that guide users through data selection, queries, and workflows
 - Lets you build **custom UI-driven flows** (dialogs, grids, inputs) without needing to create a full VS Code extension or web app
 
----
 
-### Demo scripts
+## Demo scripts
 
-Example demo scripts are available in the [GitHub repository](https://github.com/andriy-viyatyk/interactive-script) inside the `demo` folder. These scripts demonstrate various features and UI components.
+Example demo scripts are available in the [GitHub repository](https://github.com/andriy-viyatyk/interactive-script):
 
-To try them:
+- `demo/` – contains JavaScript/TypeScript example scripts using [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js)
+- `python_demo/` – contains Python example scripts using [`interactive-script-py`](https://pypi.org/project/interactive-script-py/)
 
-1. Clone or download the repository.
-2. Open the `demo` folder in a terminal.
-3. Run `npm install interactive-script-js` to install the required dependency.
-4. Open one of the demo `.ts` files in VS Code.
-5. Open the **"Script UI"** panel.
-6. Click **"Run"** in the panel header.
-7. Follow the interactive steps displayed in the panel.
+#### Try the JavaScript/TypeScript demos:
+
+1. Open the `demo` folder in a terminal.
+2. Run `npm install interactive-script-js`.
+3. Open a `.ts` file in VS Code, open the **"Script UI"** panel, and click **"Run"**.
+
+#### Try the Python demos:
+
+1. Open the `python_demo` folder in a terminal.
+2. Create a virtual environment (optional).
+3. Run `pip install interactive-script-py`.
+4. Open a `.py` file in VS Code, open the **"Script UI"** panel, and click **"Run"**.
 
 > These demo scripts are useful for testing or exploring how to build interactive scripts using the `interactive-script-js` library.
 
@@ -105,117 +124,82 @@ Output:
 
 ![Example snippet output](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/example-snippet.png)
 
----
 
-## Using \`interactive-script-js\`
+## Using `interactive-script-js`
 
-Your scripts must import [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) to communicate with the extension’s UI.
+JavaScript and TypeScript scripts must import [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) to communicate with the extension’s UI.
 
-Available APIs:
 
-- \`ui.log()\`, \`ui.error()\`, \`ui.warn()\`, \`ui.info()\`, \`ui.success()\`
-- \`ui.dialog.confirm()\`, \`ui.dialog.textInput()\`, \`ui.dialog.buttons()\`
-- \`ui.show.gridFromJsonArray()\`, \`ui.show.textBlock()\`
-- \`ui.window.showGrid()\`, \`ui.window.showText()\`
-- and more!
+APIs include:
 
-See the demo script for examples.
+- **Logging & Output**
+  - `ui.log()`, `ui.error()`, `ui.warn()`, `ui.info()`, `ui.success()`, `ui.text()`
+  - `ui.clear()`
+  - `ui.output.append()`, `ui.output.clear()`
 
----
+- **Dialogs**
+  - `ui.dialog.buttons()`
+  - `ui.dialog.confirm()`
+  - `ui.dialog.textInput()`
+  - `ui.dialog.dateInput()`
+  - `ui.dialog.checkboxes()`
+  - `ui.dialog.radioboxes()`
+  - `ui.dialog.selectRecord()`
+
+- **Output Components**
+  - `ui.show.gridFromJsonArray()`
+  - `ui.show.textBlock()`
+  - `ui.show.progress()`
+
+- **Window Components**
+  - `ui.window.showGrid()`
+  - `ui.window.showText()`
+
+- **Event Subscriptions**
+  - `ui.on.consoleLog(callback)`
+  - `ui.on.consoleError(callback)`
+
+
+## Using `interactive-script-py`
+
+Python scripts must install and import [`interactive-script-py`](https://pypi.org/project/interactive-script-py/).
+
+APIs are similar to the JavaScript version, including:
+
+- **Logging & Output**
+  - `ui.log()`, `ui.error()`, `ui.warn()`, `ui.info()`, `ui.success()`, `ui.text()`
+  - `ui.clear()`
+  - `ui.output.append()`, `ui.output.clear()`
+
+- **Dialogs**
+  - `await ui.dialog.confirm()`
+  - `await ui.dialog.buttons()`
+  - `await ui.dialog.checkboxes()`
+  - `await ui.dialog.radioboxes()`
+  - `await ui.dialog.date_input()`
+  - `await ui.dialog.text_input()`
+  - `await ui.dialog.select_record()`
+
+- **Output Components**
+  - `ui.show.grid_from_list()`
+  - `ui.show.text_block()`
+  - `ui.show.progress()`
+
+- **Window Components**
+  - `ui.window.show_grid()`
+  - `ui.window.show_text()`
+
+- **Event Subscriptions**
+  - `ui.on.console_log(callback)`
+  - `ui.on.console_error(callback)`
+
 
 ## Contributing
 
 Pull requests and feedback are welcome! Please file issues or feature requests via [GitHub Issues](https://github.com/andriy-viyatyk/interactive-script).
 
----
 
 ## License
 
 ISC
-
----
-
-# How to set up a script project with `interactive-script-js`
-
-Follow these steps to create a new script project using **interactive-script-js**.
-
-### 1. Create an empty folder and initialize a Node.js project:
-
-```bash
-mkdir my-script-project
-cd my-script-project
-npm init -y
-```
-
----
-
-## Using **TypeScript**
-
-### 2. Install dependencies:
-
-You’ll need `interactive-script-js` and `ts-node`:
-
-```bash
-npm install interactive-script-js
-npm install --save-dev typescript ts-node
-```
-
-(Alternatively, you can install `ts-node` globally if you plan to run multiple scripts this way: `npm install -g ts-node`)
-
----
-
-### 3. Create a `tsconfig.json` file:
-
-Add this `tsconfig.json` in your project folder:
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
-    "esModuleInterop": true,
-    "strict": true
-  }
-}
-```
-
----
-
-### 4. Create your script: `test.ts`
-
-```ts
-import ui from 'interactive-script-js';
-
-ui.log('Hello World from TypeScript!');
-```
-
-### 5. Run the script from 'Script UI' tab in VSCode (provided by 'Interactive Script' extension):
-
----
-
-## Using **JavaScript**
-
-### 2. Install `interactive-script-js`:
-
-```bash
-npm install interactive-script-js
-```
-
-(no extra tools needed except nodejs)
-
----
-
-### 3. Create your script: `test.js`
-
-Since `interactive-script-js` is compiled as an ES module with a `default` export, use this pattern in CommonJS (Node.js) JavaScript (import ui as default):
-
-```js
-const ui = require('interactive-script-js').default;
-
-ui.log('Hello World from JavaScript!');
-```
-
-That’s it!
-
----
 
