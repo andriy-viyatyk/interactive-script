@@ -6,3 +6,4 @@ node_modules/
 /interactive-script-js/dist/
 /interactive-script-py/interactive_script_py.egg-info/
 __pycache__/
+/interactive-script-py/dist/

@@ -70,7 +70,6 @@ Grids can also be opened programmatically via `ui.window.showGrid(jsonArray)` fr
 - Perfect for creating **internal developer tools** inside VS Code
 - Ideal for building **interactive scripts** that guide users through data selection, queries, and workflows
 - Lets you build **custom UI-driven flows** (dialogs, grids, inputs) without needing to create a full VS Code extension or web app
-- Not intended for rendering rich text documents — behaves more like an **interactive terminal** with UI components rather than a formatted document viewer
 
 ---
 
