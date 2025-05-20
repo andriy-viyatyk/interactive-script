@@ -4,7 +4,22 @@
 
 ---
 
-# Overview: How Interactive Script Works
+# Overview
+
+## Purpose and Main Focus
+
+The "Interactive Script" extension is designed to empower your scripts with essential user interface capabilities, enabling direct interaction with the user within the familiar VS Code environment. It provides a curated set of components and dialogs, transforming otherwise passive scripts into dynamic, interactive tools.
+
+**It's important to understand the core philosophy:** This extension does not aim to be a comprehensive UI builder or a framework for creating arbitrary graphical user interfaces. Developing complex, full-featured UIs is generally beyond the scope of a script's responsibilities and is better handled by dedicated web applications or desktop frameworks.
+
+Instead, "Interactive Script" focuses on **simplicity and practicality**. Its goal is to offer a robust collection of well-designed, useful components and dialogs that enhance the interactivity of your scripts where it truly matters.
+
+Consider a common scenario: your script downloads thousands of entities, and you need to select just a few to proceed. Without "Interactive Script," a developer might have to save these entities to a file, manually search for the needed ones, and then copy them into a separate script or input. With this extension, you can simply call `ui.dialog.selectRecord(entities)`. The entities will be displayed in an interactive grid within the "Script UI" panel, complete with filtering, sorting, and selection functionalities, streamlining your workflow significantly.
+
+The project's primary focus is on providing a straightforward, easy-to-use set of rendered components that offer tangible utility and a clean design, enabling developers to inject interactivity precisely where it enhances their script-driven workflows.
+
+
+## How Interactive Script Works
 
 The "Interactive Script" VS Code extension empowers your scripts to become interactive by establishing a seamless communication channel between your running script and the VS Code "Script UI" panel. This document explains the underlying mechanism that enables this rich interaction.
 
