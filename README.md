@@ -5,6 +5,17 @@
 [![Demo Video](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/demo.gif)](https://github.com/andriy-viyatyk/interactive-script)
 
 
+⚠️ **Important Compatibility Warning** ⚠️
+
+"Interactive Script" relies on external client libraries (`interactive-script-js` for JavaScript/TypeScript and `interactive-script-py` for Python) to enable interactive features.
+
+**It is crucial that the version of your installed client library is compatible with your "Interactive Script" VS Code extension version.**
+
+VS Code extensions update automatically, but client libraries must be updated manually (`npm update` or `pip install --upgrade`). **Incompatible versions may lead to unexpected behavior or breaking changes.**
+
+Please refer to the [**Version Compatibility Guide**](documentation/compatibility.md) for detailed information on matching extension and client library versions. We strongly recommend keeping your client libraries up-to-date with the extension.
+
+
 ## Key Features
 
 - Adds a **"Script UI"** view in the bottom panel of VS Code
@@ -17,6 +28,9 @@
   - Programmatically opening a grid or text block in a central editor tab
   - Progress bars
 - Integrated **interactive grid viewer** that can open JSON or CSV files as a powerful filterable, sortable grid (from button or API)
+
+## Documentation
+[Contents](documentation/documentation.md)
 
 ## How to use
 
