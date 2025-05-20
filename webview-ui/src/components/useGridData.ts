@@ -96,7 +96,7 @@ export function getGridDataWithColumns(
     const gridData = getGridData(jsonData, withSelectColumn);
 
     let data = gridData;
-    if (columns) {
+    if (columns && columns.length) {
         let newColumns = columns.map((column) => {
             const existing = data.columns.find((c) => c.key === column.key);
             const c: Column = {

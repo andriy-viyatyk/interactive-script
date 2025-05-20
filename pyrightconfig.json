@@ -1,0 +1,4 @@
+{
+  "include": ["python-demo"],
+  "extraPaths": ["interactive-script-py"]
+}

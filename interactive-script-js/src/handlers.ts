@@ -2,7 +2,6 @@ import * as readline from "readline";
 
 import { ViewMessage } from "../../shared/ViewMessage";
 import { messageFromString, messageToString } from "./utils";
-import commands from "../../shared/commands";
 
 export function send<T extends ViewMessage>(message: T): T {
     console.log(messageToString(message));

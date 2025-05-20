@@ -4,7 +4,7 @@
   "description": "Provides interactive UI elements for the JS and TS scripts.",
   "publisher": "andriy-viyatyk",
   "author": "Andriy Viyatyk",
-  "version": "1.0.2",
+  "version": "1.0.2-dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/andriy-viyatyk/interactive-script.git"
@@ -98,7 +98,7 @@
       "view/title": [
         {
           "command": "avScriptTools.runScript",
-          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js) && !avScriptTools.scriptRunning",
+          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py) && !avScriptTools.scriptRunning",
           "group": "navigation@1"
         },
         {
@@ -108,7 +108,7 @@
         },
         {
           "command": "avScriptTools.runScriptSeparate",
-          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js)",
+          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py)",
           "group": "navigation@3"
         },
         {

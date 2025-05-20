@@ -1,0 +1,15 @@
+[project]
+name = "interactive-script-py"
+version = "0.1.0"
+description = "A Python library to communicate with 'Interactive Script' VSCode extension."
+authors = [
+    { name="Andriy Viyatyk" }
+]
+readme = "README.md"
+license = { file="ISC" }
+requires-python = ">=3.7"
+dependencies = []
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

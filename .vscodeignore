@@ -7,8 +7,11 @@ webview-ui
 test
 package-lock.json
 interactive-script-js
+interactive-script-py
 shared/
 demo/
+python_demo/
 images/
+pyrightconfig.json
 
 *.map

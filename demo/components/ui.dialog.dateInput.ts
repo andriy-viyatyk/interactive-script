@@ -25,8 +25,6 @@ async function dateInputDemo() {
         .then(" button.")
         .print();
 
-    ui.warn("\nNote that the date is serialized to/from JSON while sending to UI panel and back. So take care of the timezone.");
-
     ui.log("\nAnd you can style title and buttons");
     await ui.dialog.dateInput({
         title: styledText("Styled title").color("lightseagreen").value,
