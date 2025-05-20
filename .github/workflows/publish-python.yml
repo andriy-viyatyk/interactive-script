@@ -10,6 +10,9 @@ jobs:
   build-and-publish:
     name: Build and Publish to PyPI
     runs-on: ubuntu-latest
+    permissions: # <--- ADD THIS BLOCK HERE
+      id-token: write # Needed for OIDC token retrieval by pypa/gh-action-pypi-publish
+      contents: read  # Recommended for actions/checkout
 
     defaults:
       run:
