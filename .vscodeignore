@@ -3,6 +3,7 @@ tsconfig.json
 .vscode
 .git
 .gitignore
+.github
 webview-ui
 test
 package-lock.json
