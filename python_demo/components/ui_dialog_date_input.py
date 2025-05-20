@@ -37,4 +37,5 @@ async def date_input_demo():
 
     ui.log("\nEnd of demo.")
     
-asyncio.run(date_input_demo())
+if __name__ == "__main__":
+    asyncio.run(date_input_demo())

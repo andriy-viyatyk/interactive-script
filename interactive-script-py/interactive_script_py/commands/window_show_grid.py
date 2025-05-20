@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, List, Union
+from typing import Any, List, Mapping, Union
 from ..command import ViewMessage
 from .output_grid import GridData, GridDataParam
     
@@ -7,7 +7,7 @@ from .output_grid import GridData, GridDataParam
 class WindowGridCommand(ViewMessage):
     data: GridData = field(default_factory=GridData)
     
-    def init(self, data: dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data.init(data.get("data", {}))
 

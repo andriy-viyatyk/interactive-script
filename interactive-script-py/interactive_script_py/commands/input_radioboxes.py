@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, TypedDict, Union
+from typing import Any, List, Mapping, Optional, TypedDict, Union
 from ..command import UiText, Styles, ViewMessage
 
 class RadioboxesDataParam(TypedDict, total=False):
@@ -19,7 +19,7 @@ class RadioboxesData:
     resultButton: Optional[str] = None
     bodyStyles: Optional[Styles] = None
     
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         self.items = data.get("items", self.items)
         self.title = data.get("title", self.title)
         self.buttons = data.get("buttons", self.buttons)
@@ -31,7 +31,7 @@ class RadioboxesData:
 class RadioboxesCommand(ViewMessage):
     data: RadioboxesData = field(default_factory=RadioboxesData)
 
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data.init(data.get("data", {}))
 

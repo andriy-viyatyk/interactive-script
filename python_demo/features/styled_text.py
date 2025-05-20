@@ -65,5 +65,13 @@ async def styled_text_demo():
         .then(pressedButton).color("lightseagreen") \
         .then(" button.") \
         .print()
+    
+    ui.log("")
+    ui.text("You can clear all output using ui.clear() command.")
+    pressedButton = await ui.dialog.confirm("Do you want to clear output?");
+    if pressedButton == "Yes":
+        ui.clear()
+        ui.text("Output cleared.")
 
-asyncio.run(styled_text_demo())
+if __name__ == "__main__":
+    asyncio.run(styled_text_demo())

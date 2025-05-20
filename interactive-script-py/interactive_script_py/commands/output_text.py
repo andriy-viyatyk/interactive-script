@@ -19,7 +19,7 @@ class TextData:
 class TextCommand(ViewMessage):
     data: TextData = field(default_factory=TextData)
     
-    def init(self, data: dict):
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data.init(data.get("data", {}))
 

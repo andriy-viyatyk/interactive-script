@@ -26,4 +26,5 @@ async def grid_demo():
     ui.text("You can open grid in main VSCode window by clicking 'Open in separate window' button in the grid title bar.")
     ui.info("Also you can open any json file in a grid using 'AV' button in the top right corner of the VSCode.")
 
-asyncio.run(grid_demo())
+if __name__ == "__main__":
+    asyncio.run(grid_demo())

@@ -19,4 +19,5 @@ async def text_block_demo():
     ui.log("")
     ui.success("End of Demo.")
     
-asyncio.run(text_block_demo())
+if __name__ == "__main__":
+    asyncio.run(text_block_demo())

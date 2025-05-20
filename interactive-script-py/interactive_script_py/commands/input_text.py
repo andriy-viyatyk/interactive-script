@@ -25,7 +25,7 @@ class TextInputData:
 class TextInputCommand(ViewMessage):
     data: TextInputData = field(default_factory=TextInputData)
     
-    def init(self, data: dict):
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data.init(data.get("data", {}))
 

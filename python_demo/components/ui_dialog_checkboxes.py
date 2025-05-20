@@ -65,4 +65,5 @@ async def checkboxes_demo():
     ui.log("")
     ui.success("End of demo.")
     
-asyncio.run(checkboxes_demo())
+if __name__ == "__main__":
+    asyncio.run(checkboxes_demo())

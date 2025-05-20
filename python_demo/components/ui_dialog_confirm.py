@@ -33,4 +33,5 @@ async def confirm_dialog_demo():
         .print()
 
 
-asyncio.run(confirm_dialog_demo())
+if __name__ == "__main__":
+    asyncio.run(confirm_dialog_demo())

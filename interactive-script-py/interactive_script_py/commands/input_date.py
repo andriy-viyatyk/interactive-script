@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional, TypedDict, Union
+from typing import Any, List, Mapping, Optional, TypedDict, Union
 from ..command import UiText, ViewMessage
 
 class DateInputDataParam(TypedDict, total=False):
@@ -16,7 +16,7 @@ class DateInputData:
     result: Optional[date] = None
     resultButton: Optional[str] = None
     
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         self.title = data.get("title", self.title)
         self.buttons = data.get("buttons", self.buttons)
         result_value = data.get("result")
@@ -35,7 +35,7 @@ class DateInputData:
 class DateInputCommand(ViewMessage):
     data: DateInputData = field(default_factory=DateInputData)
     
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data.init(data.get("data", {}))
         

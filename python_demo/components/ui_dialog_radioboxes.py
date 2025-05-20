@@ -72,4 +72,5 @@ async def radioboxes_demo():
     ui.log("")
     ui.success("End of demo.")
 
-asyncio.run(radioboxes_demo())
+if __name__ == "__main__":
+    asyncio.run(radioboxes_demo())

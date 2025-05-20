@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, Mapping, Optional, TypedDict, Union
+from typing import Any, Mapping, Optional, TypedDict, Union
 from ..command import UiText, ViewMessage
 
 class ProgressDataParam(TypedDict, total=False):
@@ -25,7 +25,7 @@ class ProgressData:
 class ProgressCommand(ViewMessage):
     data: ProgressData = field(default_factory=ProgressData)
     
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data.init(data.get("data", {}))
         

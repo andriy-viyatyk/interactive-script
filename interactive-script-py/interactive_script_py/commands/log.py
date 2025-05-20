@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-import json
-from typing import Any, Dict, Literal
-from uuid import uuid4
+from typing import Any, Literal, Mapping
 from ..command import UiText, ViewMessage
 
 
@@ -13,7 +11,7 @@ LogCommandType = Literal[
 class LogCommand(ViewMessage):
     data: UiText = ""
 
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data = data.get("data", self.data)
 

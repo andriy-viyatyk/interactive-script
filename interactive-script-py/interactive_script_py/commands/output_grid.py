@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Mapping, Optional, TypedDict, Union
+from typing import Any, List, Mapping, Optional, TypedDict, Union
 from ..command import UiText, ViewMessage
 
 class GridColumnParam(TypedDict, total=False):
@@ -44,7 +44,7 @@ class GridData:
 class GridCommand(ViewMessage):
     data: GridData = field(default_factory=GridData)
     
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data.init(data.get("data", {}))
         

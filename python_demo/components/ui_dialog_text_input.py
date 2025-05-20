@@ -50,4 +50,5 @@ async def input_text_demo():
     ui.log("")
     ui.success("End of Demo.")
 
-asyncio.run(input_text_demo())
+if __name__ == "__main__":
+    asyncio.run(input_text_demo())

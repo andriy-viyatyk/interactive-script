@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, TypedDict, Union
+from typing import Any, List, Mapping, Optional, TypedDict, Union
 from ..command import UiText, Styles, ViewMessage
 
 class ButtonsDataParam(TypedDict, total=False):
@@ -12,8 +12,8 @@ class ButtonsData:
     buttons: List[UiText] = field(default_factory=lambda: ["Proceed"])
     bodyStyles: Optional[Styles] = None
     result: Optional[str] = None
-    
-    def init(self, data: Dict[str, Any]):
+
+    def init(self, data: Mapping[str, Any]):
         self.buttons = data.get("buttons", self.buttons)
         self.bodyStyles = data.get("bodyStyles", self.bodyStyles)
         self.result = data.get("result", self.result)
@@ -22,7 +22,7 @@ class ButtonsData:
 class ButtonsCommand(ViewMessage):
     data: ButtonsData = field(default_factory=ButtonsData)
     
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data.init(data.get("data", {}))
         

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Optional, TypedDict, Union
-from ..command import UiText, ViewMessage
+from ..command import ViewMessage
 
 class WindowTextDataParam(TypedDict, total=False):
     text: str
@@ -19,7 +19,7 @@ class WindowTextData:
 class WindowTextCommand(ViewMessage):
     data: WindowTextData = field(default_factory=WindowTextData)
     
-    def init(self, data: dict):
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data.init(data.get("data", {}))
         

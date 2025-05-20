@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, TypedDict, Union
+from typing import Any, List, Mapping, Optional, TypedDict, Union
 from ..command import UiText, ViewMessage
 
 class ConfirmDataParam(TypedDict, total=False):
@@ -15,7 +15,7 @@ class ConfirmData:
     buttons: Optional[List[UiText]] = field(default_factory=lambda: ["Cancel", "Yes"])
     result: Optional[str] = None
 
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         self.title = data.get("title", self.title)
         self.message = data.get("message", self.message)
         self.buttons = data.get("buttons", self.buttons)
@@ -25,7 +25,7 @@ class ConfirmData:
 class ConfirmCommand(ViewMessage):
     data: ConfirmData = field(default_factory=ConfirmData)
 
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data.init(data.get("data", {}))
 

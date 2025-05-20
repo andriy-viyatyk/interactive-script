@@ -1,7 +1,7 @@
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime
 import json
-from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, TypedDict, Union
+from typing import Any, Dict, List, Literal, Mapping, Optional, TypeVar, TypedDict, Union
 from uuid import uuid4
 
 # ──────── COMMAND TYPES ────────
@@ -79,7 +79,7 @@ class ViewMessage:
         except AttributeError:
             raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
     
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         self.command = data.get("command", "")
         self.commandId = data.get("commandId", "")
         self.isEvent = data.get("isEvent", False)

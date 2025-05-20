@@ -31,4 +31,5 @@ async def progress_demo():
     ui.log("")
     ui.log("Progress demo completed!")
 
-asyncio.run(progress_demo())
+if __name__ == "__main__":
+    asyncio.run(progress_demo())

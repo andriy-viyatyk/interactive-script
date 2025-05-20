@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, TypedDict, Union
+from typing import Any, List, Mapping, Optional, TypedDict, Union
 from ..command import UiText, Styles, ViewMessage
 
 class CheckboxItemParam(TypedDict, total=False):
@@ -19,7 +19,7 @@ class CheckboxItem:
     label: UiText = ""
     checked: Optional[bool] = None
 
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         self.label = data.get("label", self.label)
         self.checked = data.get("checked", self.checked)
 
@@ -32,7 +32,7 @@ class CheckboxesData:
     resultButton: str = ""
     bodyStyles: Optional[Styles] = None
 
-    def init(self, data: Dict[str, Any]):
+    def init(self, data: Mapping[str, Any]):
         data_items = data.get("items", [])
         self.items = []
         for item_data in data_items:
@@ -48,8 +48,8 @@ class CheckboxesData:
 @dataclass
 class CheckboxesCommand(ViewMessage):
     data: CheckboxesData = field(default_factory=CheckboxesData)
-    
-    def init(self, data: Dict[str, Any]):
+
+    def init(self, data: Mapping[str, Any]):
         super().init(data)
         self.data.init(data.get("data", {}))
         

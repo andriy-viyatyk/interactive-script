@@ -38,4 +38,5 @@ async def buttons_demo():
 
     ui.success("\nDemo completed.")
 
-asyncio.run(buttons_demo())
+if __name__ == "__main__":
+    asyncio.run(buttons_demo())

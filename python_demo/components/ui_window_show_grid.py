@@ -17,4 +17,5 @@ async def window_show_grid_demo():
     ui.log("")
     ui.success("End of demo.")
 
-asyncio.run(window_show_grid_demo())
+if __name__ == "__main__":
+    asyncio.run(window_show_grid_demo())
