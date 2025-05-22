@@ -1,147 +1,196 @@
 {
-  "name": "interactive-script",
-  "displayName": "Interactive Script",
-  "description": "Provides interactive UI elements for the JS and TS scripts.",
-  "publisher": "andriy-viyatyk",
-  "author": "Andriy Viyatyk",
-  "version": "1.0.3-dev",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/andriy-viyatyk/interactive-script.git"
-  },
-  "icon": "icon.png",
-  "engines": {
-    "vscode": "^1.70.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onCommand:avScriptTools.showGrid"
-  ],
-  "main": "./out/src/extension.js",
-  "contributes": {
-    "viewsContainers": {
-      "panel": [{
-        "id": "avScriptTools-script-ui",
-        "title": "Script UI",
-        "icon": "./icons/av.svg"
-      }]
+    "name": "interactive-script",
+    "displayName": "Interactive Script",
+    "description": "Provides interactive UI elements for the JS and TS scripts.",
+    "publisher": "andriy-viyatyk",
+    "author": "Andriy Viyatyk",
+    "version": "1.0.4-dev",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/andriy-viyatyk/interactive-script.git"
     },
-    "views": {
-      "avScriptTools-script-ui": [
-        {
-          "id": "avScriptTools.bottomPanel",
-          "name": "Script UI",
-          "contextualTitle": "Script UI",
-          "type": "webview",
-          "when": "true",
-          "icon": "./icons/av.svg"
-        }
-      ]
+    "icon": "icon.png",
+    "engines": {
+        "vscode": "^1.70.0"
     },
-    "commands": [
-      {
-        "command": "avScriptTools.showGrid",
-        "title": "Show Grid",
-        "category": "Interactive Script",
-        "icon": {
-          "light": "./icons/av.svg",
-          "dark": "./icons/av.svg"
-        }
-      },
-      {
-        "command": "avScriptTools.runScript",
-        "title": "Run Script",
-        "category": "Interactive Script",
-        "icon": {
-          "light": "./icons/arrowRight.svg",
-          "dark": "./icons/arrowRight.svg"
-        }
-      },
-      {
-        "command": "avScriptTools.runScriptSeparate",
-        "title": "Run Script Separate",
-        "category": "Interactive Script",
-        "icon": {
-          "light": "./icons/arrowUp.svg",
-          "dark": "./icons/arrowUp.svg"
-        }
-      },
-      {
-        "command": "avScriptTools.stopScript",
-        "title": "Stop Script",
-        "category": "Interactive Script",
-        "icon": {
-          "light": "./icons/stop.svg",
-          "dark": "./icons/stop.svg"
-        }
-      },
-      {
-        "command": "avScriptTools.clearConsole",
-        "title": "Clear Console",
-        "category": "Interactive Script",
-        "icon": {
-          "light": "./icons/clear-console.svg",
-          "dark": "./icons/clear-console.svg"
-        }
-      }
+    "categories": [
+        "Other"
     ],
-    "menus": {
-      "editor/title": [
-        {
-          "command": "avScriptTools.showGrid",
-          "when": "resourceExtname == .json || resourceExtname == .csv",
-          "group": "navigation"
+    "activationEvents": [
+        "onCommand:interactiveScript.showGrid"
+    ],
+    "main": "./out/src/extension.js",
+    "contributes": {
+        "viewsContainers": {
+            "panel": [
+                {
+                    "id": "interactiveScript-script-ui",
+                    "title": "Script UI",
+                    "icon": "./icons/av.svg"
+                }
+            ]
+        },
+        "views": {
+            "interactiveScript-script-ui": [
+                {
+                    "id": "interactiveScript.bottomPanel",
+                    "name": "Script UI",
+                    "contextualTitle": "Script UI",
+                    "type": "webview",
+                    "when": "true",
+                    "icon": "./icons/av.svg"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "interactiveScript.showGrid",
+                "title": "Show Grid",
+                "category": "Interactive Script",
+                "icon": {
+                    "light": "./icons/av.svg",
+                    "dark": "./icons/av.svg"
+                }
+            },
+            {
+                "command": "interactiveScript.runScript",
+                "title": "Run Script",
+                "category": "Interactive Script",
+                "icon": {
+                    "light": "./icons/arrowRight.svg",
+                    "dark": "./icons/arrowRight.svg"
+                }
+            },
+            {
+                "command": "interactiveScript.runScriptSeparate",
+                "title": "Run Script Separate",
+                "category": "Interactive Script",
+                "icon": {
+                    "light": "./icons/arrowUp.svg",
+                    "dark": "./icons/arrowUp.svg"
+                }
+            },
+            {
+                "command": "interactiveScript.stopScript",
+                "title": "Stop Script",
+                "category": "Interactive Script",
+                "icon": {
+                    "light": "./icons/stop.svg",
+                    "dark": "./icons/stop.svg"
+                }
+            },
+            {
+                "command": "interactiveScript.clearConsole",
+                "title": "Clear Console",
+                "category": "Interactive Script",
+                "icon": {
+                    "light": "./icons/clear-console.svg",
+                    "dark": "./icons/clear-console.svg"
+                }
+            },
+            {
+                "command": "interactiveScript.openSettings",
+                "title": "Open Interactive Script Settings",
+                "icon": "$(gear)", 
+                "category": "Interactive Script"
+            }
+        ],
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "interactiveScript.showGrid",
+                    "when": "resourceExtname == .json || resourceExtname == .csv",
+                    "group": "navigation"
+                }
+            ],
+            "view/title": [
+                {
+                    "command": "interactiveScript.runScript",
+                    "when": "view == interactiveScript.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py) && !interactiveScript.scriptRunning",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "interactiveScript.stopScript",
+                    "when": "view == interactiveScript.bottomPanel && interactiveScript.scriptRunning",
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "interactiveScript.runScriptSeparate",
+                    "when": "view == interactiveScript.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py)",
+                    "group": "navigation@3"
+                },
+                {
+                    "command": "interactiveScript.clearConsole",
+                    "when": "view == interactiveScript.bottomPanel",
+                    "group": "navigation@4"
+                },
+                {
+                    "command": "interactiveScript.openSettings",
+                    "when": "view == interactiveScript.bottomPanel",
+                    "group": "navigation@5"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "Interactive Script Settings",
+            "properties": {
+                "interactiveScript.workingDirectory": {
+                    "type": "string",
+                    "default": "workspace",
+                    "enum": [
+                        "workspace",
+                        "file"
+                    ],
+                    "markdownDescription": "Specifies the working directory for script execution.",
+                    "enumDescriptions": [
+                        "Uses the VS Code workspace folder as the working directory.",
+                        "Uses the directory of the currently running script as the working directory."
+                    ]
+                },
+                "interactiveScript.pythonPathSource": {
+                    "type": "string",
+                    "enum": [
+                        "extension",
+                        "manual"
+                    ],
+                    "default": "extension",
+                    "markdownDescription": "Determines how the Python executable path is resolved.",
+                    "enumDescriptions": [
+                        "Automatically uses the Python extension (ms-python.python) to determine the path.",
+                        "Manually specify the path to the Python executable."
+                    ]
+                },
+                "interactiveScript.manualPythonPath": {
+                    "type": "string",
+                    "default": "python",
+                    "markdownDescription": "Manually specify the full path to the Python executable. This path is used when 'Python Path Source' is set to 'manual', or as a fallback if the Python extension (ms-python.python) is not found or fails to provide a path."
+                }
+            }
         }
-      ],
-      "view/title": [
-        {
-          "command": "avScriptTools.runScript",
-          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py) && !avScriptTools.scriptRunning",
-          "group": "navigation@1"
-        },
-        {
-          "command": "avScriptTools.stopScript",
-          "when": "view == avScriptTools.bottomPanel && avScriptTools.scriptRunning",
-          "group": "navigation@2"
-        },
-        {
-          "command": "avScriptTools.runScriptSeparate",
-          "when": "view == avScriptTools.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py)",
-          "group": "navigation@3"
-        },
-        {
-          "command": "avScriptTools.clearConsole",
-          "when": "view == avScriptTools.bottomPanel",
-          "group": "navigation@4"
-        }
-      ]
+    },
+    "scripts": {
+        "vscode:prepublish": "tsc -p ./",
+        "compile": "tsc -p ./",
+        "start": "tsc -watch -p ./",
+        "build": "vsce package"
+    },
+    "devDependencies": {
+        "@types/node": "^18.0.0",
+        "@types/vscode": "^1.70.0",
+        "typescript": "^5.0.0"
+    },
+    "keywords": [
+        "interactive",
+        "script",
+        "script runner",
+        "typescript",
+        "javascript",
+        "json",
+        "grid",
+        "preview"
+    ],
+    "license": "ISC",
+    "dependencies": {
+        "uuid": "^11.1.0"
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "tsc -p ./",
-    "compile": "tsc -p ./",
-    "start": "tsc -watch -p ./",
-    "build": "vsce package"
-  },
-  "devDependencies": {
-    "@types/node": "^18.0.0",
-    "@types/vscode": "^1.70.0",
-    "typescript": "^5.0.0"
-  },
-  "keywords": [
-    "interactive",
-    "script",
-    "script runner",
-    "typescript",
-    "javascript",
-    "json",
-    "grid",
-    "preview"
-  ],
-  "license": "ISC",
-  "dependencies": {
-    "uuid": "^11.1.0"
-  }
 }

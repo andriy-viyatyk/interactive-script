@@ -21,6 +21,7 @@ import { isOnConsoleCommand, isOnConsoleLogCommand, OnConsoleCommand } from "../
 import { isOutputClearCommand, isOutputCommand } from "../../shared/commands/output";
 import { clearOutput, writeOutput } from "../utils/output-channel";
 import { getPythonPath } from "../utils/python-utils";
+import { WorkingDirectoryType } from "../types";
 
 export class RunningProcess extends vscode.Disposable {
     private child: cp.ChildProcessWithoutNullStreams | null = null;
@@ -143,7 +144,6 @@ export class RunningProcess extends vscode.Disposable {
     private sendToProcess = (message: ViewMessage<any>) => {
         if (this.child) {
             const line = `${commandLine}${JSON.stringify(message)}\n`;
-            console.log("sendToProcess", line);
             this.child.stdin.write(line);
         }
     }
@@ -180,10 +180,15 @@ export class RunningProcess extends vscode.Disposable {
             ])
         );
 
+        const config = vscode.workspace.getConfiguration('interactiveScript');
+        const workingDirectoryOption = config.get<WorkingDirectoryType>('workingDirectory');
+
         let workDirectory = path.dirname(filePath);
-        const workspaceFolders = vscode.workspace.workspaceFolders;
-        if (workspaceFolders && workspaceFolders.length > 0) {
-            workDirectory = workspaceFolders[0].uri.fsPath;
+        if (workingDirectoryOption !== "file") {
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (workspaceFolders && workspaceFolders.length > 0) {
+                workDirectory = workspaceFolders[0].uri.fsPath;
+            }
         }
 
         this.child = cp.spawn(`"${command}"`, [`"${filePath}"`], {
@@ -219,9 +224,9 @@ export class RunningProcess extends vscode.Disposable {
                     } else {
                         this.onConsoleError = commandObj;
                     }
-                } if (isOutputCommand(commandObj)) {
+                } else if (isOutputCommand(commandObj)) {
                     writeOutput(commandObj.data ?? "");
-                } if (isOutputClearCommand(commandObj)) {
+                } else if (isOutputClearCommand(commandObj)) {
                     clearOutput();
                 } else {
                     this.view?.messageToOutput(commandObj);

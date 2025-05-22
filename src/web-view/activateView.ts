@@ -6,7 +6,7 @@ import { json } from 'stream/consumers';
 
 export function activateView(context: vscode.ExtensionContext) {
     const disposeGridView = vscode.commands.registerCommand(
-        "avScriptTools.showGrid",
+        "interactiveScript.showGrid",
         () => {
             const editor = vscode.window.activeTextEditor;
             if (!editor) {
@@ -42,7 +42,7 @@ export function activateView(context: vscode.ExtensionContext) {
     // Register the webview view provider for the bottom panel
     const outputView = views.createView(context, "output");
     const disposeOutputView = vscode.window.registerWebviewViewProvider(
-        "avScriptTools.bottomPanel",
+        "interactiveScript.bottomPanel",
         outputView,
         {
             webviewOptions: { retainContextWhenHidden: true },

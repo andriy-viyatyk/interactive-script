@@ -15,6 +15,6 @@
 
 ### Getting Started
 
-If you're new to "Interactive Script", we recommend starting with the [Installation Guide](installation.md) to set up your environment, then moving on to the [Overview](overview.md) and [Key Features](features.md) to understand its core capabilities. Don't forget to review the [Version Compatibility Guide](compatibility.md)!
+If you're new to "Interactive Script", we recommend starting with the [Installation Guide](installation.md) to set up your environment, then moving on to the [Overview](overview.md) and [API Reference](api.md) to understand its core capabilities. Don't forget to review the [Version Compatibility Guide](compatibility.md)!
 
 We hope this documentation helps you get the most out of "Interactive Script"! If you have any questions or encounter issues, please open an issue on our [GitHub repository](https://github.com/andriy-viyatyk/interactive-script/issues).

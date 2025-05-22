@@ -75,9 +75,13 @@ export function CommandDateInputView({
     replayMessage,
     updateMessage,
 }: Readonly<CommandDateInputViewProps>) {
-    const [date, setDate] = useState<Date | null>(
-        new Date(item.data?.result || Date.now())
-    );
+    const [date, setDate] = useState<Date | null>(() => {
+        if (item.data?.result) {
+            return new Date(item.data.result);
+        }
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    });
     const disabled = Boolean(item.data?.resultButton);
 
     const buttonClick = (button: string) => {

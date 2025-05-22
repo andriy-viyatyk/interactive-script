@@ -115,7 +115,7 @@ export class WebView implements vscode.WebviewViewProvider {
 
     private createPanel = (title: UiText, iconPath: vscode.Uri, webViewInput: WebViewInput, column: vscode.ViewColumn) => {
         const panel = vscode.window.createWebviewPanel(
-            "avScriptTools",
+            "interactiveScript",
             uiTextToString(title),
             column,
             {

@@ -21,7 +21,7 @@ export function activateCodeRunner(context: vscode.ExtensionContext) {
     }
 
     const runTsFileDisposable = vscode.commands.registerCommand(
-        "avScriptTools.runScript",
+        "interactiveScript.runScript",
         () => {
             const filePath = getActiveScriptFile();
             if (filePath) {
@@ -31,7 +31,7 @@ export function activateCodeRunner(context: vscode.ExtensionContext) {
     );
 
     const runTsFileSeparateDisposable = vscode.commands.registerCommand(
-        "avScriptTools.runScriptSeparate",
+        "interactiveScript.runScriptSeparate",
         () => {
             const filePath = getActiveScriptFile();
             if (filePath) {
@@ -41,14 +41,14 @@ export function activateCodeRunner(context: vscode.ExtensionContext) {
     );
 
     const stopTsFileDisposable = vscode.commands.registerCommand(
-        "avScriptTools.stopScript",
+        "interactiveScript.stopScript",
         () => {
             codeRunner.stop();
         }
     );
 
     const clearConsoleDisposable = vscode.commands.registerCommand(
-        "avScriptTools.clearConsole",
+        "interactiveScript.clearConsole",
         () => {
             codeRunner.clear();
         }

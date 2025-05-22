@@ -1,9 +1,19 @@
 import * as vscode from "vscode";
+import { PythonPathSource } from "../types";
 
 export async function getPythonPath() {
+    const config = vscode.workspace.getConfiguration('interactiveScript');
+    const pythonPathSource = config.get<PythonPathSource>('pythonPathSource');
+    const manualPythonPath = config.get<string>('manualPythonPath');
+    const manualPath = manualPythonPath || "python"; // fallback
+
+    if (pythonPathSource === "manual") {
+        return manualPath;
+    }
+
     const pythonExtension = vscode.extensions.getExtension("ms-python.python");
     if (!pythonExtension) {
-        return "python"; // fallback
+        return manualPath;
     }
     if (!pythonExtension.isActive) {
         await pythonExtension.activate();
@@ -14,6 +24,6 @@ export async function getPythonPath() {
         return pythonPath;
     } catch (error) {
         console.error("Error getting Python path:", error);
-        return "python"; // fallback
+        return manualPath;
     }
 }

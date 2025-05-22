@@ -14,5 +14,7 @@ demo/
 python_demo/
 images/
 pyrightconfig.json
+documentation
+build
 
 *.map
