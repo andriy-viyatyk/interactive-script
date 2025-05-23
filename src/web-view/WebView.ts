@@ -9,8 +9,14 @@ import { UiText, uiTextToString, ViewMessage } from "../../shared/ViewMessage";
 import { isViewReadyCommand } from "../../shared/commands/view-ready";
 import { isScriptStartCommand } from "../../shared/commands/script";
 import codeRunner from "../code-runner/CodeRunner";
-import { isWindowGridCommand, isWindowTextCommand } from "../../shared/commands/window";
-import { handleWindowGridCommand, handleWindowTextCommand } from "../utils/common-commands";
+import {
+    isWindowGridCommand,
+    isWindowTextCommand,
+} from "../../shared/commands/window";
+import {
+    handleWindowGridCommand,
+    handleWindowTextCommand,
+} from "../utils/common-commands";
 
 export interface ViewPanel {
     viewType: string;
@@ -36,7 +42,7 @@ export class WebView implements vscode.WebviewViewProvider {
     onOutputMessage = new Subscription<ViewMessage<any>>();
     onDispose = new Subscription<void>();
     private onReady: (() => void) | undefined;
-    whenReady = new Promise<void>(resolve => {
+    whenReady = new Promise<void>((resolve) => {
         this.onReady = resolve;
     });
 
@@ -47,7 +53,7 @@ export class WebView implements vscode.WebviewViewProvider {
 
     messageToOutput = (message: ViewMessage<any>) => {
         this.panel?.webview.postMessage(message);
-    }
+    };
 
     private handleMessage = (message: ViewMessage<any>) => {
         if (message?.command) {
@@ -76,25 +82,27 @@ export class WebView implements vscode.WebviewViewProvider {
 
             this.onOutputMessage.send(message);
         }
-    }
+    };
 
     private panelCreated = () => {
         const subscriptions: vscode.Disposable[] = [];
-        const messageSubscription =  this.panel?.webview.onDidReceiveMessage(this.handleMessage);
+        const messageSubscription = this.panel?.webview.onDidReceiveMessage(
+            this.handleMessage
+        );
         if (messageSubscription) {
             subscriptions.push(messageSubscription);
         }
 
         const disposeSubscription = this.panel?.onDidDispose(() => {
-           subscriptions.forEach((s) => s.dispose());
-           this.onDispose.send();
+            subscriptions.forEach((s) => s.dispose());
+            this.onDispose.send();
         });
         if (disposeSubscription) {
             subscriptions.push(disposeSubscription);
         }
 
         this.onPanel.send(this);
-    }
+    };
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
         this.type = "output";
@@ -113,7 +121,12 @@ export class WebView implements vscode.WebviewViewProvider {
         this.panelCreated();
     }
 
-    private createPanel = (title: UiText, iconPath: vscode.Uri, webViewInput: WebViewInput, column: vscode.ViewColumn) => {
+    private createPanel = (
+        title: UiText,
+        iconPath: vscode.Uri,
+        webViewInput: WebViewInput,
+        column: vscode.ViewColumn
+    ) => {
         const panel = vscode.window.createWebviewPanel(
             "interactiveScript",
             uiTextToString(title),
@@ -121,6 +134,11 @@ export class WebView implements vscode.WebviewViewProvider {
             {
                 enableScripts: true,
                 retainContextWhenHidden: true,
+                localResourceRoots: [
+                    vscode.Uri.file(
+                        path.join(this.context.extensionUri.fsPath, "media")
+                    ),
+                ],
             }
         );
         this.panel = panel;
@@ -129,19 +147,24 @@ export class WebView implements vscode.WebviewViewProvider {
 
         this.panelCreated();
         return panel;
-    }
+    };
 
-    createGridPanel = (title: UiText, data: any, columns?: GridColumn[], isCsv?: boolean) => {
+    createGridPanel = (
+        title: UiText,
+        data: any,
+        columns?: GridColumn[],
+        isCsv?: boolean
+    ) => {
         this.type = "grid";
         this.createPanel(
             title,
-                vscode.Uri.file(
+            vscode.Uri.file(
                 path.join(this.context.extensionPath, "icons", "av.svg") // Path to your icon
             ),
             {
                 viewType: "grid",
                 gridInput: {
-                    jsonData: isCsv ? undefined :data,
+                    jsonData: isCsv ? undefined : data,
                     csvData: isCsv ? data : undefined,
                     gridColumns: columns,
                     gridTitle: title,
@@ -170,7 +193,7 @@ export class WebView implements vscode.WebviewViewProvider {
             },
             vscode.ViewColumn.Two
         );
-    }
+    };
 
     private readonly createPanelHtml = (
         panel: ViewPanel,
@@ -189,24 +212,11 @@ export class WebView implements vscode.WebviewViewProvider {
         // Read the manifest file
         const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
 
-        const scriptUri = panel.webview.asWebviewUri(
-            vscode.Uri.file(
-                path.join(
-                    this.context.extensionUri.fsPath,
-                    "media",
-                    manifest["index.html"].file
-                )
-            )
+        const mediaBaseUri = panel.webview.asWebviewUri(
+            vscode.Uri.file(path.join(this.context.extensionUri.fsPath, "media"))
         );
-        const styleUri = panel.webview.asWebviewUri(
-            vscode.Uri.file(
-                path.join(
-                    this.context.extensionUri.fsPath,
-                    "media",
-                    manifest["index.html"].css[0]
-                )
-            )
-        );
+        const scriptFileName = manifest["index.html"].file;
+        const styleFileName = manifest["index.html"].css[0];
 
         panel.webview.html = `
             <!DOCTYPE html>
@@ -215,14 +225,15 @@ export class WebView implements vscode.WebviewViewProvider {
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <title>JSON Grid</title>
-              <link href="${styleUri}" rel="stylesheet">
+              <base href="${mediaBaseUri.toString()}/">
+              <link href="${styleFileName}" rel="stylesheet">
               <script>
                 window.appInput = ${jsonStr};
               </script>
             </head>
             <body>
               <div id="root"></div>
-              <script type="module" src="${scriptUri}"></script>
+              <script type="module" src="${scriptFileName}"></script>
             </body>
             </html>
           `;

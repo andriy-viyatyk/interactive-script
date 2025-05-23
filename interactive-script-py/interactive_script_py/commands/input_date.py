@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import date, datetime
+from dateutil import tz
 from typing import Any, List, Mapping, Optional, TypedDict, Union
 from ..command import UiText, ViewMessage
 
@@ -23,7 +24,14 @@ class DateInputData:
         if isinstance(result_value, str):
             try:
                 dt_object = datetime.fromisoformat(result_value) if result_value else None
-                self.result = dt_object.date() if dt_object else None
+                
+                if dt_object:
+                    local_timezone = tz.tzlocal()
+                    dt_local = dt_object.astimezone(local_timezone)
+                    self.result = dt_local.date()
+                else:
+                    self.result = None
+
             except ValueError:
                 print(f"Warning: Could not parse '{result_value}' as an ISO date. Setting result to None.")
                 self.result = None

@@ -31,6 +31,7 @@ interface TextAreaFieldProps
     value?: string;
     onChange?: (value: string) => void;
     singleLine?: boolean;
+    readonly?: boolean;
 }
 
 export interface TextAreaFieldRef {
@@ -39,15 +40,24 @@ export interface TextAreaFieldRef {
     getText: () => string;
 }
 
+function innerTextToString(text: string): string {
+    if (text === "\n") {
+        return "";
+    } else if (text.endsWith("\n\n")) {
+        return text.slice(0, -1);
+    }
+    return text;
+}
+
 export const TextAreaField = forwardRef<TextAreaFieldRef, TextAreaFieldProps>(
     (props, ref) => {
-        const { value, onChange, singleLine, ...divProps } = props;
+        const { value, onChange, singleLine, readonly, ...divProps } = props;
         const textAreaRef = useRef<HTMLDivElement>(null);
 
         React.useEffect(() => {
             if (
                 textAreaRef.current &&
-                textAreaRef.current.innerText !== value
+                innerTextToString(textAreaRef.current.innerText) !== value
             ) {
                 textAreaRef.current.innerText = value ?? "";
             }
@@ -59,9 +69,10 @@ export const TextAreaField = forwardRef<TextAreaFieldRef, TextAreaFieldProps>(
                 if (singleLine && text.includes("\n")) {
                     text = text.replace(/\n/g, ""); // Remove line breaks
                     e.currentTarget.innerText = text; // Update the text content
+                } else {
+                    text = innerTextToString(text);
                 }
-                const fixedSpaces = text.replace(/\u00A0/g, " ");
-                onChange?.(fixedSpaces);
+                onChange?.(text);
             },
             [onChange, singleLine]
         );
@@ -130,7 +141,7 @@ export const TextAreaField = forwardRef<TextAreaFieldRef, TextAreaFieldProps>(
                 onPaste={handlePaste}
                 onKeyDown={handleKeyDown}
                 role="textarea"
-                contentEditable
+                contentEditable={readonly ? false : "plaintext-only"}
                 spellCheck={false}
                 {...divProps}
                 tabIndex={divProps.tabIndex ?? 0}

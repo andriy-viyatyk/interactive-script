@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { GridCommand } from "../../../../../shared/commands/output-grid";
 import { getRowKey, useGridDataWithColumns } from "../../useGridData";
 import AVGrid from "../../../controls/AVGrid/AVGrid";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { CellFocus } from "../../../controls/AVGrid/avGridTypes";
 import { Button } from "../../../controls/Button";
 import { CloseIcon, OpenWindowIcon, SearchIcon } from "../../../theme/icons";
@@ -14,6 +14,7 @@ import { TextField } from "../../../controls/TextField";
 import color from "../../../theme/color";
 import { HighlightedTextProvider } from "../../../controls/useHighlightedText";
 import { useGridSearchHeight } from "./useGridSearchHeight";
+import { useItemState } from "../OutputViewContext";
 
 const CommandGridViewRoot = styled(OutputDialog)({
     position: "relative",
@@ -53,9 +54,9 @@ export function CommandGridView({
     sendMessage,
 }: Readonly<CommandGridViewProps>) {
     const data = useGridDataWithColumns(item.data?.data, item.data?.columns);
-    const [focus, setFocus] = useState<CellFocus | undefined>(undefined);
+    const [focus, setFocus] = useItemState<CellFocus | undefined>(item.commandId, "focus", undefined);
     const { search, setSearch, gridWrapperRef, gridWrapperHeight } =
-        useGridSearchHeight();
+        useGridSearchHeight(item.commandId);
     const searchRef = useRef<HTMLInputElement>(null);
 
     const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
@@ -130,6 +131,7 @@ export function CommandGridView({
                         growToWidth="100%"
                         searchString={search}
                         disableFiltering
+                        scrollToFocus
                     />
                 </HighlightedTextProvider>
             </div>

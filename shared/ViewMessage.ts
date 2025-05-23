@@ -71,7 +71,11 @@ export function uiTextToString(uiText?: UiText): string {
         return uiText;
     }
 
-    return uiText
-        .map((block) => (typeof block === "string" ? block : block.text))
-        .join("");
+    if (Array.isArray(uiText)) {
+        return uiText
+            .map((block) => (typeof block === "string" ? block : block.text))
+            .join("");
+    }
+
+    return "";
 }

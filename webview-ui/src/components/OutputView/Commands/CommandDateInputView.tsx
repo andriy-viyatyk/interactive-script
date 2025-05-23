@@ -1,7 +1,6 @@
-import { useState } from "react";
 import styled from "@emotion/styled";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
 
 import { DateInputCommand } from "../../../../../shared/commands/input-date";
 import { ViewMessage } from "../../../../../shared/ViewMessage";
@@ -10,6 +9,8 @@ import { OutputDialogHeader } from "../OutputDialog/OutputDialogHeader";
 import { OutputDialogButtons } from "../OutputDialog/OutputDialogButtons";
 import color from "../../../theme/color";
 import clsx from "clsx";
+import { useItemState } from "../OutputViewContext";
+import AsyncComponent from "../../../controls/AsyncComponent";
 
 const CommandDateInputViewRoot = styled(OutputDialog)({
     "&.disabled .react-datepicker": {
@@ -59,7 +60,11 @@ const CommandDateInputViewRoot = styled(OutputDialog)({
         outline: `1px solid ${color.border.default}`,
         backgroundColor: "inherit",
     },
-    " .react-datepicker__day--selected:hover": {
+    "& .react-datepicker__day:not(.react-datepicker__day--selected):hover": {
+        outline: `1px solid ${color.border.default}`,
+        backgroundColor: "inherit",
+    },
+    "& .react-datepicker__day--selected:hover": {
         backgroundColor: color.background.selection,
     },
 });
@@ -68,20 +73,20 @@ interface CommandDateInputViewProps {
     item: DateInputCommand;
     replayMessage: (message: ViewMessage) => void;
     updateMessage: (message: ViewMessage) => void;
+    onCheckSize?: () => void;
 }
 
 export function CommandDateInputView({
     item,
     replayMessage,
     updateMessage,
+    onCheckSize,
 }: Readonly<CommandDateInputViewProps>) {
-    const [date, setDate] = useState<Date | null>(() => {
-        if (item.data?.result) {
-            return new Date(item.data.result);
-        }
-        const now = new Date();
-        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    });
+    const [date, setDate] = useItemState<Date | null>(
+        item.commandId,
+        "date",
+        null,
+    );
     const disabled = Boolean(item.data?.resultButton);
 
     const buttonClick = (button: string) => {
@@ -103,16 +108,26 @@ export function CommandDateInputView({
             active={!disabled}
         >
             <OutputDialogHeader title={item.data?.title} />
-            <DatePicker
-                selected={date}
-                onChange={(date) => setDate(date)}
-                inline
+            <AsyncComponent
+                component={async () => {
+                    await import("react-datepicker/dist/react-datepicker.css");
+                    const mod = await import("react-datepicker");
+                    return mod.default;
+                }}
+                props={{
+                    selected: date,
+                    onChange: (date: Date | null) => setDate(date),
+                    inline: true,
+                }}
+                onMount={onCheckSize}
             />
             <OutputDialogButtons
                 buttons={item.data?.buttons}
-                defaultButtons={["Cancel", "Proceed"]}
+                defaultButtons={["!Proceed"]}
                 resultButton={item.data?.resultButton}
                 onClick={buttonClick}
+                required={!date}
+                requiredHint="Please select a date"
             />
         </CommandDateInputViewRoot>
     );

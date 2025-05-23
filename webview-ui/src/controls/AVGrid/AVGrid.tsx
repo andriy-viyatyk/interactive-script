@@ -218,11 +218,17 @@ export interface AVGridProps<R> {
     readonly?: boolean;
     filters?: TFilter[];
     onVisibleRowsChanged?: () => void;
+    scrollToFocus?: boolean;
 }
+
+export type AVGridRef = {
+    context: TAVGridContext;
+    gridRef: RenderGridModel | null;
+};
 
 function AVGridComponent<R = any>(
     props: AVGridProps<R>,
-    ref?: RefType<TAVGridContext | undefined>
+    ref?: RefType<AVGridRef | undefined>
 ) {
     const {
         className,
@@ -250,6 +256,7 @@ function AVGridComponent<R = any>(
         readonly,
         filters,
         onVisibleRowsChanged,
+        scrollToFocus,
     } = props;
 
     const renderGridRef = useRef<RenderGridModel>(null);
@@ -423,7 +430,19 @@ function AVGridComponent<R = any>(
         ]
     );
 
-    useImperativeHandle(ref, () => context);
+    useImperativeHandle(ref, () => ({
+        context,
+        gridRef: renderGridRef.current,
+    }));
+
+    useEffect(() => {
+        if (scrollToFocus && focus && focus.rowKey) {
+            const rowIndex = rows.findIndex((row) => getRowKey(row) === focus.rowKey);
+            if (rowIndex >= 0) {
+                renderGridRef.current?.scrollToRow(rowIndex + 1, "center");
+            }
+        }
+    }, []);
 
     const renderCell: RenderCellFunc = useCallback(
         ({ key, ...cellProps }) => {
@@ -484,5 +503,5 @@ function AVGridComponent<R = any>(
 }
 
 export default forwardRef(AVGridComponent) as <R>(
-    props: AVGridProps<R> & { ref?: RefType<TAVGridContext | undefined> }
+    props: AVGridProps<R> & { ref?: RefType<AVGridRef | undefined> }
 ) => ReturnType<typeof AVGridComponent>;

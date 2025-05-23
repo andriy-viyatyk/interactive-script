@@ -3,13 +3,13 @@ import { TextCommand } from "../../../../../shared/commands/output-text";
 import color from "../../../theme/color";
 import clsx from "clsx";
 import { Button } from "../../../controls/Button";
-import { useState } from "react";
 import { CopyIcon, OpenWindowIcon } from "../../../theme/icons";
 import { toClipboard } from "../../../common/utils/utils";
 import { ViewMessage } from "../../../../../shared/ViewMessage";
 import commands from "../../../../../shared/commands";
 import { OutputDialog } from "../OutputDialog/OutputDialog";
 import { OutputDialogHeader } from "../OutputDialog/OutputDialogHeader";
+import { useItemState } from "../OutputViewContext";
 
 const CommandTextBlockViewRoot = styled(OutputDialog)({
     overflow: "hidden",
@@ -40,7 +40,7 @@ export function CommandTextBlockView({
     onCheckSize,
     sendMessage,
 }: Readonly<CommandTextBlockViewProps>) {
-    const [wrap, setWrap] = useState(false);
+    const [wrap, setWrap] = useItemState(item.commandId, "wrap", false);
 
     const setWrapProxy = (value: boolean) => {
         setWrap(value);

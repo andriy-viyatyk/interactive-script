@@ -12,7 +12,7 @@ class ConfirmDataParam(TypedDict, total=False):
 class ConfirmData:
     title: Optional[UiText] = None
     message: UiText = ""
-    buttons: Optional[List[UiText]] = field(default_factory=lambda: ["Cancel", "Yes"])
+    buttons: Optional[List[UiText]] = None
     result: Optional[str] = None
 
     def init(self, data: Mapping[str, Any]):

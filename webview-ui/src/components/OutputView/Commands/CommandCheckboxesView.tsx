@@ -88,9 +88,11 @@ export function CommandCheckboxesView({
             </div>
             <OutputDialogButtons 
                 buttons={item.data?.buttons}
-                defaultButtons={["Proceed"]}
+                defaultButtons={["!Proceed"]}
                 resultButton={item.data?.resultButton}
                 onClick={buttonClick}
+                required={!checkboxes.some((checkbox) => checkbox.checked)}
+                requiredHint="Select at least one checkbox"
             />
         </CommandCheckboxesViewRoot>
     );

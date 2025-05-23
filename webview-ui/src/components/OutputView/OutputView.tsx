@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { SetStateAction, useEffect } from "react";
 import { TModel } from "../../common/classes/model";
 import { TGlobalState } from "../../common/classes/state";
 import styled from "@emotion/styled";
@@ -12,6 +12,8 @@ import commands from "../../../../shared/commands";
 import { FlexSpace } from "../../controls/FlexSpace";
 import { Button } from "../../controls/Button";
 import { ARightIcon, ClearConsoleIcon, StopIcon } from "../../theme/icons";
+import { OutputViewProvider, UseItemStateFn } from "./OutputViewContext";
+import { resolveState } from "../../common/utils/utils";
 
 const OutputRoot = styled(GlobalRoot)({
     position: "absolute",
@@ -38,6 +40,7 @@ const OutputRoot = styled(GlobalRoot)({
 
 const defaultOutputViewState = {
     items: [] as ViewMessage[],
+    itemsState: {} as Record<string, Record<string, any>>,
     isRunning: false,
 };
 
@@ -83,6 +86,7 @@ class OutputViewModel extends TModel<OutputViewState> {
     clearConsole = () => {
         this.state.update((state) => {
             state.items = [];
+            state.itemsState = {};
         });
     };
 
@@ -130,11 +134,30 @@ class OutputViewModel extends TModel<OutputViewState> {
             }
         }
     };
+
+    // this hook should be used only inside the component
+    useItemState: UseItemStateFn<any> = (itemId: string, stateName: string, defaultState: any) => {
+        const currentState = this.state.use(s => {
+            const value = s.itemsState[itemId]?.[stateName];
+            return value ?? defaultState;
+        })
+
+        const setState = (value: SetStateAction<any>) => {
+            this.state.update((state) => {
+                const resolved = resolveState(value, () => state.itemsState[itemId]?.[stateName]);
+                if (!state.itemsState[itemId]) {
+                    state.itemsState[itemId] = {};
+                }
+                state.itemsState[itemId][stateName] = resolved;
+            });
+        };
+        return [currentState, setState];
+    }
 }
 
 const model = new OutputViewModel(new TGlobalState(defaultOutputViewState));
 
-export function OutputView() {
+export default function OutputView() {
     const state = model.state.use();
     const data = window.appInput?.outputInput ?? {};
     const { title = "", filePath = "", withHeader = false } = data;
@@ -167,12 +190,14 @@ export function OutputView() {
                     </Button>
                 </div>
             )}
+            <OutputViewProvider useItemState={model.useItemState}>
             <OutputItemList
                 items={state.items}
                 replayMessage={model.replayMessage}
                 updateMessage={model.updateMessage}
                 sendMessage={model.sendMessage}
             />
+            </OutputViewProvider>
             {Boolean(window.isDebug) && <TestConsole />}
         </OutputRoot>
     );

@@ -14,6 +14,13 @@ async def input_text_demo():
         .then(response.resultButton).color("lightblue") \
         .then(" button.") \
         .print()
+        
+    ui.log("")
+    ui.text("You can pass buttons and mark one as required using '!' character:")
+    text = await ui.dialog.text_input({
+        "title": "Enter some text:",
+        "buttons": ["Cancel", "!Ok"],
+    })
 
     ui.log("")
     ui.text("You can provide own buttons and initial text:")

@@ -1,12 +1,11 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
+import { useItemState } from "../OutputViewContext";
 
-export function useGridSearchHeight() {
-    const [search, setSearch] = useState<string>("");
+export function useGridSearchHeight(id: string) {
+    const [search, setSearch] = useItemState<string>(id, "search", "");
         const gridWrapperRef = useRef<HTMLDivElement>(null);
-        const [gridWrapperHeight, setGridWrapperHeight] = useState<number | undefined>(
-            undefined
-        );
-    
+        const [gridWrapperHeight, setGridWrapperHeight] = useItemState<number | undefined>(id, "gridWrapperHeight", undefined);
+
         const setSearchProxy = useCallback((value: string) => {
             if (!value && gridWrapperHeight) {
                 setGridWrapperHeight(undefined);
@@ -14,7 +13,7 @@ export function useGridSearchHeight() {
                 setGridWrapperHeight(gridWrapperRef.current?.clientHeight);
             }
             setSearch(value);
-        }, [gridWrapperHeight]);
+        }, [gridWrapperHeight, setGridWrapperHeight, setSearch]);
 
     return {
         search,

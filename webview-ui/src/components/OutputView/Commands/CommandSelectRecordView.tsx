@@ -63,7 +63,7 @@ export function CommandSelectRecordView({
         multiple
     );
     const { search, setSearch, gridWrapperRef, gridWrapperHeight } =
-        useGridSearchHeight();
+        useGridSearchHeight(item.commandId);
 
     const selected = useMemo(() => {
         const result = item.data?.result ?? [];
@@ -186,8 +186,10 @@ export function CommandSelectRecordView({
             <OutputDialogButtons
                 buttons={item.data?.buttons}
                 resultButton={item.data?.resultButton}
-                defaultButtons={["Select"]}
+                defaultButtons={["!Select"]}
                 onClick={buttonClick}
+                required={!item.data?.result?.length}
+                requiredHint="Select record to proceed."
             />
         </CommandSelectRecordViewRoot>
     );

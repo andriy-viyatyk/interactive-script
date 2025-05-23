@@ -96,7 +96,7 @@ export const OutputItem = forwardRef(function OutputItemComponent(
     } else if (isSelectRecordCommand(item)) {
         el = <CommandSelectRecordView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     } else if (isDateInputCommand(item)) {
-        el = <CommandDateInputView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
+        el = <CommandDateInputView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize}/>;
     }
 
     return (

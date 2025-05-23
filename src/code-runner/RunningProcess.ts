@@ -163,24 +163,23 @@ export class RunningProcess extends vscode.Disposable {
         this.isRunning = true;
         this.view?.messageToOutput(commands.script.start(filePath));
 
+        const config = vscode.workspace.getConfiguration('interactiveScript');
+
         const fileExtension = path.extname(filePath);
         let command = "node";
+        let args: string[] = [];
+
         if (fileExtension === ".ts") {
             command = "ts-node";
-        }
-        if (fileExtension == ".py") {
+            args = config.get<string[]>('tsNodeArgs', []);
+        } else if (fileExtension == ".py") {
             command = await getPythonPath();
+            args = config.get<string[]>('pythonArgs', []);
+        } else if (fileExtension === ".js") {
+            command = "node";
+            args = config.get<string[]>('nodeArgs', []);
         }
-        this.fileName = path.basename(filePath);
-
-        this.view?.messageToOutput(
-            commands.log.log([
-                { text: `[ ${this.fileName} ]`, styles: { color: "lightseagreen" } },
-                ` "${command}" "${filePath}"`,
-            ])
-        );
-
-        const config = vscode.workspace.getConfiguration('interactiveScript');
+        
         const workingDirectoryOption = config.get<WorkingDirectoryType>('workingDirectory');
 
         let workDirectory = path.dirname(filePath);
@@ -191,7 +190,16 @@ export class RunningProcess extends vscode.Disposable {
             }
         }
 
-        this.child = cp.spawn(`"${command}"`, [`"${filePath}"`], {
+        args.push(filePath);
+        this.fileName = path.basename(filePath);
+        this.view?.messageToOutput(
+            commands.log.log([
+                { text: `[ ${this.fileName} ]`, styles: { color: "lightseagreen" } },
+                ` "${command}"${args.map(arg => ` "${arg}"`)}`,
+            ])
+        );
+
+        this.child = cp.spawn(`"${command}"`, args.map(arg => `"${arg}"`), {
             cwd: workDirectory,
             shell: true,
         });

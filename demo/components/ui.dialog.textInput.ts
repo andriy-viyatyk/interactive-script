@@ -15,6 +15,13 @@ async function textInputDemo() {
         .print();
 
     ui.log("");
+    ui.text("You can pass buttons and mark one as required using '!' character:");
+    text = await ui.dialog.textInput({
+        title: "Enter some text:",
+        buttons: ["Cancel", "!Ok"],
+    });
+
+    ui.log("");
     ui.text("You can provide own buttons and initial text:");
     text = await ui.dialog.textInput({
         title: "Enter some text:",

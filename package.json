@@ -4,7 +4,7 @@
     "description": "Provides interactive UI elements for the JS and TS scripts.",
     "publisher": "andriy-viyatyk",
     "author": "Andriy Viyatyk",
-    "version": "1.0.4-dev",
+    "version": "1.0.5",
     "repository": {
         "type": "git",
         "url": "https://github.com/andriy-viyatyk/interactive-script.git"
@@ -164,6 +164,30 @@
                     "type": "string",
                     "default": "python",
                     "markdownDescription": "Manually specify the full path to the Python executable. This path is used when 'Python Path Source' is set to 'manual', or as a fallback if the Python extension (ms-python.python) is not found or fails to provide a path."
+                },
+                "interactiveScript.nodeArgs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [],
+                    "markdownDescription": "Additional command-line arguments to pass to the `node` executable. E.g., `[\"--inspect\", \"--no-warnings\"]`"
+                },
+                "interactiveScript.tsNodeArgs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [],
+                    "markdownDescription": "Additional command-line arguments to pass to the `ts-node` executable. E.g., `[\"--transpile-only\"]`"
+                },
+                "interactiveScript.pythonArgs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [],
+                    "markdownDescription": "Additional command-line arguments to pass to the `python` executable. E.g., `[\"-u\", \"-OO\"]`"
                 }
             }
         }

@@ -14,6 +14,17 @@ async def checkboxes_demo():
     ])
     ui.log(f"You selected: {', '.join(response.result) if response.result else ''}")
     ui.text("Without buttons provided it displays a default button 'Proceed'.")
+    
+    ui.log("")
+    ui.text("You can pass buttons and make one required by starting it with '!' character:")
+    response = await ui.dialog.checkboxes({
+        "items": [
+            { "label": "Item 1" },
+            { "label": "Item 2" },
+            { "label": "Item 3" },
+        ],
+        "buttons": ["Cancel", "!Ok"],
+    })
 
     ui.log("")
     ui.text("You can also provide a title and buttons and default checked state:")

@@ -9,7 +9,7 @@ class ButtonsDataParam(TypedDict, total=False):
 
 @dataclass
 class ButtonsData:
-    buttons: List[UiText] = field(default_factory=lambda: ["Proceed"])
+    buttons: List[UiText] = field(default_factory=list)
     bodyStyles: Optional[Styles] = None
     result: Optional[str] = None
 

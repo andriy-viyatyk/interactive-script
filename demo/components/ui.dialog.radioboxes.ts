@@ -16,6 +16,13 @@ async function radioboxesDemo() {
         .print();
 
     ui.log("");
+    ui.text("You can pass buttons and mark one as required using '!' character:");
+    selected = await ui.dialog.radioboxes({
+        items: ["one", "two", "three"],
+        buttons: ["Cancel", "!Ok"],
+    });
+
+    ui.log("");
     ui.text("You can also provide a title, buttons and default checked state:");
     selected = await ui.dialog.radioboxes({
         title: "Select items",

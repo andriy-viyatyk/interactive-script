@@ -19,11 +19,12 @@ async def select_record_demo():
     })
 
     ui.text("You can provide additional options like multiple selection, title, and buttons.")
+    ui.text("You can make a button required by prefixing it with '!' character.")
     response = await ui.dialog.select_record({
         "records": someRecords,
         "multiple": True,
         "title": styled_text("Select Multiple Records").color("pink").value,
-        "buttons": ["Cancel", styled_text("OK").color("gold").value],
+        "buttons": ["Cancel", styled_text("!OK").color("gold").value],
     })
     ui.log("You have pressed: ") \
         .then(response.resultButton).color("lime") \

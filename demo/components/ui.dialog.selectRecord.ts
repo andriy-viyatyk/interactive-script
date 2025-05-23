@@ -18,11 +18,12 @@ async function selectRecordDemo() {
     });
 
     ui.text("You can provide additional options like multiple selection, title, and buttons.");
+    ui.text("You can make a button required by prefixing it with '!' character.");
     response = await ui.dialog.selectRecord({
         records: someRecords,
         multiple: true,
         title: styledText("Select Multiple Records").color("pink").value,
-        buttons: ["Cancel", styledText("OK").color("gold").value],
+        buttons: ["Cancel", styledText("!OK").color("gold").value],
     });
     ui.log("You have pressed: ")
         .then(response?.resultButton).color("lime")
