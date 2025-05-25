@@ -206,10 +206,14 @@
     "keywords": [
         "interactive",
         "script",
-        "script runner",
+        "runner",
+        "ui",
+        "components",
         "typescript",
         "javascript",
+        "python",
         "json",
+        "csv",
         "grid",
         "preview"
     ],

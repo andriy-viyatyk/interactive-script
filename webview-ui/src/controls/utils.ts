@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { isNullOrUndefined } from "../common/utils/utils";
 
 export const emptyLabel = "(empty)";
@@ -42,4 +42,63 @@ export function useFilteredOptions<O = any>(
             );
         });
     }, [options, searchString, getLabel]);
+}
+
+export async function resolveValue<T>(value: T | (() => T | Promise<T>)): Promise<T> {
+	let res = value;
+    if (typeof res === 'function') {
+        res = (res as any)();
+    }
+	if (res && (res as any).then) {
+		res = await res;
+	}
+	return res as T;
+}
+
+export type SelectOptionsResult<T> = {
+	options: T[];
+	loading: boolean;
+};
+
+export function useSelectOptions<T>(
+	selectFrom?: readonly T[] | (() => T[] | Promise<T[]>),
+	open?: boolean,
+): SelectOptionsResult<T> {
+	const [options, setOptions] = useState<T[]>([]);
+	const [loading, setLoading] = useState(false);
+	const [loaded, setLoaded] = useState(false);
+
+	useEffect(() => {
+		setLoaded(false);
+		setOptions([]);
+	}, [selectFrom]);
+
+	useEffect(() => {
+		let live = true;
+
+		if (!open || loaded) {
+			return;
+		}
+
+		if (!selectFrom) {
+			setOptions([]);
+		} else if (Array.isArray(selectFrom)) {
+			setOptions(selectFrom);
+		} else if (typeof selectFrom === "function") {
+			setLoading(true);
+			resolveValue(selectFrom).then(res => {
+				if (live) {
+					setLoading(false);
+					setLoaded(true);
+					setOptions(res);
+				}
+			});
+		}
+
+		return () => {
+			live = false;
+		};
+	}, [open, selectFrom, loaded]);
+
+	return { options, loading };
 }

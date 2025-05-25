@@ -46,7 +46,7 @@ const InputRoot = styled.div<{
     },
 }), { label: 'InputRoot' });
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     addornmentStart?: ReactNode;
     addornmentStartWidth?: number;
     addornmentEnd?: ReactNode;

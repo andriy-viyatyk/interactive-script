@@ -1,4 +1,4 @@
-import { CSSProperties, ReactElement, ReactNode, useCallback, useEffect, useRef } from "react";
+import { CSSProperties, ForwardedRef, forwardRef, ReactElement, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import clsx from "clsx";
 import styled from "@emotion/styled";
 
@@ -49,10 +49,10 @@ const ItemRoot = styled.div({
         flex: '1 1',
         whiteSpace: 'nowrap',
     },
-    "& .item-selectedCheckIcon": {
+    "& .selectedCheckIcon": {
         position: 'absolute',
         right: 6,
-        bottom: 8,
+        top: 4,
         width: 16,
         height: 16,
     }
@@ -61,6 +61,8 @@ const ItemRoot = styled.div({
 const RenderGridRoot = styled(RenderGrid)({
     
 });
+
+export const listItemHeight = 24;
 
 export type ListOptionRenderer<O> = (props: {
     index: number,
@@ -88,15 +90,20 @@ export interface ListProps<O> {
     rowRenderer?: ListOptionRenderer<O>;
     className?: string;
     growToHeight?: CSSProperties['height'];
+    whiteSpaceY?: number;
 }
 
 const columnWidth = () => '100%' as Percent;
 
-export function List<O = any>(props: Readonly<ListProps<O>>) {
+export interface ListRef {
+    grid: RenderGridModel | null;
+}
+
+function ListComponent<O = any>(props: Readonly<ListProps<O>>, ref: ForwardedRef<ListRef>) {
     const gridRef = useRef<RenderGridModel | null>(null);
     const {options, rowHeight, getSelected, getHovered, rowRenderer, onClick, getIcon,
         getLabel: getLabelProps, getOptionClass, loading, emptyMessage, onMouseHover,
-        className, growToHeight} = props;
+        className, growToHeight, whiteSpaceY} = props;
 
     useEffect(() => {
         gridRef.current?.update({all: true});
@@ -119,6 +126,10 @@ export function List<O = any>(props: Readonly<ListProps<O>>) {
         onClick?.(row, index);
         gridRef.current?.update({all: true});
     }, [onClick])
+
+    useImperativeHandle(ref, () => ({
+        grid: gridRef.current,
+    }), []);
 
     const renderCell = useCallback<RenderCellFunc>(({row: index, key, style}) => {
         const isSelected = getSelected ? getSelected(options[index]) : false;
@@ -180,12 +191,17 @@ export function List<O = any>(props: Readonly<ListProps<O>>) {
             columnCount={1}
             rowCount={options.length}
             columnWidth={columnWidth}
-            rowHeight={rowHeight || 24}
+            rowHeight={rowHeight || listItemHeight}
             renderCell={renderCell}
             overscanRow={2}
             fitToWidth
             className={className}
             growToHeight={growToHeight}
+            whiteSpaceY={whiteSpaceY}
         />
     )
-}
+};
+
+export const List = forwardRef(ListComponent) as <O = any>(
+  props: React.PropsWithoutRef<ListProps<O>> & React.RefAttributes<ListRef>
+) => React.ReactElement | null;

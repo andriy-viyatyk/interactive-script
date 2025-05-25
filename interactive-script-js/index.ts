@@ -21,6 +21,7 @@ import { WindowGridData, WindowTextData } from "../shared/commands/window";
 import { DateInputCommand, DateInputData } from "../shared/commands/input-date";
 import { PackedGridArray } from "../shared/PackedGridArray";
 import { TextBlock } from "./src/objects/TextBlock";
+import { SelectCommand, SelectData } from "../shared/commands/input-select";
 
 const ui = {
     ping: () => responseHandler.send(commands.ping()),
@@ -129,6 +130,17 @@ const ui = {
             }
         }
 
+    },
+    inline: {
+        select: async <T = any>(options: SelectData<T>) => {
+            const message = commands.inputSelect(options);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as SelectCommand<T>).data;
+            } else {
+                return undefined;
+            }
+        }
     },
     show: {
         gridFromJsonArray: (data: any[] | GridData) => {

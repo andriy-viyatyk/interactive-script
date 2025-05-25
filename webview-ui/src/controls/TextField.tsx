@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import React, { forwardRef, ReactNode } from 'react';
 
 import { FieldProps } from './types';
-import { Input } from './Input';
+import { Input, InputProps } from './Input';
 import color from '../theme/color';
 
 const TextFieldRoot = styled(Input)({
@@ -14,7 +14,7 @@ const TextFieldRoot = styled(Input)({
     },
 });
 
-interface TextFieldProps extends FieldProps<string> {
+export interface TextFieldProps extends FieldProps<string>, Omit<InputProps, 'value' | 'onChange'> {
     width?: number | string;
     endButtons?: ReactNode[];
     endButtonsWidth?: number;
@@ -23,6 +23,7 @@ interface TextFieldProps extends FieldProps<string> {
     onKeyDown?: (e: React.KeyboardEvent) => void;
     password?: boolean;
     onClick?: (e: React.MouseEvent) => void;
+    disabled?: boolean;
 }
 
 const buttonWidth = 16;
@@ -40,6 +41,8 @@ export const TextField = forwardRef(function TextFieldComponent(props: Readonly<
         onKeyDown,
         password,
         onClick,
+        disabled,
+        ...other
     } = props;
 
     const addornmentEndWidth = endButtons?.length
@@ -59,6 +62,8 @@ export const TextField = forwardRef(function TextFieldComponent(props: Readonly<
             placeholder={placeholder}
             onKeyDown={onKeyDown}
             onClick={onClick}
+            disabled={disabled}
+            {...other}
         >
             {Boolean(label) && <div className="textField-label">{label}</div>}
         </TextFieldRoot>

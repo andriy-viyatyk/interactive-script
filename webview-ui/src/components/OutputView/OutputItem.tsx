@@ -23,6 +23,8 @@ import { isSelectRecordCommand } from "../../../../shared/commands/input-selectR
 import { CommandSelectRecordView } from "./Commands/CommandSelectRecordView";
 import { isDateInputCommand } from "../../../../shared/commands/input-date";
 import { CommandDateInputView } from "./Commands/CommandDateInputView";
+import { isSelectCommand } from "../../../../shared/commands/input-select";
+import { CommandSelectView } from "./Commands/CommandSelectView";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
@@ -97,6 +99,8 @@ export const OutputItem = forwardRef(function OutputItemComponent(
         el = <CommandSelectRecordView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     } else if (isDateInputCommand(item)) {
         el = <CommandDateInputView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize}/>;
+    } else if (isSelectCommand(item)) {
+        el = <CommandSelectView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     }
 
     return (

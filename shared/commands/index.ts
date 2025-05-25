@@ -12,6 +12,7 @@ import inputCheckboxes from './input-checkboxes';
 import inputRadioboxes from './input-radioboxes';
 import inputSelectRecord from './input-selectRecord';
 import inputDate from './input-date';
+import inputSelect from './input-select';
 import viewReady from './view-ready';
 import script from './script';
 import onConsole from './on-console';
@@ -36,6 +37,7 @@ const commands = {
     script,
     onConsole,
     output,
+    inputSelect,
 }
 
 export default commands;
