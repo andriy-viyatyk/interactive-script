@@ -20,6 +20,7 @@ from .commands.console import ConsoleCommand
 from .commands.output import OutputCommand
 from .commands.output_clear import OutputClearCommand
 from .commands.input_select import SelectCommand
+from .commands.inline_confirm import InlineConfirmCommand
 
 MESSAGE_TYPE_MAPPING: Dict[str, type[ViewMessage]] = {
     "clear": ClearCommand,
@@ -37,6 +38,7 @@ MESSAGE_TYPE_MAPPING: Dict[str, type[ViewMessage]] = {
     "input.text": TextInputCommand,
     "input.selectRecord": SelectRecordCommand,
     "inline.select": SelectCommand,
+    "inline.confirm": InlineConfirmCommand,
     "output.grid": GridCommand,
     "output.progress": ProgressCommand,
     "output.text": TextCommand,

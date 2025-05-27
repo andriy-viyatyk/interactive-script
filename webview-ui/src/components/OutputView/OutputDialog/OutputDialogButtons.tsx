@@ -20,6 +20,9 @@ const OutputDialogButtonsRoot = styled.div({
     padding: 4,
     paddingBottom: 0,
     marginBottom: 4,
+    "&.inline": {
+        display: "contents",
+    },
 });
 
 interface OutputDialogButtonsProps {
@@ -117,11 +120,9 @@ export function OutputDialogButtons({
         </Button>
     ));
 
-    return inline ? (
-        buttonsElements
-    ) : (
+    return (
         <OutputDialogButtonsRoot
-            className={clsx("dialog-buttons", className)}
+            className={clsx("dialog-buttons", {inline}, className)}
             style={style}
         >
             {buttonsElements}

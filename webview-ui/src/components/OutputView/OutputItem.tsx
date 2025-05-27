@@ -25,6 +25,8 @@ import { isDateInputCommand } from "../../../../shared/commands/input-date";
 import { CommandDateInputView } from "./Commands/CommandDateInputView";
 import { isSelectCommand } from "../../../../shared/commands/input-select";
 import { CommandSelectView } from "./Commands/CommandSelectView";
+import { isInlineConfirmCommand } from "../../../../shared/commands/inline-confirm";
+import { CommandInlineConfirmView } from "./Commands/CommandInlineConfirmView";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
@@ -101,6 +103,8 @@ export const OutputItem = forwardRef(function OutputItemComponent(
         el = <CommandDateInputView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize}/>;
     } else if (isSelectCommand(item)) {
         el = <CommandSelectView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
+    } else if (isInlineConfirmCommand(item)) {
+        el = <CommandInlineConfirmView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     }
 
     return (

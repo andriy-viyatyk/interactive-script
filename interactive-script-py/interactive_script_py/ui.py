@@ -10,6 +10,7 @@ from .commands.input_radioboxes import radioboxes, RadioboxesDataParam, Radiobox
 from .commands.input_text import textInput, TextInputDataParam, TextInputData
 from .commands.input_select_record import select_record, SelectRecordDataParam, SelectRecordData
 from .commands.input_select import select, SelectDataParam
+from .commands.inline_confirm import InlineConfirmDataParam, inline_confirm
 from .commands.output_grid import grid_from_list, GridDataParam
 from .commands.output_progress import progress, ProgressDataParam
 from .commands.output_text import text_block, TextDataParam
@@ -96,6 +97,10 @@ class InlineNamespace:
     async def select(self, params: SelectDataParam):
         response = await response_handler.send(select(params))
         return response.data
+    
+    async def confirm(self, params: Union[UiText, InlineConfirmDataParam]) -> str:
+        response = await response_handler.send(inline_confirm(params))
+        return response.data.result if response.data.result else ""
         
 
 class UiNamespace:

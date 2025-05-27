@@ -132,6 +132,7 @@ export function CommandGridView({
                         searchString={search}
                         disableFiltering
                         scrollToFocus
+                        focusOnClick
                     />
                 </HighlightedTextProvider>
             </div>

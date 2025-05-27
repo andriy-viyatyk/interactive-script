@@ -22,6 +22,7 @@ import { DateInputCommand, DateInputData } from "../shared/commands/input-date";
 import { PackedGridArray } from "../shared/PackedGridArray";
 import { TextBlock } from "./src/objects/TextBlock";
 import { SelectCommand, SelectData } from "../shared/commands/input-select";
+import { InlineConfirmCommand, InlineConfirmData } from "../shared/commands/inline-confirm";
 
 const ui = {
     ping: () => responseHandler.send(commands.ping()),
@@ -137,6 +138,18 @@ const ui = {
             const response = await responseHandler.send(message);
             if (response) {
                 return (response as SelectCommand<T>).data;
+            } else {
+                return undefined;
+            }
+        },
+
+        confirm: async (params: UiText | InlineConfirmData) => {
+            const message = isUiText(params)
+                ? commands.inlineConfirm({ message: params })
+                : commands.inlineConfirm(params);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as InlineConfirmCommand).data?.result;
             } else {
                 return undefined;
             }

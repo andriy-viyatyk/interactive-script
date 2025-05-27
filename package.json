@@ -83,10 +83,7 @@
                 "command": "interactiveScript.clearConsole",
                 "title": "Clear Console",
                 "category": "Interactive Script",
-                "icon": {
-                    "light": "./icons/clear-console.svg",
-                    "dark": "./icons/clear-console.svg"
-                }
+                "icon": "$(clear-all)"
             },
             {
                 "command": "interactiveScript.openSettings",

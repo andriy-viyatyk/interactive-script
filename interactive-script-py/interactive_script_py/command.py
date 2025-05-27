@@ -31,6 +31,7 @@ Command = Literal[
     "input.selectRecord",
     "input.date",
     "inline.select",
+    "inline.confirm",
     "output.grid",
     "output.text",
     "output.progress",

@@ -17,6 +17,7 @@ import viewReady from './view-ready';
 import script from './script';
 import onConsole from './on-console';
 import output from './output';
+import inlineConfirm from './inline-confirm';
 
 const commands = {
     ping,
@@ -38,6 +39,7 @@ const commands = {
     onConsole,
     output,
     inputSelect,
+    inlineConfirm
 }
 
 export default commands;
