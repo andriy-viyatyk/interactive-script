@@ -10,11 +10,11 @@ export interface SelectData<T = any> {
 }
 
 export interface SelectCommand<T = any> extends ViewMessage<SelectData<T>> {
-    command: "input.select";
+    command: "inline.select";
 }
 
 export function isSelectCommand(message: ViewMessage): message is SelectCommand {
-    return message.command === "input.select";
+    return message.command === "inline.select";
 }
 
-export default <T = any>(data: SelectData<T>) => newMessage("input.select", data) as SelectCommand<T>;
+export default <T = any>(data: SelectData<T>) => newMessage("inline.select", data) as SelectCommand<T>;

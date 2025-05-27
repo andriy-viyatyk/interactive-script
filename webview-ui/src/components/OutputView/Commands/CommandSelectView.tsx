@@ -5,15 +5,18 @@ import { ViewMessage } from "../../../../../shared/ViewMessage";
 import { UiTextView } from "../UiTextView";
 import { OutputDialogButtons } from "../OutputDialog/OutputDialogButtons";
 import { ComboSelect } from "../../../controls/ComboSelect";
+import { useCallback } from "react";
 
 const CommandSelectViewRoot = styled(OutputDialog)({
     display: "flex",
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
     padding: "0 4px",
     columnGap: 8,
     border: "none",
     margin: 0,
+    marginTop: 2,
 });
 
 interface CommandSelectViewProps {
@@ -29,16 +32,16 @@ export function CommandSelectView({
 }: Readonly<CommandSelectViewProps>) {
     const options = item.data?.options || [];
 
-    const getLabel = (value: any) => {
+    const getLabel = useCallback((value: any) => {
         if (typeof value === "string") {
             return value;
         } else if (typeof value === "object" && value !== null) {
             return value[item.data?.labelKey || "label"] || "";
         }
         return "";
-    };
+    }, [item.data?.labelKey]);
 
-    const onSelect = (value: any) => {
+    const onSelect = useCallback((value: any) => {
         const newItem = {
             ...item,
             data: {
@@ -47,9 +50,9 @@ export function CommandSelectView({
             },
         };
         updateMessage(newItem);
-    };
+    }, [item, updateMessage]);
 
-    const buttonClick = (button: string) => {
+    const buttonClick = useCallback((button: string) => {
         const newItem = {
             ...item,
             data: {
@@ -59,7 +62,7 @@ export function CommandSelectView({
         };
         updateMessage(newItem);
         replayMessage(newItem);
-    };
+    }, [item, replayMessage, updateMessage]);
 
     return (
         <CommandSelectViewRoot>
@@ -81,6 +84,7 @@ export function CommandSelectView({
                 onClick={buttonClick}
                 required={!item.data?.result}
                 requiredHint="Select option to proceed."
+                inline
             />
         </CommandSelectViewRoot>
     );

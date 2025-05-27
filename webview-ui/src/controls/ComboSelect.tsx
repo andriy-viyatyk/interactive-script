@@ -7,8 +7,13 @@ import {
     useSelectOptions,
 } from "./utils";
 import { List, listItemHeight, ListRef } from "./List";
-import { ComboTemplate, ComboTemplateProps, ComboTemplateRef } from "./ComboTemplate";
+import {
+    ComboTemplate,
+    ComboTemplateProps,
+    ComboTemplateRef,
+} from "./ComboTemplate";
 import clsx from "clsx";
+import { HighlightedTextProvider } from "./useHighlightedText";
 
 const ListRoot = styled.div<{
     width?: number | string;
@@ -25,8 +30,8 @@ const ListRoot = styled.div<{
         textAlign: "center",
     },
     "&.resized": {
-        flex: '1 1 auto',
-    }
+        flex: "1 1 auto",
+    },
 }));
 
 function hoverNextInex<T = any>(
@@ -234,7 +239,7 @@ export function ComboSelect<T = any>(props: ComboSelectProps<T>) {
                     }
                     return open;
                 case "Enter":
-                    if (open && hovered !== value && !hovered) {
+                    if (open && hovered !== value) {
                         e.stopPropagation();
                         e.preventDefault();
                         onChange(hovered);
@@ -263,29 +268,39 @@ export function ComboSelect<T = any>(props: ComboSelectProps<T>) {
     }, []);
 
     const renderDropDown = useCallback(() => {
-        const height = Math.min(filteredOptions.length, maxVisibleItems) * listItemHeight;
-        const width = resized ? 'unset' : comboTemplateRef.current?.input?.clientWidth ?? 200;
+        const height =
+            Math.min(filteredOptions.length, maxVisibleItems) * listItemHeight;
+        const width = resized
+            ? "unset"
+            : comboTemplateRef.current?.input?.clientWidth ?? 200;
         return (
-            <ListRoot className={clsx("list-container", { resized })} width={width} height={height}>
-                <List
-                    ref={listRef}
-                    options={filteredOptions}
-                    loading={loading}
-                    onClick={onItemClick}
-                    getSelected={getSelected}
-                    getHovered={getHovered}
-                    getLabel={propsGetLabel}
-                    getIcon={getIcon}
-                    getOptionClass={getOptionClass}
-                    emptyMessage="no results"
-                    onMouseHover={onMouseHover}
-                    whiteSpaceY={0}
-                />
-            </ListRoot>
+            <HighlightedTextProvider value={search}>
+                <ListRoot
+                    className={clsx("list-container", { resized })}
+                    width={width}
+                    height={height}
+                >
+                    <List
+                        ref={listRef}
+                        options={filteredOptions}
+                        loading={loading}
+                        onClick={onItemClick}
+                        getSelected={getSelected}
+                        getHovered={getHovered}
+                        getLabel={propsGetLabel}
+                        getIcon={getIcon}
+                        getOptionClass={getOptionClass}
+                        emptyMessage="no results"
+                        onMouseHover={onMouseHover}
+                        whiteSpaceY={0}
+                    />
+                </ListRoot>
+            </HighlightedTextProvider>
         );
     }, [
-        resized,
         filteredOptions,
+        resized,
+        search,
         loading,
         onItemClick,
         getSelected,

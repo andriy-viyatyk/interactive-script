@@ -30,7 +30,7 @@ export function useFilteredOptions<O = any>(
         if (!searchString) {
             return options;
         }
-        const searchStringLower = searchString.toLocaleLowerCase();
+        const searchStringLower = searchString.toLocaleLowerCase().split(" ").map(s => s.trim());
         return options.filter((o, idx) => {
             const label: string = getLabel
                 ? getLabel(o, idx)
@@ -38,7 +38,7 @@ export function useFilteredOptions<O = any>(
             return (
                 label &&
                 label.toLowerCase &&
-                label.toLowerCase().includes(searchStringLower)
+                searchStringLower.every(term => label.toLowerCase().includes(term))
             );
         });
     }, [options, searchString, getLabel]);

@@ -119,6 +119,7 @@ export const Button = forwardRef(function ButtonComponent(props: Readonly<Button
         tooltip,
         extraPadding: textPadding,
         disabled,
+        ...other
     } = props;
     const id = useMemo(() => uuidv4(), []);
     const [loading, setLoading] = React.useState(false);
@@ -162,6 +163,7 @@ export const Button = forwardRef(function ButtonComponent(props: Readonly<Button
                 )}
                 data-tooltip-id={id}
                 disabled={disabled || loading}
+                {...other}
             >
                 {children}
                 {loading && <CircularProgress className='button-progress'/>}

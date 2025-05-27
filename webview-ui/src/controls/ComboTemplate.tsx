@@ -227,6 +227,7 @@ export const ComboTemplate = forwardRef(function ComboTemplateComponent(
             onClick={handleClear}
             className={clsx("clear-button", { "clear-button-visible": value })}
             disabled={disabled}
+            tabIndex={-1}
         >
             <CloseIcon />
         </Button>,

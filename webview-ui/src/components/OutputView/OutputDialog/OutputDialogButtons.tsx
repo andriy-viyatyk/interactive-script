@@ -1,6 +1,10 @@
 import styled from "@emotion/styled";
 import { Button } from "../../../controls/Button";
-import { TextWithStyle, UiText, uiTextToString } from "../../../../../shared/ViewMessage";
+import {
+    TextWithStyle,
+    UiText,
+    uiTextToString,
+} from "../../../../../shared/ViewMessage";
 import { CheckIcon } from "../../../theme/icons";
 import { UiTextView } from "../UiTextView";
 import { useMemo } from "react";
@@ -27,6 +31,7 @@ interface OutputDialogButtonsProps {
     style?: React.CSSProperties;
     required?: boolean;
     requiredHint?: string;
+    inline?: boolean;
 }
 
 function useButtons(btns: UiText[] | undefined, defaultButtons: string[]) {
@@ -50,7 +55,10 @@ function useButtons(btns: UiText[] | undefined, defaultButtons: string[]) {
                 if (typeof firstBlock === "string") {
                     if (firstBlock.startsWith("!")) {
                         required = true;
-                        newButton = [firstBlock.substring(1), ...button.slice(1)];
+                        newButton = [
+                            firstBlock.substring(1),
+                            ...button.slice(1),
+                        ];
                     } else {
                         newButton = button;
                     }
@@ -90,28 +98,33 @@ export function OutputDialogButtons({
     onClick,
     required,
     requiredHint,
+    inline,
 }: Readonly<OutputDialogButtonsProps>) {
     const buttons = useButtons(propsButtons, defaultButtons);
 
-    return (
+    const buttonsElements = buttons.map((button, index) => (
+        <Button
+            size="small"
+            key={`${uiTextToString(button.button)}-${index}`}
+            onClick={() => onClick(uiTextToString(button.button))}
+            disabled={Boolean(resultButton) || (required && button.required)}
+            title={required && button.required ? requiredHint : undefined}
+        >
+            {resultButton === uiTextToString(button.button) ? (
+                <CheckIcon />
+            ) : null}
+            <UiTextView uiText={button.button} />
+        </Button>
+    ));
+
+    return inline ? (
+        buttonsElements
+    ) : (
         <OutputDialogButtonsRoot
             className={clsx("dialog-buttons", className)}
             style={style}
         >
-            {buttons.map((button, index) => (
-                <Button
-                    size="small"
-                    key={`${uiTextToString(button.button)}-${index}`}
-                    onClick={() => onClick(uiTextToString(button.button))}
-                    disabled={Boolean(resultButton) || (required && button.required)}
-                    title={required && button.required ? requiredHint : undefined}
-                >
-                    {resultButton === uiTextToString(button.button) ? (
-                        <CheckIcon />
-                    ) : null}
-                    <UiTextView uiText={button.button} />
-                </Button>
-            ))}
+            {buttonsElements}
         </OutputDialogButtonsRoot>
     );
 }

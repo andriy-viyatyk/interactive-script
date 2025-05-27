@@ -9,6 +9,7 @@ from .commands.input_date import date_input, DateInputDataParam, DateInputData
 from .commands.input_radioboxes import radioboxes, RadioboxesDataParam, RadioboxesData
 from .commands.input_text import textInput, TextInputDataParam, TextInputData
 from .commands.input_select_record import select_record, SelectRecordDataParam, SelectRecordData
+from .commands.input_select import select, SelectDataParam
 from .commands.output_grid import grid_from_list, GridDataParam
 from .commands.output_progress import progress, ProgressDataParam
 from .commands.output_text import text_block, TextDataParam
@@ -90,6 +91,12 @@ class OutputNamespace:
     
     def clear(self):
         return send(output_clear())
+    
+class InlineNamespace:
+    async def select(self, params: SelectDataParam):
+        response = await response_handler.send(select(params))
+        return response.data
+        
 
 class UiNamespace:
     def clear(self):
@@ -107,6 +114,7 @@ class UiNamespace:
     def success(self, text: UiText) -> StyledLogCommand:
         return StyledLogCommand(send(log.success(text)))
     dialog = DialogNamespace()
+    inline = InlineNamespace()
     show = ShowNamespace()
     window = WindowNamespace()
     on = OnNamespace()

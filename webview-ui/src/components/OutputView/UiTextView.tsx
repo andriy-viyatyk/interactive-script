@@ -2,10 +2,10 @@ import styled from "@emotion/styled";
 import { UiText } from "../../../../shared/ViewMessage";
 
 const UiTextViewRoot = styled.span({
-    display: "inline-block",
+    display: "contents",
     whiteSpace: "pre-wrap",
     "& .inner-span": {
-        display: "inline-block",
+        display: "contents",
     }
 });
 

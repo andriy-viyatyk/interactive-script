@@ -21,7 +21,7 @@ export type Command =
     | "input.radioboxes"
     | "input.selectRecord"
     | "input.date"
-    | "input.select"
+    | "inline.select"
     | "output.grid"
     | "output.text"
     | "output.progress"
