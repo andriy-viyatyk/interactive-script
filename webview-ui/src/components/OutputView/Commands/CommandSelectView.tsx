@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { OutputDialog } from "../OutputDialog/OutputDialog";
-import { SelectCommand } from "../../../../../shared/commands/input-select";
+import { SelectCommand } from "../../../../../shared/commands/inline-select";
 import { ViewMessage } from "../../../../../shared/ViewMessage";
 import { UiTextView } from "../UiTextView";
 import { OutputDialogButtons } from "../OutputDialog/OutputDialogButtons";
@@ -82,7 +82,7 @@ export function CommandSelectView({
                 defaultButtons={["!Proceed"]}
                 resultButton={item.data?.resultButton}
                 onClick={buttonClick}
-                required={!item.data?.result}
+                required={!item.data?.result && !item.data?.resultButton}
                 requiredHint="Select option to proceed."
                 inline
             />

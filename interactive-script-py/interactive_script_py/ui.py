@@ -9,8 +9,9 @@ from .commands.input_date import date_input, DateInputDataParam, DateInputData
 from .commands.input_radioboxes import radioboxes, RadioboxesDataParam, RadioboxesData
 from .commands.input_text import textInput, TextInputDataParam, TextInputData
 from .commands.input_select_record import select_record, SelectRecordDataParam, SelectRecordData
-from .commands.input_select import select, SelectDataParam
+from .commands.inline_select import select, SelectDataParam
 from .commands.inline_confirm import InlineConfirmDataParam, inline_confirm
+from .commands.inline_text import inlineTextInput
 from .commands.output_grid import grid_from_list, GridDataParam
 from .commands.output_progress import progress, ProgressDataParam
 from .commands.output_text import text_block, TextDataParam
@@ -101,6 +102,10 @@ class InlineNamespace:
     async def confirm(self, params: Union[UiText, InlineConfirmDataParam]) -> str:
         response = await response_handler.send(inline_confirm(params))
         return response.data.result if response.data.result else ""
+    
+    async def text_input(self, params: Union[UiText, TextInputDataParam]) -> TextInputData:
+        response = await response_handler.send(inlineTextInput(params))
+        return response.data
         
 
 class UiNamespace:

@@ -9,6 +9,7 @@ import { CheckIcon } from "../../../theme/icons";
 import { UiTextView } from "../UiTextView";
 import { useMemo } from "react";
 import clsx from "clsx";
+import color from "../../../theme/color";
 
 const OutputDialogButtonsRoot = styled.div({
     display: "flex",
@@ -23,6 +24,14 @@ const OutputDialogButtonsRoot = styled.div({
     "&.inline": {
         display: "contents",
     },
+    "& button": {
+        "&:focus": {
+            borderColor: color.border.active,
+        },
+        "&:focus-visible": {
+            outline: "none",
+        }
+    }
 });
 
 interface OutputDialogButtonsProps {

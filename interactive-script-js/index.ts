@@ -21,8 +21,9 @@ import { WindowGridData, WindowTextData } from "../shared/commands/window";
 import { DateInputCommand, DateInputData } from "../shared/commands/input-date";
 import { PackedGridArray } from "../shared/PackedGridArray";
 import { TextBlock } from "./src/objects/TextBlock";
-import { SelectCommand, SelectData } from "../shared/commands/input-select";
+import { SelectCommand, SelectData } from "../shared/commands/inline-select";
 import { InlineConfirmCommand, InlineConfirmData } from "../shared/commands/inline-confirm";
+import { InlineTextCommand } from "../shared/commands/inline-text";
 
 const ui = {
     ping: () => responseHandler.send(commands.ping()),
@@ -153,7 +154,19 @@ const ui = {
             } else {
                 return undefined;
             }
-        }
+        },
+
+        textInput: async (params: UiText | TextInputData) => {
+            const message = isUiText(params)
+                ? commands.inlineText({ title: params })
+                : commands.inlineText(params);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as InlineTextCommand).data;
+            } else {
+                return undefined;
+            }
+        },
     },
     show: {
         gridFromJsonArray: (data: any[] | GridData) => {

@@ -32,6 +32,7 @@ Command = Literal[
     "input.date",
     "inline.select",
     "inline.confirm",
+    "inline.text",
     "output.grid",
     "output.text",
     "output.progress",

@@ -31,7 +31,7 @@ const TextFieldRoot = styled(TextField)({
     "& input": {
         paddingTop: 0,
         paddingBottom: 0,
-        height: 28,
+        height: 26,
     },
     "&.active input": {
         borderColor: color.border.active,
@@ -225,7 +225,7 @@ export const ComboTemplate = forwardRef(function ComboTemplateComponent(
             type="icon"
             key="clear-button"
             onClick={handleClear}
-            className={clsx("clear-button", { "clear-button-visible": value })}
+            className={clsx("clear-button", { "clear-button-visible": value && !disabled })}
             disabled={disabled}
             tabIndex={-1}
         >
