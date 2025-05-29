@@ -24,6 +24,7 @@ import { TextBlock } from "./src/objects/TextBlock";
 import { SelectCommand, SelectData } from "../shared/commands/inline-select";
 import { InlineConfirmCommand, InlineConfirmData } from "../shared/commands/inline-confirm";
 import { InlineTextCommand } from "../shared/commands/inline-text";
+import { InlineDateInputCommand } from "../shared/commands/inline-date";
 
 const ui = {
     ping: () => responseHandler.send(commands.ping()),
@@ -163,6 +164,21 @@ const ui = {
             const response = await responseHandler.send(message);
             if (response) {
                 return (response as InlineTextCommand).data;
+            } else {
+                return undefined;
+            }
+        },
+
+        dateInput: async (params?: UiText | DateInputData) => {
+            const message = isUiText(params)
+                ? commands.inlineDate({ title: params })
+                : commands.inlineDate(params ?? {});
+            const response = await responseHandler.send(message);
+            if (response) {
+                if (response.data && response.data.result) {
+                    response.data.result = new Date(response.data.result);
+                }
+                return (response as InlineDateInputCommand).data;
             } else {
                 return undefined;
             }

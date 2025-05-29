@@ -19,6 +19,7 @@ import onConsole from './on-console';
 import output from './output';
 import inlineConfirm from './inline-confirm';
 import inlineText from './inline-text';
+import inlineDate from './inline-date';
 
 const commands = {
     ping,
@@ -41,7 +42,8 @@ const commands = {
     output,
     inputSelect,
     inlineConfirm,
-    inlineText
+    inlineText,
+    inlineDate,
 }
 
 export default commands;

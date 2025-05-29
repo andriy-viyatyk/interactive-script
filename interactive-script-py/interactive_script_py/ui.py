@@ -12,6 +12,7 @@ from .commands.input_select_record import select_record, SelectRecordDataParam, 
 from .commands.inline_select import select, SelectDataParam
 from .commands.inline_confirm import InlineConfirmDataParam, inline_confirm
 from .commands.inline_text import inlineTextInput
+from .commands.inline_date import inline_date_input
 from .commands.output_grid import grid_from_list, GridDataParam
 from .commands.output_progress import progress, ProgressDataParam
 from .commands.output_text import text_block, TextDataParam
@@ -105,6 +106,10 @@ class InlineNamespace:
     
     async def text_input(self, params: Union[UiText, TextInputDataParam]) -> TextInputData:
         response = await response_handler.send(inlineTextInput(params))
+        return response.data
+    
+    async def date_input(self, params: Optional[Union[UiText, DateInputDataParam]] = None) -> DateInputData:
+        response = await response_handler.send(inline_date_input(params))
         return response.data
         
 

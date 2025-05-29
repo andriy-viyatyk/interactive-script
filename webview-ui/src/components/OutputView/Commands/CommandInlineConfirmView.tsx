@@ -4,14 +4,7 @@ import { InlineConfirmCommand } from "../../../../../shared/commands/inline-conf
 import { UiTextView } from "../UiTextView";
 import { OutputDialogButtons } from "../OutputDialog/OutputDialogButtons";
 
-const CommandInlineConfirmViewRoot = styled(OutputDialog)({
-    display: "flex",
-    flexWrap: "wrap",
-    alignItems: "center",
-    columnGap: 8,
-    padding: '0 4px',
-    margin: '2px 0',
-});
+const CommandInlineConfirmViewRoot = styled(OutputDialog)({});
 
 interface CommandInlineConfirmViewProps {
     item: InlineConfirmCommand;
@@ -32,7 +25,7 @@ export function CommandInlineConfirmView({
     };
 
     return (
-        <CommandInlineConfirmViewRoot className="command-inline-confirm" active={!item.data?.result}>
+        <CommandInlineConfirmViewRoot className="inline command-inline-confirm" active={!item.data?.result}>
             <UiTextView uiText={item.data?.message} />
             <OutputDialogButtons
                 buttons={item.data?.buttons}

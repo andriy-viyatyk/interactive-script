@@ -7,17 +7,7 @@ import { OutputDialogButtons } from "../OutputDialog/OutputDialogButtons";
 import { ComboSelect } from "../../../controls/ComboSelect";
 import { useCallback } from "react";
 
-const CommandSelectViewRoot = styled(OutputDialog)({
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    padding: "0 4px",
-    columnGap: 8,
-    border: "none",
-    margin: 0,
-    marginTop: 2,
-});
+const CommandSelectViewRoot = styled(OutputDialog)({});
 
 interface CommandSelectViewProps {
     item: SelectCommand;
@@ -65,7 +55,7 @@ export function CommandSelectView({
     }, [item, replayMessage, updateMessage]);
 
     return (
-        <CommandSelectViewRoot>
+        <CommandSelectViewRoot className="inline">
             <UiTextView uiText={item.data?.label || ""} />
             <ComboSelect
                 selectFrom={options}

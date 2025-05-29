@@ -12,15 +12,6 @@ import { CloseIcon } from "../../../theme/icons";
 import { useCallback } from "react";
 
 const CommandInlineTextRoot = styled(OutputDialog)({
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    columnGap: 8,
-    padding: "0 4px",
-    margin: 0,
-    marginTop: 2,
-    border: "none",
     "& .command-inline-text-field": {
         "& input": {
             paddingTop: 0,
@@ -81,7 +72,7 @@ export function CommandInlineTextView({
     );
 
     return (
-        <CommandInlineTextRoot className="command-inline-text">
+        <CommandInlineTextRoot className="inline command-inline-text">
             <UiTextView uiText={item.data?.title} />
             <TextField
                 className={clsx("command-inline-text-field", {

@@ -7,6 +7,8 @@ import './index.css'
 import App from './App.tsx'
 import { mockData } from './mock-data.ts';
 import { Poppers } from './dialogs/Poppers.tsx';
+import { Global } from '@emotion/react';
+import { globalStyles } from './theme/global-styles.ts';
 
 declare function acquireVsCodeApi(): any;
 
@@ -26,6 +28,7 @@ function renderApp() {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <DndProvider backend={HTML5Backend}>
+        <Global styles={globalStyles} />
         <App />
         <Poppers />
       </DndProvider>
