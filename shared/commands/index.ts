@@ -12,10 +12,14 @@ import inputCheckboxes from './input-checkboxes';
 import inputRadioboxes from './input-radioboxes';
 import inputSelectRecord from './input-selectRecord';
 import inputDate from './input-date';
+import inputSelect from './inline-select';
 import viewReady from './view-ready';
 import script from './script';
 import onConsole from './on-console';
 import output from './output';
+import inlineConfirm from './inline-confirm';
+import inlineText from './inline-text';
+import inlineDate from './inline-date';
 
 const commands = {
     ping,
@@ -36,6 +40,10 @@ const commands = {
     script,
     onConsole,
     output,
+    inputSelect,
+    inlineConfirm,
+    inlineText,
+    inlineDate,
 }
 
 export default commands;

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import clsx from 'clsx';
-import { HTMLAttributes, useState } from 'react';
+import React from 'react';
+import { HTMLAttributes, ReactNode, useState } from 'react';
 
 const OverflowTooltipTextRoot = styled.span(
     {
@@ -11,6 +12,22 @@ const OverflowTooltipTextRoot = styled.span(
     },
     { name: 'OverflowTooltipText' },
 );
+
+function getTextFromReactChildren(children: ReactNode): string {
+    if (typeof children === 'string' || typeof children === 'number') {
+        return String(children);
+    }
+
+    if (Array.isArray(children)) {
+        return children.map(getTextFromReactChildren).join('');
+    }
+
+    if (React.isValidElement(children) && children.props && (children.props as any).children) {
+        return getTextFromReactChildren((children.props as any).children);
+    }
+
+    return '';
+}
 
 export function OverflowTooltipText(props: HTMLAttributes<HTMLSpanElement>) {
     const { className, children, ...rest } = props;
@@ -25,7 +42,7 @@ export function OverflowTooltipText(props: HTMLAttributes<HTMLSpanElement>) {
                 }
             }}
             onMouseOut={() => setOverflow(false)}
-            title={overflow ? children?.toString() : undefined}
+            title={overflow ? getTextFromReactChildren(children) : undefined}
             {...rest}
         >
             {children}

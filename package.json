@@ -4,7 +4,7 @@
     "description": "Provides interactive UI elements for the JS and TS scripts.",
     "publisher": "andriy-viyatyk",
     "author": "Andriy Viyatyk",
-    "version": "1.0.5-dev",
+    "version": "1.0.6",
     "repository": {
         "type": "git",
         "url": "https://github.com/andriy-viyatyk/interactive-script.git"
@@ -83,10 +83,7 @@
                 "command": "interactiveScript.clearConsole",
                 "title": "Clear Console",
                 "category": "Interactive Script",
-                "icon": {
-                    "light": "./icons/clear-console.svg",
-                    "dark": "./icons/clear-console.svg"
-                }
+                "icon": "$(clear-all)"
             },
             {
                 "command": "interactiveScript.openSettings",
@@ -206,10 +203,14 @@
     "keywords": [
         "interactive",
         "script",
-        "script runner",
+        "runner",
+        "ui",
+        "components",
         "typescript",
         "javascript",
+        "python",
         "json",
+        "csv",
         "grid",
         "preview"
     ],

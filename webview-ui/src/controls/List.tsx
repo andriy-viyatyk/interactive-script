@@ -1,4 +1,14 @@
-import { CSSProperties, ReactElement, ReactNode, useCallback, useEffect, useRef } from "react";
+import {
+    CSSProperties,
+    ForwardedRef,
+    forwardRef,
+    ReactElement,
+    ReactNode,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+} from "react";
 import clsx from "clsx";
 import styled from "@emotion/styled";
 
@@ -10,68 +20,71 @@ import { CheckIcon } from "../theme/icons";
 import { CircularProgress } from "./CircularProgress";
 import color from "../theme/color";
 import { OverflowTooltipText } from "./OverflowTooltipText";
+import { highlightText, useHighlightedText } from "./useHighlightedText";
 
 const NoRowsRoot = styled.div({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     "& >": {
         marginRight: 4,
     },
     "& .loading-indicator": {
-        width: 16, 
+        width: 16,
         height: 16,
         margin: 4,
         "& svg": {
             color: `${color.icon.light} !important`,
-        }
-    }
+        },
+    },
 });
 
 const ItemRoot = styled.div({
     paddingLeft: 4,
-    cursor: 'pointer',
+    cursor: "pointer",
     color: color.text.default,
-    '&:hover': {
+    flexDirection: "row",
+    columnGap: 6,
+    display: "inline-flex",
+    alignItems: "center",
+    overflow: "hidden",
+    "&.selected)": {
         backgroundColor: color.background.selection,
         color: color.text.selection,
     },
-    flexDirection: 'row',
-    columnGap: 6,
-    display: 'inline-flex',
-    alignItems: 'center',
-    overflow: 'hidden',
-    "&.selected": {
-    },
     "&.hovered": {
+        backgroundColor: color.background.selection,
+        color: color.text.selection,
     },
     "& .item-text": {
-        flex: '1 1',
-        whiteSpace: 'nowrap',
+        flex: "1 1",
+        whiteSpace: "nowrap",
     },
-    "& .item-selectedCheckIcon": {
-        position: 'absolute',
+    "& .selectedCheckIcon": {
+        position: "absolute",
         right: 6,
-        bottom: 8,
+        top: 4,
         width: 16,
         height: 16,
-    }
+    },
 });
 
-const RenderGridRoot = styled(RenderGrid)({
-    
-});
+const RenderGridRoot = styled(RenderGrid)({});
 
-export type ListOptionRenderer<O> = (props: {
-    index: number,
-    key: string | number,
-    style: CSSProperties,
-    onClick: (row: O, index?: number) => void,
-    row: O,
-    selected: boolean,
-    hovered: boolean,
+export const listItemHeight = 24;
+
+interface OptionProps<O> {
+    index: number;
+    key: string | number;
+    style: CSSProperties;
+    onClick: (row: O, index?: number) => void;
+    row: O;
+    selected: boolean;
+    hovered: boolean;
     onMouseHover?: (value: O, index?: number) => void;
-}) => ReactNode;
+}
+
+export type ListOptionRenderer<O> = (props: OptionProps<O>) => ReactNode;
 
 export interface ListProps<O> {
     options: readonly O[];
@@ -87,24 +100,109 @@ export interface ListProps<O> {
     rowHeight?: number;
     rowRenderer?: ListOptionRenderer<O>;
     className?: string;
-    growToHeight?: CSSProperties['height'];
+    growToHeight?: CSSProperties["height"];
+    whiteSpaceY?: number;
 }
 
-const columnWidth = () => '100%' as Percent;
+const columnWidth = () => "100%" as Percent;
 
-export function List<O = any>(props: Readonly<ListProps<O>>) {
+export interface ListRef {
+    grid: RenderGridModel | null;
+}
+
+function DefaultCell({
+    style,
+    optionClass,
+    selected,
+    hovered,
+    onClick: propsOnClick,
+    onMouseHover,
+    row,
+    index,
+    icon,
+    label,
+    ...other
+}: OptionProps<any> & {
+    optionClass?: string;
+    onMouseHover?: (value: any, index?: number) => void;
+    index: number;
+    icon?: ReactElement;
+    label?: string;
+}) {
+    const highlight = useHighlightedText();
+
+    const onMouseEnter = useCallback(() => {
+        onMouseHover?.(row, index);
+    }, [onMouseHover, row, index]);
+
+    const onClick = useCallback(() => {
+        propsOnClick(row, index);
+    }, [index, propsOnClick, row]);
+
+    return (
+        <ItemRoot
+            key={other.key}
+            style={style}
+            className={clsx(
+                {
+                    selected,
+                    hovered,
+                },
+                "list-item",
+                optionClass
+            )}
+            onClick={onClick}
+            onMouseEnter={onMouseEnter}
+        >
+            {Boolean(icon) && icon}
+            <OverflowTooltipText className="item-text">
+                {highlightText(highlight, label)}
+            </OverflowTooltipText>
+            {selected && <CheckIcon className="selectedCheckIcon" />}
+        </ItemRoot>
+    );
+}
+
+function ListComponent<O = any>(
+    props: Readonly<ListProps<O>>,
+    ref: ForwardedRef<ListRef>
+) {
     const gridRef = useRef<RenderGridModel | null>(null);
-    const {options, rowHeight, getSelected, getHovered, rowRenderer, onClick, getIcon,
-        getLabel: getLabelProps, getOptionClass, loading, emptyMessage, onMouseHover,
-        className, growToHeight} = props;
+    const {
+        options,
+        rowHeight,
+        getSelected,
+        getHovered,
+        rowRenderer,
+        onClick,
+        getIcon,
+        getLabel: getLabelProps,
+        getOptionClass,
+        loading,
+        emptyMessage,
+        onMouseHover,
+        className,
+        growToHeight,
+        whiteSpaceY,
+    } = props;
 
     useEffect(() => {
-        gridRef.current?.update({all: true});
-    }, 
-        [options, rowHeight, getSelected, getHovered, rowRenderer, onClick, getIcon,
-        getLabelProps, getOptionClass, loading, emptyMessage, onMouseHover,
-        className]
-    )
+        gridRef.current?.update({ all: true });
+    }, [
+        options,
+        rowHeight,
+        getSelected,
+        getHovered,
+        rowRenderer,
+        onClick,
+        getIcon,
+        getLabelProps,
+        getOptionClass,
+        loading,
+        emptyMessage,
+        onMouseHover,
+        className,
+    ]);
 
     const getLabel = useCallback(
         (option: O, index: number) => {
@@ -115,63 +213,83 @@ export function List<O = any>(props: Readonly<ListProps<O>>) {
         [getLabelProps]
     );
 
-    const optionClick = useCallback((row: O, index?: number) => {
-        onClick?.(row, index);
-        gridRef.current?.update({all: true});
-    }, [onClick])
+    const optionClick = useCallback(
+        (row: O, index?: number) => {
+            onClick?.(row, index);
+            gridRef.current?.update({ all: true });
+        },
+        [onClick]
+    );
 
-    const renderCell = useCallback<RenderCellFunc>(({row: index, key, style}) => {
-        const isSelected = getSelected ? getSelected(options[index]) : false;
-        const isHovered = getHovered ? getHovered(options[index]) : false;
-        const icon = getIcon?.(options[index], index);
-        const label = getLabel(options[index], index);
-        const optionClass = getOptionClass?.(options[index], index);
+    useImperativeHandle(
+        ref,
+        () => ({
+            grid: gridRef.current,
+        }),
+        []
+    );
 
-        const res = rowRenderer?.({
-            index,
-            key,
-            style,
-            onClick: optionClick,
-            row: options[index],
-            selected: isSelected,
-            hovered: isHovered,
+    const renderCell = useCallback<RenderCellFunc>(
+        ({ row: index, key, style }) => {
+            const isSelected = getSelected
+                ? getSelected(options[index])
+                : false;
+            const isHovered = getHovered?.(options[index]) ?? false;
+            const icon = getIcon?.(options[index], index);
+            const label = getLabel(options[index], index);
+            const optionClass = getOptionClass?.(options[index], index);
+
+            const res = rowRenderer?.({
+                index,
+                key,
+                style,
+                onClick: optionClick,
+                row: options[index],
+                selected: isSelected,
+                hovered: isHovered,
+                onMouseHover,
+            });
+            return (
+                res ?? (
+                    <DefaultCell
+                        key={key}
+                        style={style}
+                        optionClass={optionClass}
+                        selected={isSelected}
+                        hovered={isHovered}
+                        onClick={optionClick}
+                        onMouseHover={onMouseHover}
+                        row={options[index]}
+                        index={index}
+                        icon={icon}
+                        label={label}
+                    />
+                )
+            );
+        },
+        [
+            getSelected,
+            options,
+            getHovered,
+            getIcon,
+            getLabel,
+            getOptionClass,
+            rowRenderer,
+            optionClick,
             onMouseHover,
-        })
-        return res ?? (
-            <ItemRoot 
-                key={key} 
-                style={{...style}} 
-                className={clsx({
-                    selected: isSelected,
-                    hovered: isHovered,
-                }, "list-item", optionClass)}
-                onClick={() => optionClick(options[index], index)}
-                onMouseEnter={() => onMouseHover?.(options[index])}
-            >
-                {Boolean(icon) && icon}
-                <OverflowTooltipText className="item-text">{label}</OverflowTooltipText>
-                {isSelected &&
-                    <CheckIcon className="selectedCheckIcon"/>
-                }
-            </ItemRoot>
-        )
-    }, [options, rowRenderer, optionClick, getSelected, getHovered, getIcon, getLabel, getOptionClass, 
-        onMouseHover])
+        ]
+    );
 
     if (loading) {
         return (
             <NoRowsRoot>
-                <CircularProgress className="loading-indicator"/> Loading...
-            </NoRowsRoot>
-        )
-    }
-
-    if (!(options.length)){
-        return (
-            <NoRowsRoot>
-                {emptyMessage ?? 'No rows'}
+                <CircularProgress className="loading-indicator" /> Loading...
             </NoRowsRoot>
         );
+    }
+
+    if (!options.length) {
+        return <NoRowsRoot>{emptyMessage ?? "No rows"}</NoRowsRoot>;
     }
 
     return (
@@ -180,12 +298,17 @@ export function List<O = any>(props: Readonly<ListProps<O>>) {
             columnCount={1}
             rowCount={options.length}
             columnWidth={columnWidth}
-            rowHeight={rowHeight || 24}
+            rowHeight={rowHeight || listItemHeight}
             renderCell={renderCell}
             overscanRow={2}
             fitToWidth
             className={className}
             growToHeight={growToHeight}
+            whiteSpaceY={whiteSpaceY}
         />
-    )
+    );
 }
+
+export const List = forwardRef(ListComponent) as <O = any>(
+    props: React.PropsWithoutRef<ListProps<O>> & React.RefAttributes<ListRef>
+) => React.ReactElement | null;

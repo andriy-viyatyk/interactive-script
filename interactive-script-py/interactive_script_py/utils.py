@@ -19,6 +19,10 @@ from .commands.input_select_record import SelectRecordCommand
 from .commands.console import ConsoleCommand
 from .commands.output import OutputCommand
 from .commands.output_clear import OutputClearCommand
+from .commands.inline_select import SelectCommand
+from .commands.inline_confirm import InlineConfirmCommand
+from .commands.inline_text import InlineTextInputCommand
+from .commands.inline_date import InlineDateInputCommand
 
 MESSAGE_TYPE_MAPPING: Dict[str, type[ViewMessage]] = {
     "clear": ClearCommand,
@@ -35,6 +39,10 @@ MESSAGE_TYPE_MAPPING: Dict[str, type[ViewMessage]] = {
     "input.radioboxes": RadioboxesCommand,
     "input.text": TextInputCommand,
     "input.selectRecord": SelectRecordCommand,
+    "inline.select": SelectCommand,
+    "inline.confirm": InlineConfirmCommand,
+    "inline.text": InlineTextInputCommand,
+    "inline.date": InlineDateInputCommand,
     "output.grid": GridCommand,
     "output.progress": ProgressCommand,
     "output.text": TextCommand,

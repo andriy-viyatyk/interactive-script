@@ -23,6 +23,14 @@ import { isSelectRecordCommand } from "../../../../shared/commands/input-selectR
 import { CommandSelectRecordView } from "./Commands/CommandSelectRecordView";
 import { isDateInputCommand } from "../../../../shared/commands/input-date";
 import { CommandDateInputView } from "./Commands/CommandDateInputView";
+import { isSelectCommand } from "../../../../shared/commands/inline-select";
+import { CommandSelectView } from "./Commands/CommandSelectView";
+import { isInlineConfirmCommand } from "../../../../shared/commands/inline-confirm";
+import { CommandInlineConfirmView } from "./Commands/CommandInlineConfirmView";
+import { isInlineTextCommand } from "../../../../shared/commands/inline-text";
+import { CommandInlineTextView } from "./Commands/CommandInlineTextView";
+import { isInlineDateInputCommand } from "../../../../shared/commands/inline-date";
+import { CommandInlineDateView } from "./Commands/CommandInlineDateView";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
@@ -96,7 +104,15 @@ export const OutputItem = forwardRef(function OutputItemComponent(
     } else if (isSelectRecordCommand(item)) {
         el = <CommandSelectRecordView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     } else if (isDateInputCommand(item)) {
-        el = <CommandDateInputView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize}/>;
+        el = <CommandDateInputView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize} />;
+    } else if (isSelectCommand(item)) {
+        el = <CommandSelectView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
+    } else if (isInlineConfirmCommand(item)) {
+        el = <CommandInlineConfirmView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
+    } else if (isInlineTextCommand(item)) {
+        el = <CommandInlineTextView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
+    } else if (isInlineDateInputCommand(item)) {
+        el = <CommandInlineDateView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize} />;
     }
 
     return (

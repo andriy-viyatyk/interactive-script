@@ -9,6 +9,10 @@ from .commands.input_date import date_input, DateInputDataParam, DateInputData
 from .commands.input_radioboxes import radioboxes, RadioboxesDataParam, RadioboxesData
 from .commands.input_text import textInput, TextInputDataParam, TextInputData
 from .commands.input_select_record import select_record, SelectRecordDataParam, SelectRecordData
+from .commands.inline_select import select, SelectDataParam
+from .commands.inline_confirm import InlineConfirmDataParam, inline_confirm
+from .commands.inline_text import inlineTextInput
+from .commands.inline_date import inline_date_input
 from .commands.output_grid import grid_from_list, GridDataParam
 from .commands.output_progress import progress, ProgressDataParam
 from .commands.output_text import text_block, TextDataParam
@@ -90,6 +94,24 @@ class OutputNamespace:
     
     def clear(self):
         return send(output_clear())
+    
+class InlineNamespace:
+    async def select(self, params: SelectDataParam):
+        response = await response_handler.send(select(params))
+        return response.data
+    
+    async def confirm(self, params: Union[UiText, InlineConfirmDataParam]) -> str:
+        response = await response_handler.send(inline_confirm(params))
+        return response.data.result if response.data.result else ""
+    
+    async def text_input(self, params: Union[UiText, TextInputDataParam]) -> TextInputData:
+        response = await response_handler.send(inlineTextInput(params))
+        return response.data
+    
+    async def date_input(self, params: Optional[Union[UiText, DateInputDataParam]] = None) -> DateInputData:
+        response = await response_handler.send(inline_date_input(params))
+        return response.data
+        
 
 class UiNamespace:
     def clear(self):
@@ -107,6 +129,7 @@ class UiNamespace:
     def success(self, text: UiText) -> StyledLogCommand:
         return StyledLogCommand(send(log.success(text)))
     dialog = DialogNamespace()
+    inline = InlineNamespace()
     show = ShowNamespace()
     window = WindowNamespace()
     on = OnNamespace()

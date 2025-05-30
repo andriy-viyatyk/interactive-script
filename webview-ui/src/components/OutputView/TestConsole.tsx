@@ -6,6 +6,7 @@ import { FlexSpace } from "../../controls/FlexSpace";
 import { Button } from "../../controls/Button";
 import { newMessage, ViewMessage } from "../../../../shared/ViewMessage";
 import { v4 } from "uuid";
+import clsx from "clsx";
 
 const TestConsoleRoot = styled.div({
     height: "40%",
@@ -14,6 +15,10 @@ const TestConsoleRoot = styled.div({
     overflow: "hidden",
     borderTop: `1px solid ${color.border.default}`,
     flexShrink: 0,
+    "&.hidden": {
+        height: 30,
+        flexGrow: 0,
+    },
     '& .test-console-header': {
         backgroundColor: color.background.light,
         borderBottom: `1px solid ${color.border.default}`,
@@ -31,6 +36,7 @@ const TestConsoleRoot = styled.div({
 
 export function TestConsole() {
     const [text, setText] = useState(localStorage.getItem('test-console-text') || '');
+    const [hidden, setHidden] = useState(false);
 
     const setTextProxy = useCallback((text: string) => {
         setText(text);
@@ -50,18 +56,25 @@ export function TestConsole() {
         window.postMessage(message, "*");
     }, []);
 
+    const toggleHidden = useCallback(() => {
+        setHidden((prev) => !prev);
+    }, []);
+
     return (
-        <TestConsoleRoot>
+        <TestConsoleRoot className={clsx("test-console", { hidden })}>
             <div className="test-console-header">
+                <Button size="mini" onClick={toggleHidden}>{hidden ? "Expand" : "Collapse"}</Button>
                 <FlexSpace />
                 <Button size="mini" onClick={clearClick}>Clear</Button>
                 <Button size="mini" onClick={sendClick}>Send</Button>
             </div>
-            <TextAreaField 
-                onChange={setTextProxy}
-                className="test-console-textarea"
-                value={text}
-            />
+            {!hidden && (
+                <TextAreaField
+                    onChange={setTextProxy}
+                    className="test-console-textarea"
+                    value={text}
+                />
+            )}
         </TestConsoleRoot>
     );
 }

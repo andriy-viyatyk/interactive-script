@@ -23,6 +23,7 @@ interface UseFocusProps {
     setFocus?: (value?: SetStateAction<CellFocus | undefined>) => void;
     getRowKey: (row: any) => string;
     renderGridRef: RefObject<RenderGridModel | null>;
+    onMouseDown?: (e: React.MouseEvent) => void;
 }
 
 type SelType = 'click' | 'shiftClick' | 'rightClick' | 'startDrag' | 'drag';
@@ -59,6 +60,7 @@ export function useFocus({
     setFocus,
     getRowKey,
     renderGridRef,
+    onMouseDown: propsOnMouseDown,
 }: UseFocusProps) {
     const updateFocus = useCallback(
         (
@@ -210,8 +212,9 @@ export function useFocus({
                         ? 'click'
                         : 'rightClick',
             );
+            propsOnMouseDown?.(e);
         },
-        [updateFocus],
+        [propsOnMouseDown, updateFocus],
     );
 
     const onDragStart = useCallback<CellDragEvent>(

@@ -160,6 +160,12 @@ APIs include:
   - `ui.dialog.radioboxes()`
   - `ui.dialog.selectRecord()`
 
+- **Inline Components**
+  - `ui.input.select)()`
+  - `ui.inline.confirm()`
+  - `ui.inline.textInput()`
+  - `ui.inline.dateInput()`
+
 - **Output Components**
   - `ui.show.gridFromJsonArray()`
   - `ui.show.textBlock()`
@@ -186,13 +192,19 @@ APIs are similar to the JavaScript version, including:
   - `ui.output.append()`, `ui.output.clear()`
 
 - **Dialogs**
-  - `await ui.dialog.confirm()`
-  - `await ui.dialog.buttons()`
-  - `await ui.dialog.checkboxes()`
-  - `await ui.dialog.radioboxes()`
-  - `await ui.dialog.date_input()`
-  - `await ui.dialog.text_input()`
-  - `await ui.dialog.select_record()`
+  - `ui.dialog.confirm()`
+  - `ui.dialog.buttons()`
+  - `ui.dialog.checkboxes()`
+  - `ui.dialog.radioboxes()`
+  - `ui.dialog.date_input()`
+  - `ui.dialog.text_input()`
+  - `ui.dialog.select_record()`
+
+- **Inline Components**
+  - `ui.inline.select()`
+  - `ui.inline.confirm`
+  - `ui.inline.text_input()`
+  - `ui.inline.date_input()`
 
 - **Output Components**
   - `ui.show.grid_from_list()`

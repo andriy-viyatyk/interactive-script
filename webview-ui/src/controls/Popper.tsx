@@ -1,14 +1,25 @@
-import { ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
+import {
+    ForwardedRef,
+    forwardRef,
+    ReactNode,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+} from "react";
 import {
     Placement,
     useFloating,
     VirtualElement,
     offset as floadingOffset,
     flip,
+    useMergeRefs,
+    autoUpdate,
 } from "@floating-ui/react";
 import styled from "@emotion/styled";
 import color from "../theme/color";
 import { ResizeHandleIcon } from "../theme/icons";
+import clsx from "clsx";
 
 export const PopperRoot = styled.div({
     backgroundColor: color.background.default,
@@ -27,6 +38,12 @@ export const PopperRoot = styled.div({
         height: 10,
         cursor: "nwse-resize",
         color: color.icon.light,
+        "&.isTopPlacement": {
+            bottom: "auto",
+            top: 0,
+            cursor: "nesw-resize",
+            transform: "rotate(-90deg)",
+        },
     },
 });
 
@@ -46,9 +63,13 @@ export interface PopperProps extends PopperPosition {
     onClose?: () => void;
     onKeyDown?: (event: React.KeyboardEvent) => void;
     onResize?: (width: number, height: number) => void;
+    tabIndex?: number;
 }
 
-export function Popper(props: PopperProps) {
+export const Popper = forwardRef(function PopperComponent(
+    props: PopperProps,
+    ref: ForwardedRef<HTMLDivElement | null>
+) {
     const {
         className,
         elementRef,
@@ -62,9 +83,12 @@ export function Popper(props: PopperProps) {
         onKeyDown,
         resizable,
         onResize,
+        tabIndex,
     } = props;
 
-    const initialSizeRef = useRef<{ width: number; height: number } | null>(null);
+    const initialSizeRef = useRef<{ width: number; height: number } | null>(
+        null
+    );
     const placeRef = useMemo<Element | VirtualElement | undefined>(() => {
         if (elementRef) {
             return elementRef;
@@ -93,7 +117,7 @@ export function Popper(props: PopperProps) {
         [onClose]
     );
 
-    const { refs, floatingStyles } = useFloating({
+    const { refs, floatingStyles, placement: actualPlacement } = useFloating({
         open,
         onOpenChange,
         placement,
@@ -109,34 +133,40 @@ export function Popper(props: PopperProps) {
                       ],
                   }),
               ]
-            : [],
+            : [
+                  flip({
+                      fallbackPlacements: [
+                          "bottom-start",
+                          "bottom-end",
+                          "top-start",
+                          "top-end",
+                      ],
+                  }),
+              ],
         strategy: "fixed",
+        whileElementsMounted: autoUpdate,
     });
+
+    const isTopPlacement = actualPlacement.startsWith("top");
+
+    const internalRef = useRef<HTMLDivElement | null>(null);
+    const mergedRefs = useMergeRefs([refs.setFloating, ref, internalRef]);
 
     useEffect(() => {
         refs.setPositionReference(placeRef ?? null);
     }, [placeRef, refs]);
 
-    useEffect(() => {
-        if (refs.floating.current) {
-            const { width, height } = refs.floating.current.getBoundingClientRect();
-            if (initialSizeRef.current === null) {
-                initialSizeRef.current = { width, height };
-            }
-        }
-    }, [refs.floating]);
-
     const handleClickOutside = useCallback(
         (event: MouseEvent) => {
             if (
                 open &&
-                refs.floating.current &&
-                !refs.floating.current.contains(event.target as Node)
+                internalRef.current &&
+                !internalRef.current.contains(event.target as Node)
             ) {
                 onClose?.();
             }
         },
-        [onClose, open, refs.floating]
+        [onClose, open, internalRef]
     );
 
     useEffect(() => {
@@ -152,29 +182,48 @@ export function Popper(props: PopperProps) {
             return;
         }
 
-        const currentTarget = refs.floating.current;
+        if (!internalRef.current) {
+            return;
+        }
+
+        if (!initialSizeRef.current) {
+            const { width: initialWidth, height: initialHeight } =
+                internalRef.current.getBoundingClientRect();
+            initialSizeRef.current = {
+                width: initialWidth,
+                height: initialHeight,
+            };
+        }
+
+        const currentTarget = internalRef.current;
 
         if (!currentTarget) {
             return;
         }
 
         const { pointerId } = event;
-        const { right, bottom } = currentTarget.getBoundingClientRect();
-        const offsetX = right - event.clientX;
-        const offsetY = bottom - event.clientY;
+        const { width: startingWidth, height: startingHeight } =currentTarget.getBoundingClientRect();
+        const startingX = event.clientX;
+        const startingY = event.clientY;
 
         function onPointerMove(e: PointerEvent) {
             if (!initialSizeRef.current) {
                 return;
             }
-            const { width: initialWidth, height: initialHeight } = initialSizeRef.current;
+            const { width: initialWidth, height: initialHeight } =
+                initialSizeRef.current;
+
             e.preventDefault();
-            const { left, top } = currentTarget!.getBoundingClientRect();
-            const width = e.clientX + offsetX - left;
-            const height = e.clientY + offsetY - top;
-            if (width > 0 && height > 0 && width > initialWidth && height > initialHeight) {
-                refs.floating.current?.style.setProperty("width", `${width}px`);
-                refs.floating.current?.style.setProperty("height", `${height}px`);
+            const width = startingWidth + e.clientX - startingX;
+            const height = isTopPlacement ? (startingHeight + - e.clientY + startingY) : (startingHeight + e.clientY - startingY);
+            if (
+                width > 0 &&
+                height > 0 &&
+                width > initialWidth &&
+                height > initialHeight
+            ) {
+                internalRef.current?.style.setProperty("width", `${width}px`);
+                internalRef.current?.style.setProperty("height", `${height}px`);
                 onResize?.(width, height);
             }
         }
@@ -201,18 +250,19 @@ export function Popper(props: PopperProps) {
 
     return (
         <PopperRoot
-            ref={refs.setFloating}
+            ref={mergedRefs}
             className={className}
             style={{ ...floatingStyles, zIndex: 1000 }}
             onKeyDown={onKeyDown}
+            tabIndex={tabIndex}
         >
             {children}
             {resizable && (
                 <ResizeHandleIcon
-                    className="resize-handle"
+                    className={clsx("resize-handle", {isTopPlacement})}
                     onPointerDown={onPointerDown}
                 />
             )}
         </PopperRoot>
     );
-}
+});

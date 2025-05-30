@@ -6,4 +6,15 @@ export const OutputDialog = styled.div<{active?: boolean}>(props => ({
     border: `1px solid ${props.active ? color.border.active : color.border.default}`,
     borderRadius: 4,
     maxHeight: 400,
+    "&.inline": {
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        alignItems: "center",
+        padding: "0 4px",
+        columnGap: 8,
+        border: "none",
+        margin: 0,
+        marginTop: 2,
+    }
 }));

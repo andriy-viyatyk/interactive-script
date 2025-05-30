@@ -21,6 +21,10 @@ import { WindowGridData, WindowTextData } from "../shared/commands/window";
 import { DateInputCommand, DateInputData } from "../shared/commands/input-date";
 import { PackedGridArray } from "../shared/PackedGridArray";
 import { TextBlock } from "./src/objects/TextBlock";
+import { SelectCommand, SelectData } from "../shared/commands/inline-select";
+import { InlineConfirmCommand, InlineConfirmData } from "../shared/commands/inline-confirm";
+import { InlineTextCommand } from "../shared/commands/inline-text";
+import { InlineDateInputCommand } from "../shared/commands/inline-date";
 
 const ui = {
     ping: () => responseHandler.send(commands.ping()),
@@ -129,6 +133,56 @@ const ui = {
             }
         }
 
+    },
+    inline: {
+        select: async <T = any>(options: SelectData<T>) => {
+            const message = commands.inputSelect(options);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as SelectCommand<T>).data;
+            } else {
+                return undefined;
+            }
+        },
+
+        confirm: async (params: UiText | InlineConfirmData) => {
+            const message = isUiText(params)
+                ? commands.inlineConfirm({ message: params })
+                : commands.inlineConfirm(params);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as InlineConfirmCommand).data?.result;
+            } else {
+                return undefined;
+            }
+        },
+
+        textInput: async (params: UiText | TextInputData) => {
+            const message = isUiText(params)
+                ? commands.inlineText({ title: params })
+                : commands.inlineText(params);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as InlineTextCommand).data;
+            } else {
+                return undefined;
+            }
+        },
+
+        dateInput: async (params?: UiText | DateInputData) => {
+            const message = isUiText(params)
+                ? commands.inlineDate({ title: params })
+                : commands.inlineDate(params ?? {});
+            const response = await responseHandler.send(message);
+            if (response) {
+                if (response.data && response.data.result) {
+                    response.data.result = new Date(response.data.result);
+                }
+                return (response as InlineDateInputCommand).data;
+            } else {
+                return undefined;
+            }
+        },
     },
     show: {
         gridFromJsonArray: (data: any[] | GridData) => {

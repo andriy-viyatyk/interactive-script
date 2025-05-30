@@ -113,16 +113,28 @@ const RenderGridStyled = styled(RenderGrid)(
             pointerEvents: "none",
         },
         "& .data-cell.inSelectionTop:not(.focused)::before": {
-            borderTop: `1px solid ${color.grid.selectionColor.border}`,
+            borderTop: `1px solid ${color.border.default}`,
+        },
+        "&:focus .data-cell.inSelectionTop:not(.focused)::before": {
+            borderColor: color.grid.selectionColor.border
         },
         "& .data-cell.inSelectionBottom:not(.focused)::before": {
-            borderBottom: `1px solid ${color.grid.selectionColor.border}`,
+            borderBottom: `1px solid ${color.border.default}`,
+        },
+        "&:focus .data-cell.inSelectionBottom:not(.focused)::before": {
+            borderColor: color.grid.selectionColor.border,
         },
         "& .data-cell.inSelectionLeft:not(.focused)::before": {
-            borderLeft: `1px solid ${color.grid.selectionColor.border}`,
+            borderLeft: `1px solid ${color.border.default}`,
+        },
+        "&:focus .data-cell.inSelectionLeft:not(.focused)::before": {
+            borderColor: color.grid.selectionColor.border,
         },
         "& .data-cell.inSelectionRight:not(.focused)::before": {
-            borderRight: `1px solid ${color.grid.selectionColor.border}`,
+            borderRight: `1px solid ${color.border.default}`,
+        },
+        "&:focus .data-cell.inSelectionRight:not(.focused)::before": {
+            borderColor: color.grid.selectionColor.border,
         },
         "& .data-cell.focused::before": {
             content: "''",
@@ -133,7 +145,10 @@ const RenderGridStyled = styled(RenderGrid)(
             right: 0,
             backgroundColor: color.grid.selectionColor.selected,
             pointerEvents: "none",
-            border: `1px solid ${color.grid.selectionColor.border}`,
+            border: `1px solid ${color.border.default}`,
+        },
+        "&:focus .data-cell.focused::before": {
+            borderColor: color.grid.selectionColor.border,
         },
         "& .cell-check-icon": {
             width: 16,
@@ -219,6 +234,8 @@ export interface AVGridProps<R> {
     filters?: TFilter[];
     onVisibleRowsChanged?: () => void;
     scrollToFocus?: boolean;
+    onMouseDown?: (e: React.MouseEvent) => void;
+    focusOnClick?: boolean;
 }
 
 export type AVGridRef = {
@@ -257,6 +274,8 @@ function AVGridComponent<R = any>(
         filters,
         onVisibleRowsChanged,
         scrollToFocus,
+        onMouseDown: propsOnMouseDown,
+        focusOnClick,
     } = props;
 
     const renderGridRef = useRef<RenderGridModel>(null);
@@ -303,6 +322,18 @@ function AVGridComponent<R = any>(
 
     const { hovered, setHovered } = useHovered({ update });
 
+    const handleMouseDown = useCallback((e: React.MouseEvent) => {
+        propsOnMouseDown?.(e);
+        if (focusOnClick) {
+            setTimeout(() => {
+                const renderGrid = renderGridRef.current?.gridRef?.current;
+                if (renderGrid && document.activeElement !== renderGrid) {
+                    renderGrid.focus();
+                }
+            }, 50);
+        }
+    }, [focusOnClick, propsOnMouseDown]);
+
     const {
         onMouseDown: onMouseDownFocus,
         onDragStart,
@@ -316,6 +347,7 @@ function AVGridComponent<R = any>(
         setFocus,
         getRowKey,
         renderGridRef,
+        onMouseDown: handleMouseDown,
     });
 
     const {
