@@ -31,7 +31,14 @@ export type Command =
     | "window.grid"
     | "window.text"
     | "on.console.log"
-    | "on.console.error";
+    | "on.console.error"
+    | "file.open"
+    | "file.save"
+    | "file.openFolder"
+    | "file.showOpen"
+    | "file.showSave"
+    | "file.showOpenFolder"
+    | "file.exists";
 
 export interface ViewMessage<T = any> {
     command: Command;

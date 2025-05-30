@@ -43,7 +43,7 @@ export interface TextAreaFieldRef {
 function innerTextToString(text: string): string {
     if (text === "\n") {
         return "";
-    } else if (text.endsWith("\n\n")) {
+    } else if (text.endsWith("\n")) {
         return text.slice(0, -1);
     }
     return text;

@@ -8,20 +8,19 @@ import { commandLine } from "../../shared/constants";
 import {
     isWindowGridCommand,
     isWindowTextCommand,
-    WindowGridCommand,
-    WindowTextCommand,
 } from "../../shared/commands/window";
-import vars from "../vars";
-import views from "../web-view/Views";
-import { ViewMessage } from "../../shared/ViewMessage";
+import { uiTextToString, ViewMessage } from "../../shared/ViewMessage";
 import { SubscriptionObject } from "../utils/events";
 import { isScriptStopCommand } from "../../shared/commands/script";
-import { handleWindowGridCommand, handleWindowTextCommand } from "../utils/common-commands";
+import { handleFileOpenCommand, handleFileOpenFolderCommand, handleFileSaveCommand, handleWindowGridCommand, handleWindowTextCommand, showOpenDialog } from "../utils/common-commands";
 import { isOnConsoleCommand, isOnConsoleLogCommand, OnConsoleCommand } from "../../shared/commands/on-console";
 import { isOutputClearCommand, isOutputCommand } from "../../shared/commands/output";
 import { clearOutput, writeOutput } from "../utils/output-channel";
 import { getPythonPath } from "../utils/python-utils";
 import { WorkingDirectoryType } from "../types";
+import { isFileOpenCommand } from "../../shared/commands/file-open";
+import { isFileSaveCommand } from "../../shared/commands/file-save";
+import { isFileOpenFolderCommand } from "../../shared/commands/file-openFolder";
 
 export class RunningProcess extends vscode.Disposable {
     private child: cp.ChildProcessWithoutNullStreams | null = null;
@@ -236,6 +235,18 @@ export class RunningProcess extends vscode.Disposable {
                     writeOutput(commandObj.data ?? "");
                 } else if (isOutputClearCommand(commandObj)) {
                     clearOutput();
+                } else if (isFileOpenCommand(commandObj)) {
+                    handleFileOpenCommand(commandObj, (replayCommand) => {
+                        this.sendToProcess(replayCommand);
+                    });
+                } else if (isFileSaveCommand(commandObj)) {
+                    handleFileSaveCommand(commandObj, (replayCommand) => {
+                        this.sendToProcess(replayCommand);
+                    });
+                } else if (isFileOpenFolderCommand(commandObj)) {
+                    handleFileOpenFolderCommand(commandObj, (replayCommand) => {
+                        this.sendToProcess(replayCommand);
+                    });
                 } else {
                     this.view?.messageToOutput(commandObj);
                 }

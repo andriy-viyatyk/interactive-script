@@ -25,6 +25,12 @@ import { SelectCommand, SelectData } from "../shared/commands/inline-select";
 import { InlineConfirmCommand, InlineConfirmData } from "../shared/commands/inline-confirm";
 import { InlineTextCommand } from "../shared/commands/inline-text";
 import { InlineDateInputCommand } from "../shared/commands/inline-date";
+import { FileOpenCommand, FileOpenData } from "../shared/commands/file-open";
+import { FileOpenFolderCommand, FileOpenFolderData } from "../shared/commands/file-openFolder";
+import { FileSaveCommand, FileSaveData } from "../shared/commands/file-save";
+import { FileShowOpenCommand, FileShowOpenData } from "../shared/commands/file-showOpen";
+import { FileShowSaveCommand, FileShowSaveData } from "../shared/commands/file-showSave";
+import { FileShowOpenFolderCommand, FileShowOpenFolderData } from "../shared/commands/file-showOpenFolder";
 
 const ui = {
     ping: () => responseHandler.send(commands.ping()),
@@ -240,6 +246,79 @@ const ui = {
             });
             return subscription;
         },
+    },
+    file: {
+        open: async (data?: string | FileOpenData) => {
+            const message = !data || typeof data === "string"
+                ? commands.fileOpen({ label: data })
+                : commands.fileOpen(data);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as FileOpenCommand).data?.result;
+            } else {
+                return undefined;
+            }
+        },
+
+        openFolder: async (data?: string | FileOpenFolderData) => {
+            const message = !data || typeof data === "string"
+                ? commands.fileOpenFolder({ label: data })
+                : commands.fileOpenFolder(data);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as FileOpenFolderCommand).data?.result;
+            } else {
+                return undefined;
+            }
+        },
+
+        save: async (data?: string | FileSaveData) => {
+            const message = !data || typeof data === "string"
+                ? commands.fileSave({ label: data })
+                : commands.fileSave(data);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as FileSaveCommand).data?.result;
+            } else {
+                return undefined;
+            }
+        },
+
+        showOpen: async (data?: UiText | FileShowOpenData) => {
+            const message = !data || isUiText(data)
+                ? commands.fileShowOpen({ label: data })
+                : commands.fileShowOpen(data);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as FileShowOpenCommand).data?.result;
+            } else {
+                return undefined;
+            }
+        },
+
+        showSave: async (data?: UiText | FileShowSaveData) => {
+            const message = !data || isUiText(data)
+                ? commands.fileShowSave({ label: data })
+                : commands.fileShowSave(data);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as FileShowSaveCommand).data?.result;
+            } else {
+                return undefined;
+            }
+        },
+
+        showOpenFolder: async (data?: string | FileShowOpenFolderData) => {
+            const message = !data || typeof data === "string"
+                ? commands.fileShowOpenFolder({ label: data })
+                : commands.fileShowOpenFolder(data);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as FileShowOpenFolderCommand).data?.result;
+            } else {
+                return undefined;
+            }
+        }
     }
 };
 

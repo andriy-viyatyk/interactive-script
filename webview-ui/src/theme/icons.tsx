@@ -473,8 +473,34 @@ export const StopIcon = createIcon(24)(
 );
 
 export const ClearConsoleIcon = createIcon(16)(
-    <path 
-        d="M10 12.6l.7.7 1.6-1.6 1.6 1.6.8-.7L13 11l1.7-1.6-.8-.8-1.6 1.7-1.6-1.7-.7.8 1.6 1.6-1.6 1.6zM1 4h14V3H1v1zm0 3h14V6H1v1zm8 2.5V9H1v1h8v-.5zM9 13v-1H1v1h8z" 
-        fill="currentColor"    
+    <path
+        d="M10 12.6l.7.7 1.6-1.6 1.6 1.6.8-.7L13 11l1.7-1.6-.8-.8-1.6 1.7-1.6-1.7-.7.8 1.6 1.6-1.6 1.6zM1 4h14V3H1v1zm0 3h14V6H1v1zm8 2.5V9H1v1h8v-.5zM9 13v-1H1v1h8z"
+        fill="currentColor"
+    />
+);
+
+export const FileSearchIcon = createIcon(24)(
+    <g
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M4 22h14a2 2 0 002-2V7.5L14.5 2H6a2 2 0 00-2 2v3" />
+        <path d="M14 2v6h6" />
+        <path d="M5 17a3 3 0 100-6 3 3 0 000 6z" />
+        <path d="M9 18l-1.5-1.5" />
+    </g>
+);
+
+export const FolderOpenIcon = createIcon(24)(
+    <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6 17l2-5h14l-3 8a2 2 0 01-2 1H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h7a2 2 0 012 2v4"
     />
 );

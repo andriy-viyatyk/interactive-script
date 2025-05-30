@@ -14,6 +14,7 @@ import { Button } from "../../controls/Button";
 import { ARightIcon, ClearConsoleIcon, StopIcon } from "../../theme/icons";
 import { OutputViewProvider, UseItemStateFn } from "./OutputViewContext";
 import { resolveState } from "../../common/utils/utils";
+import { responseHandler } from "../responseHandler";
 
 const OutputRoot = styled(GlobalRoot)({
     position: "absolute",
@@ -50,6 +51,10 @@ class OutputViewModel extends TModel<OutputViewState> {
     onWindowMessage = (event: MessageEvent<any>) => {
         const message = event.data as ViewMessage;
         if (message?.command) {
+            if (responseHandler.handleResponse(message)) {
+                return;
+            }
+
             switch (message.command) {
                 case "ping":
                     this.replayMessage(message);
