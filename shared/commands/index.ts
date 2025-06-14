@@ -20,6 +20,13 @@ import output from './output';
 import inlineConfirm from './inline-confirm';
 import inlineText from './inline-text';
 import inlineDate from './inline-date';
+import fileOpen from './file-open';
+import fileSave from './file-save';
+import fileOpenFolder from './file-openFolder';
+import fileShowOpen from './file-showOpen';
+import fileShowSave from './file-showSave';
+import fileShowOpenFolder from './file-showOpenFolder';
+import fileExists from './file-exists';
 
 const commands = {
     ping,
@@ -44,6 +51,13 @@ const commands = {
     inlineConfirm,
     inlineText,
     inlineDate,
+    fileOpen,
+    fileSave,
+    fileOpenFolder,
+    fileShowOpen,
+    fileShowSave,
+    fileShowOpenFolder,
+    fileExists,
 }
 
 export default commands;

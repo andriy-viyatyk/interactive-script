@@ -4,7 +4,7 @@
     "description": "Provides interactive UI elements for the JS and TS scripts.",
     "publisher": "andriy-viyatyk",
     "author": "Andriy Viyatyk",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "repository": {
         "type": "git",
         "url": "https://github.com/andriy-viyatyk/interactive-script.git"

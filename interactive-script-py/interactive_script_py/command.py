@@ -41,6 +41,13 @@ Command = Literal[
     "window.text",
     "on.console.log",
     "on.console.error",
+    "file.open",
+    "file.save",
+    "file.openFolder",
+    "file.showOpen",
+    "file.showSave",
+    "file.showOpenFolder",
+    "file.exists"
 ]
 
 # ──────── SHARED DATA TYPES ────────

@@ -105,6 +105,7 @@ export interface ButtonProps extends ParentType {
     tooltip?: ReactNode;
     extraPadding?: boolean;
     disabled?: boolean;
+    showLoading?: boolean;
 }
 
 export const Button = forwardRef(function ButtonComponent(props: Readonly<ButtonProps>, ref: Ref<HTMLButtonElement>) {
@@ -119,6 +120,7 @@ export const Button = forwardRef(function ButtonComponent(props: Readonly<Button
         tooltip,
         extraPadding: textPadding,
         disabled,
+        showLoading,
         ...other
     } = props;
     const id = useMemo(() => uuidv4(), []);
@@ -130,7 +132,7 @@ export const Button = forwardRef(function ButtonComponent(props: Readonly<Button
                 e.stopPropagation();
                 e.preventDefault();
                 const mayBePromise = onClick(e);
-                if (mayBePromise instanceof Promise) {
+                if (showLoading && mayBePromise instanceof Promise) {
                     setLoading(true);
                     mayBePromise.finally(() => {
                         setLoading(false);
@@ -138,7 +140,7 @@ export const Button = forwardRef(function ButtonComponent(props: Readonly<Button
                 }
             }
             : undefined;
-    }, [onClick]);
+    }, [onClick, showLoading]);
 
     return (
         <>

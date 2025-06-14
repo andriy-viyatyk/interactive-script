@@ -31,6 +31,10 @@ import { isInlineTextCommand } from "../../../../shared/commands/inline-text";
 import { CommandInlineTextView } from "./Commands/CommandInlineTextView";
 import { isInlineDateInputCommand } from "../../../../shared/commands/inline-date";
 import { CommandInlineDateView } from "./Commands/CommandInlineDateView";
+import { CommandFileOpenView } from "./Commands/CommandFileOpenView";
+import { isFileShowOpenCommand } from "../../../../shared/commands/file-showOpen";
+import { isFileShowOpenFolderCommand } from "../../../../shared/commands/file-showOpenFolder";
+import { isFileShowSaveCommand } from "../../../../shared/commands/file-showSave";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
@@ -113,6 +117,12 @@ export const OutputItem = forwardRef(function OutputItemComponent(
         el = <CommandInlineTextView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     } else if (isInlineDateInputCommand(item)) {
         el = <CommandInlineDateView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize} />;
+    } else if (isFileShowOpenCommand(item)) {
+        el = <CommandFileOpenView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize} />;
+    } else if (isFileShowOpenFolderCommand(item)) {
+        el = <CommandFileOpenView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize} />;
+    } else if (isFileShowSaveCommand(item)) {
+        el = <CommandFileOpenView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize} />;
     }
 
     return (

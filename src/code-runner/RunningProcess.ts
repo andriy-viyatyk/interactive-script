@@ -8,20 +8,19 @@ import { commandLine } from "../../shared/constants";
 import {
     isWindowGridCommand,
     isWindowTextCommand,
-    WindowGridCommand,
-    WindowTextCommand,
 } from "../../shared/commands/window";
-import vars from "../vars";
-import views from "../web-view/Views";
-import { ViewMessage } from "../../shared/ViewMessage";
+import { uiTextToString, ViewMessage } from "../../shared/ViewMessage";
 import { SubscriptionObject } from "../utils/events";
 import { isScriptStopCommand } from "../../shared/commands/script";
-import { handleWindowGridCommand, handleWindowTextCommand } from "../utils/common-commands";
+import { handleFileOpenCommand, handleFileOpenFolderCommand, handleFileSaveCommand, handleWindowGridCommand, handleWindowTextCommand, showOpenDialog } from "../utils/common-commands";
 import { isOnConsoleCommand, isOnConsoleLogCommand, OnConsoleCommand } from "../../shared/commands/on-console";
 import { isOutputClearCommand, isOutputCommand } from "../../shared/commands/output";
 import { clearOutput, writeOutput } from "../utils/output-channel";
 import { getPythonPath } from "../utils/python-utils";
 import { WorkingDirectoryType } from "../types";
+import { isFileOpenCommand } from "../../shared/commands/file-open";
+import { isFileSaveCommand } from "../../shared/commands/file-save";
+import { isFileOpenFolderCommand } from "../../shared/commands/file-openFolder";
 
 export class RunningProcess extends vscode.Disposable {
     private child: cp.ChildProcessWithoutNullStreams | null = null;
@@ -31,6 +30,7 @@ export class RunningProcess extends vscode.Disposable {
     private subscriptions: SubscriptionObject[] = [];
     private onConsoleLog: OnConsoleCommand | undefined;
     private onConsoleError: OnConsoleCommand | undefined;
+    private unprocessedLine: string = '';
 
     constructor(view: WebView, callOnDispose: () => any) {
         super(callOnDispose);
@@ -104,13 +104,49 @@ export class RunningProcess extends vscode.Disposable {
 
     private onStdout = (data: Buffer) => {
         if (!this.isRunning) return;
-        const text = data.toString();
+        let text = data.toString();
+        if (this.unprocessedLine) {
+            text = this.unprocessedLine + text;
+            this.unprocessedLine = '';
+        }
         const lines = text.split("\n");
         if (lines.length && lines[lines.length - 1] === "") {
             lines.pop();
         }
-        lines.forEach(this.onLine);
+        const normalizedLines = this.normalizeCommandLines(lines);
+        normalizedLines.forEach(this.onLine);
     };
+
+    private normalizeCommandLines = (lines: string[]) => {
+        const resultLines: string[] = [];
+        let currentLine = '';
+        while (lines.length) {
+            currentLine += lines.shift() || '';
+            if (currentLine.startsWith(commandLine)) {
+                const command = currentLine.substring(commandLine.length).trim();
+                let commandValid = command.endsWith("}");
+                if (commandValid) {
+                    try {
+                        JSON.parse(command);
+                        commandValid = true;
+                    } catch {
+                        commandValid = false;
+                    }
+                }
+                if (commandValid) {
+                    resultLines.push(currentLine);
+                    currentLine = '';
+                }
+            } else {
+                resultLines.push(currentLine);
+                currentLine = '';
+            }
+        }
+        if (currentLine) {
+            this.unprocessedLine += currentLine;
+        }
+        return resultLines;
+    }
 
     private onStderr = (data: Buffer) => {
         if (!this.isRunning) return;
@@ -217,7 +253,7 @@ export class RunningProcess extends vscode.Disposable {
                 commandObj = JSON.parse(command);
             } catch (error) {
                 this.view?.messageToOutput(
-                    commands.log.error(`Error parsing command: ${error}`)
+                    commands.log.error(`RunningProcess: Error parsing command: ${error}`)
                 );
                 return false;
             }
@@ -236,6 +272,18 @@ export class RunningProcess extends vscode.Disposable {
                     writeOutput(commandObj.data ?? "");
                 } else if (isOutputClearCommand(commandObj)) {
                     clearOutput();
+                } else if (isFileOpenCommand(commandObj)) {
+                    handleFileOpenCommand(commandObj, (replayCommand) => {
+                        this.sendToProcess(replayCommand);
+                    });
+                } else if (isFileSaveCommand(commandObj)) {
+                    handleFileSaveCommand(commandObj, (replayCommand) => {
+                        this.sendToProcess(replayCommand);
+                    });
+                } else if (isFileOpenFolderCommand(commandObj)) {
+                    handleFileOpenFolderCommand(commandObj, (replayCommand) => {
+                        this.sendToProcess(replayCommand);
+                    });
                 } else {
                     this.view?.messageToOutput(commandObj);
                 }

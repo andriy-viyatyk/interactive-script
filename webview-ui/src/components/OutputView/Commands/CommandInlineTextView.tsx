@@ -15,7 +15,7 @@ const CommandInlineTextRoot = styled(OutputDialog)({
     "& .command-inline-text-field": {
         "& input": {
             paddingTop: 0,
-            paddingBottom: 0,
+            paddingBottom: 1,
             height: 26,
         },
         "&.active input": {
