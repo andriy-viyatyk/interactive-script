@@ -30,6 +30,7 @@ export class RunningProcess extends vscode.Disposable {
     private subscriptions: SubscriptionObject[] = [];
     private onConsoleLog: OnConsoleCommand | undefined;
     private onConsoleError: OnConsoleCommand | undefined;
+    private unprocessedLine: string = '';
 
     constructor(view: WebView, callOnDispose: () => any) {
         super(callOnDispose);
@@ -103,13 +104,49 @@ export class RunningProcess extends vscode.Disposable {
 
     private onStdout = (data: Buffer) => {
         if (!this.isRunning) return;
-        const text = data.toString();
+        let text = data.toString();
+        if (this.unprocessedLine) {
+            text = this.unprocessedLine + text;
+            this.unprocessedLine = '';
+        }
         const lines = text.split("\n");
         if (lines.length && lines[lines.length - 1] === "") {
             lines.pop();
         }
-        lines.forEach(this.onLine);
+        const normalizedLines = this.normalizeCommandLines(lines);
+        normalizedLines.forEach(this.onLine);
     };
+
+    private normalizeCommandLines = (lines: string[]) => {
+        const resultLines: string[] = [];
+        let currentLine = '';
+        while (lines.length) {
+            currentLine += lines.shift() || '';
+            if (currentLine.startsWith(commandLine)) {
+                const command = currentLine.substring(commandLine.length).trim();
+                let commandValid = command.endsWith("}");
+                if (commandValid) {
+                    try {
+                        JSON.parse(command);
+                        commandValid = true;
+                    } catch {
+                        commandValid = false;
+                    }
+                }
+                if (commandValid) {
+                    resultLines.push(currentLine);
+                    currentLine = '';
+                }
+            } else {
+                resultLines.push(currentLine);
+                currentLine = '';
+            }
+        }
+        if (currentLine) {
+            this.unprocessedLine += currentLine;
+        }
+        return resultLines;
+    }
 
     private onStderr = (data: Buffer) => {
         if (!this.isRunning) return;
@@ -216,7 +253,7 @@ export class RunningProcess extends vscode.Disposable {
                 commandObj = JSON.parse(command);
             } catch (error) {
                 this.view?.messageToOutput(
-                    commands.log.error(`Error parsing command: ${error}`)
+                    commands.log.error(`RunningProcess: Error parsing command: ${error}`)
                 );
                 return false;
             }

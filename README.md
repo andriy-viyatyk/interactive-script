@@ -147,37 +147,45 @@ JavaScript and TypeScript scripts must import [`interactive-script-js`](https://
 APIs include:
 
 - **Logging & Output**
-  - `ui.log()`, `ui.error()`, `ui.warn()`, `ui.info()`, `ui.success()`, `ui.text()`
-  - `ui.clear()`
-  - `ui.output.append()`, `ui.output.clear()`
+  - [`ui.log()`](documentation/api.md#uilog), [`ui.error()`](documentation/api.md#uierror), [`ui.warn()`](documentation/api.md#uiwarn), [`ui.info()`](documentation/api.md#uiinfo), [`ui.success()`](documentation/api.md#uisuccess), [`ui.text()`](documentation/api.md#uitext)
+  - [`ui.clear()`](documentation/api.md#uiclear)
+  - [`ui.output.append()`](documentation/api.md#uioutputappend), [`ui.output.clear()`](documentation/api.md#uioutputclear)
 
 - **Dialogs**
-  - `ui.dialog.buttons()`
-  - `ui.dialog.confirm()`
-  - `ui.dialog.textInput()`
-  - `ui.dialog.dateInput()`
-  - `ui.dialog.checkboxes()`
-  - `ui.dialog.radioboxes()`
-  - `ui.dialog.selectRecord()`
+  - [`ui.dialog.buttons()`](documentation/api.md#uidialogbuttons)
+  - [`ui.dialog.confirm()`](documentation/api.md#uidialogconfirm)
+  - [`ui.dialog.textInput()`](documentation/api.md#uidialogtextinput)
+  - [`ui.dialog.dateInput()`](documentation/api.md#uidialogdateinput)
+  - [`ui.dialog.checkboxes()`](documentation/api.md#uidialogcheckboxes)
+  - [`ui.dialog.radioboxes()`](documentation/api.md#uidialogradioboxes)
+  - [`ui.dialog.selectRecord()`](documentation/api.md#uidialogselectrecord)
 
 - **Inline Components**
-  - `ui.input.select)()`
-  - `ui.inline.confirm()`
-  - `ui.inline.textInput()`
-  - `ui.inline.dateInput()`
+  - [`ui.input.select)`](documentation/api.md#uiinlineselect)
+  - [`ui.inline.confirm()`](documentation/api.md#uiinlineconfirm)
+  - [`ui.inline.textInput()`](documentation/api.md#uiinlinetextinput)
+  - [`ui.inline.dateInput()`](documentation/api.md#uiinlinedateinput)
 
 - **Output Components**
-  - `ui.show.gridFromJsonArray()`
-  - `ui.show.textBlock()`
-  - `ui.show.progress()`
+  - [`ui.show.gridFromJsonArray()`](documentation/api.md#uishowgridfromjsonarray)
+  - [`ui.show.textBlock()`](documentation/api.md#uishowtextblock)
+  - [`ui.show.progress()`](documentation/api.md#uishowprogress)
 
 - **Window Components**
-  - `ui.window.showGrid()`
-  - `ui.window.showText()`
+  - [`ui.window.showGrid()`](documentation/api.md#uiwindowshowgrid)
+  - [`ui.window.showText()`](documentation/api.md#uiwindowshowtext)
+
+- **File Components**
+  - [`ui.file.open()`](documentation/api.md#uifileopen)
+  - [`ui.file.openFolder()`](documentation/api.md#uifileopenfolder)
+  - [`ui.file.save()`](documentation/api.md#uifilesave)
+  - [`ui.file.showOpen`](documentation/api.md#uifileshowopen)
+  - [`ui.file.showOpenFolder()`](documentation/api.md#uifileshowopenfolder)
+  - [`ui.file.showSave()`](documentation/api.md#uifileshowsave)
 
 - **Event Subscriptions**
-  - `ui.on.consoleLog(callback)`
-  - `ui.on.consoleError(callback)`
+  - [`ui.on.consoleLog(callback)`](documentation/api.md#uionconsolelogcallback)
+  - [`ui.on.consoleError(callback)`](documentation/api.md#uionconsoleerrorcallback)
 
 
 ## Using `interactive-script-py`
@@ -187,37 +195,45 @@ Python scripts must install and import [`interactive-script-py`](https://pypi.or
 APIs are similar to the JavaScript version, including:
 
 - **Logging & Output**
-  - `ui.log()`, `ui.error()`, `ui.warn()`, `ui.info()`, `ui.success()`, `ui.text()`
-  - `ui.clear()`
-  - `ui.output.append()`, `ui.output.clear()`
+  - [`ui.log()`](documentation/api.md#uilog), [`ui.error()`](documentation/api.md#uierror), [`ui.warn()`](documentation/api.md#uiwarn), [`ui.info()`](documentation/api.md#uiinfo), [`ui.success()`](documentation/api.md#uisuccess), [`ui.text()`](documentation/api.md#uitext)
+  - [`ui.clear()`](documentation/api.md#uiclear)
+  - [`ui.output.append()`](documentation/api.md#uioutputappend), [`ui.output.clear()`](documentation/api.md#uioutputclear)
 
 - **Dialogs**
-  - `ui.dialog.confirm()`
-  - `ui.dialog.buttons()`
-  - `ui.dialog.checkboxes()`
-  - `ui.dialog.radioboxes()`
-  - `ui.dialog.date_input()`
-  - `ui.dialog.text_input()`
-  - `ui.dialog.select_record()`
+  - [`ui.dialog.confirm()`](documentation/api.md#uidialogconfirm)
+  - [`ui.dialog.buttons()`](documentation/api.md#uidialogbuttons)
+  - [`ui.dialog.checkboxes()`](documentation/api.md#uidialogcheckboxes)
+  - [`ui.dialog.radioboxes()`](documentation/api.md#uidialogradioboxes)
+  - [`ui.dialog.date_input()`](documentation/api.md#uidialogdateinput)
+  - [`ui.dialog.text_input()`](documentation/api.md#uidialogtextinput)
+  - [`ui.dialog.select_record()`](documentation/api.md#uidialogselectrecord)
 
 - **Inline Components**
-  - `ui.inline.select()`
-  - `ui.inline.confirm`
-  - `ui.inline.text_input()`
-  - `ui.inline.date_input()`
+  - [`ui.inline.select()`](documentation/api.md#uiinlineselect)
+  - [`ui.inline.confirm`](documentation/api.md#uiinlineconfirm)
+  - [`ui.inline.text_input()`](documentation/api.md#uiinlinetextinput)
+  - [`ui.inline.date_input()`](documentation/api.md#uiinlinedateinput)
 
 - **Output Components**
-  - `ui.show.grid_from_list()`
-  - `ui.show.text_block()`
-  - `ui.show.progress()`
+  - [`ui.show.grid_from_list()`](documentation/api.md#uishowgridfromjsonarray)
+  - [`ui.show.text_block()`](documentation/api.md#uishowtextblock)
+  - [`ui.show.progress()`](documentation/api.md#uishowprogress)
 
 - **Window Components**
-  - `ui.window.show_grid()`
-  - `ui.window.show_text()`
+  - [`ui.window.show_grid()`](documentation/api.md#uiwindowshowgrid)
+  - [`ui.window.show_text()`](documentation/api.md#uiwindowshowtext)
+
+- **File Components**
+  - [`ui.file.open()`](documentation/api.md#uifileopen)
+  - [`ui.file.open_folder()`](documentation/api.md#uifileopenfolder)
+  - [`ui.file.save()`](documentation/api.md#uifilesave)
+  - [`ui.file.show_open()`](documentation/api.md#uifileshowopen)
+  - [`ui.file.show_open_folder()`](documentation/api.md#uifileshowopenfolder)
+  - [`ui.file.show_save()`](documentation/api.md#uifileshowsave)
 
 - **Event Subscriptions**
-  - `ui.on.console_log(callback)`
-  - `ui.on.console_error(callback)`
+  - [`ui.on.console_log(callback)`](documentation/api.md#uionconsolelogcallback)
+  - [`ui.on.console_error(callback)`](documentation/api.md#uionconsoleerrorcallback)
 
 
 ## Contributing

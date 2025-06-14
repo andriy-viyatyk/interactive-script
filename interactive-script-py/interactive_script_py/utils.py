@@ -23,6 +23,12 @@ from .commands.inline_select import SelectCommand
 from .commands.inline_confirm import InlineConfirmCommand
 from .commands.inline_text import InlineTextInputCommand
 from .commands.inline_date import InlineDateInputCommand
+from .commands.file_open import FileOpenCommand
+from .commands.file_open_folder import FileOpenFolderCommand
+from .commands.file_save import FileSaveCommand
+from .commands.file_show_open import FileShowOpenCommand
+from .commands.file_show_open_folder import FileShowOpenFolderCommand
+from .commands.file_show_save import FileShowSaveCommand
 
 MESSAGE_TYPE_MAPPING: Dict[str, type[ViewMessage]] = {
     "clear": ClearCommand,
@@ -52,6 +58,12 @@ MESSAGE_TYPE_MAPPING: Dict[str, type[ViewMessage]] = {
     "on.console.error": ConsoleCommand,
     "output": OutputCommand,
     "output.clear": OutputClearCommand,
+    "file.open": FileOpenCommand,
+    "file.openFolder": FileOpenFolderCommand,
+    "file.save": FileSaveCommand,
+    "file.showOpen": FileShowOpenCommand,
+    "file.showOpenFolder": FileShowOpenFolderCommand,
+    "file.showSave": FileShowSaveCommand,
 }
 
 def message_to_string(message: ViewMessage) -> str:

@@ -7,12 +7,14 @@ import { TextAreaField } from "../../../controls/TextAreaField";
 import color from "../../../theme/color";
 import clsx from "clsx";
 import { OutputDialogButtons } from "../OutputDialog/OutputDialogButtons";
-import { FileShowOpenCommand } from "../../../../../shared/commands/file-showOpen";
+import { FileShowOpenCommand, isFileShowOpenCommand } from "../../../../../shared/commands/file-showOpen";
 import { Button } from "../../../controls/Button";
 import { FileSearchIcon } from "../../../theme/icons";
 import { useCallback } from "react";
 import commands from "../../../../../shared/commands";
 import { responseHandler } from "../../responseHandler";
+import { FileShowOpenFolderCommand, isFileShowOpenFolderCommand } from "../../../../../shared/commands/file-showOpenFolder";
+import { FileShowSaveCommand, isFileShowSaveCommand } from "../../../../../shared/commands/file-showSave";
 
 const CommandFileOpenRoot = styled(OutputDialog)({
     "& .input-wrapper": {
@@ -55,22 +57,23 @@ const CommandFileOpenRoot = styled(OutputDialog)({
 });
 
 export interface CommandFileOpenViewProps {
-    item: FileShowOpenCommand;
+    item: FileShowOpenCommand | FileShowOpenFolderCommand | FileShowSaveCommand;
     replayMessage: (message: ViewMessage) => void;
     updateMessage: (message: ViewMessage) => void;
     onCheckSize?: () => void;
 }
 
-function trimResult(result?: string[]) {
-    return (
-        result
-            ?.map((line) => line.trim())
+function trimResult(result?: string[] | string) {
+    if (Array.isArray(result)) {
+        return result
+            .map((line) => line.trim())
             .filter((line) => line.length > 0)
-            .join("\n") ?? ""
-    );
+            .join("\n");
+    }
+    return result?.trim() || "";
 }
 
-function textToResult(text: string) {
+function textToResultArray(text: string) {
     return text
         .split("\n")
         .map((line) => line.trim())
@@ -89,6 +92,9 @@ export function CommandFileOpenView({
     updateMessage,
     onCheckSize,
 }: Readonly<CommandFileOpenViewProps>) {
+    const isFile = !isFileShowOpenFolderCommand(item);
+    const canSelectMany = (isFileShowOpenCommand(item) || isFileShowOpenFolderCommand(item)) && item.data?.canSelectMany;
+
     const [text, setText] = useItemState(
         item.commandId,
         "text",
@@ -107,14 +113,19 @@ export function CommandFileOpenView({
 
     const buttonClick = useCallback(
         async (button: string) => {
-            const files = textToResult(text);
-            const allExists = await Promise.all(
-                files.map((file) => fileExists(file))
-            );
-            if (allExists.some((exists) => !exists)) {
-                const errorIndex = allExists.findIndex((exists) => !exists);
-                setError(`File not found: ${files[errorIndex]}`);
-                return;
+            let files: string[] | string;
+            if (isFileShowSaveCommand(item)) {
+                files = text.trim();
+            } else {
+                files = textToResultArray(text);
+                const allExists = await Promise.all(
+                    files.map((file) => fileExists(file))
+                );
+                if (allExists.some((exists) => !exists)) {
+                    const errorIndex = allExists.findIndex((exists) => !exists);
+                    setError(`${isFile ? "File" : "Folder"} not found: ${files[errorIndex]}`);
+                    return;
+                }
             }
 
             const message = {
@@ -124,18 +135,37 @@ export function CommandFileOpenView({
             replayMessage(message);
             updateMessage(message);
         },
-        [item, replayMessage, setError, text, updateMessage]
+        [isFile, item, replayMessage, setError, text, updateMessage]
     );
 
     const fileOpenClick = useCallback(async () => {
-        const message = commands.fileOpen({
-            canSelectMany: item.data?.canSelectMany,
-            label: uiTextToString(item.data?.label),
-            result: textToResult(text),
-        });
-        const response = await responseHandler.sendRequest(message);
-        setTextProxy(trimResult(response.data?.result));
-    }, [item.data?.canSelectMany, item.data?.label, setTextProxy, text]);
+        let message: ViewMessage | undefined;
+        if (isFileShowOpenCommand(item)) {
+            message = commands.fileOpen({
+                canSelectMany: item.data?.canSelectMany,
+                label: uiTextToString(item.data?.label),
+                result: textToResultArray(text),
+                filters: item.data?.filters,
+            });
+        } else if (isFileShowOpenFolderCommand(item)) {
+            message = commands.fileOpenFolder({
+                canSelectMany: item.data?.canSelectMany,
+                label: uiTextToString(item.data?.label),
+                result: textToResultArray(text),
+            });
+        } else if (isFileShowSaveCommand(item)) {
+            message = commands.fileSave({
+                label: uiTextToString(item.data?.label),
+                filters: item.data?.filters,
+            });
+        }
+
+        if (message) {
+            const response = await responseHandler.sendRequest(message);
+            setTextProxy(trimResult(response.data?.result));
+        }
+        
+    }, [item, setTextProxy, text]);
 
     const readonly = Boolean(item.data?.resultButton);
 
@@ -156,7 +186,7 @@ export function CommandFileOpenView({
                     value={text}
                     onChange={setTextProxy}
                     readonly={readonly}
-                    singleLine={!item.data?.canSelectMany}
+                    singleLine={!canSelectMany}
                     title={error || text}
                 />
                 <Button
@@ -176,7 +206,7 @@ export function CommandFileOpenView({
                 resultButton={item.data?.resultButton}
                 onClick={buttonClick}
                 required={!text}
-                requiredHint="Input file path to proceed."
+                requiredHint={`Input ${isFile ? "file" : "folder"} path to proceed.`}
                 inline
             />
         </CommandFileOpenRoot>

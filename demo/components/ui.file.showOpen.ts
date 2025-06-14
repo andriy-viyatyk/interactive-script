@@ -12,7 +12,7 @@ async function fileShowOpenDemo() {
     });
 
     ui.log("");
-    ui.text("You can also specify options for the open dialog, like `canSelectMany`, `filters`, and `title`.");
+    ui.text("You can also specify options for the open dialog, like `canSelectMany`, `filters`, and `label`.");
     files = await ui.file.showOpen({
         canSelectMany: true,
         filters: {

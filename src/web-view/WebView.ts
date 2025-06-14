@@ -16,11 +16,15 @@ import {
 import {
     handleFileExistsCommand,
     handleFileOpenCommand,
+    handleFileOpenFolderCommand,
+    handleFileSaveCommand,
     handleWindowGridCommand,
     handleWindowTextCommand,
 } from "../utils/common-commands";
 import { isFileOpenCommand } from "../../shared/commands/file-open";
 import { isFileExistsCommand } from "../../shared/commands/file-exists";
+import { isFileOpenFolderCommand } from "../../shared/commands/file-openFolder";
+import { isFileSaveCommand } from "../../shared/commands/file-save";
 
 export interface ViewPanel {
     viewType: string;
@@ -86,6 +90,20 @@ export class WebView implements vscode.WebviewViewProvider {
 
             if (isFileOpenCommand(message)) {
                 handleFileOpenCommand(message, replayMessage => {
+                    this.messageToOutput(replayMessage);
+                });
+                return;
+            }
+
+            if (isFileOpenFolderCommand(message)) {
+                handleFileOpenFolderCommand(message, replayMessage => {
+                    this.messageToOutput(replayMessage);
+                });
+                return;
+            }
+
+            if (isFileSaveCommand(message)) {
+                handleFileSaveCommand(message, replayMessage => {
                     this.messageToOutput(replayMessage);
                 });
                 return;

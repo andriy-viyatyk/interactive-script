@@ -21,6 +21,12 @@ from .commands.window_show_text import show_text, WindowTextDataParam
 from .commands.console import subscribeError, subscribeLog
 from .commands.output import output_append, OutputCommand
 from .commands.output_clear import output_clear
+from .commands.file_open import file_open, FileOpenDataParam
+from .commands.file_open_folder import file_open_folder, FileOpenFolderDataParam
+from .commands.file_save import file_save, FileSaveDataParam
+from .commands.file_show_open import file_show_open, FileShowOpenDataParam
+from .commands.file_show_open_folder import file_show_open_folder, FileShowOpenFolderDataParam
+from .commands.file_show_save import file_show_save, FileShowSaveDataParam
 from .response_handler import send, response_handler
 from .objects.styled_text import StyledLogCommand
 from .objects.progress import Progress
@@ -111,7 +117,32 @@ class InlineNamespace:
     async def date_input(self, params: Optional[Union[UiText, DateInputDataParam]] = None) -> DateInputData:
         response = await response_handler.send(inline_date_input(params))
         return response.data
-        
+    
+class FileNamespace:
+    async def open(self, params: Optional[FileOpenDataParam] = None) -> list[str]:
+        response = await response_handler.send(file_open(params))
+        return response.data.result if response.data.result else []
+    
+    async def open_folder(self, params: Optional[FileOpenFolderDataParam] = None) -> list[str]:
+        response = await response_handler.send(file_open_folder(params))
+        return response.data.result if response.data.result else []
+    
+    async def save(self, params: Optional[FileSaveDataParam] = None) -> str:
+        response = await response_handler.send(file_save(params))
+        return response.data.result if response.data.result else ""
+    
+    async def show_open(self, params: Optional[FileShowOpenDataParam] = None) -> list[str]:
+        response = await response_handler.send(file_show_open(params))
+        return response.data.result if response.data.result else []
+    
+    async def show_open_folder(self, params: Optional[FileShowOpenFolderDataParam] = None) -> list[str]:
+        response = await response_handler.send(file_show_open_folder(params))
+        return response.data.result if response.data.result else []
+    
+    async def show_save(self, params: Optional[FileShowSaveDataParam] = None) -> str:
+        response = await response_handler.send(file_show_save(params))
+        return response.data.result if response.data.result else ""
+
 
 class UiNamespace:
     def clear(self):
@@ -134,5 +165,6 @@ class UiNamespace:
     window = WindowNamespace()
     on = OnNamespace()
     output = OutputNamespace()
+    file = FileNamespace()
 
 ui = UiNamespace()

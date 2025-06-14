@@ -46,6 +46,14 @@ This document provides a detailed reference for all available functions and comp
 * [`ui.window.showGrid()`](#uiwindowshowgrid)
 * [`ui.window.showText()`](#uiwindowshowtext)
 
+### File Components
+* [`ui.file.open`](#uifileopen)
+* [`ui.file.openFolder`](#uifileopenfolder)
+* [`ui.file.save`](#uifilesave)
+* [`ui.file.showOpen`](#uifileshowopen)
+* [`ui.file.showOpenFolder`](#uifileshowopenfolder)
+* [`ui.file.showSave`](#uifileshowsave)
+
 ### Event Subscriptions
 * [`ui.on.consoleLog(callback)`](#uionconsolelogcallback)
 * [`ui.on.consoleError(callback)`](#uionconsoleerrorcallback)
@@ -639,6 +647,143 @@ This is highly useful for displaying large blocks of text, code snippets, logs, 
 
 **Usage Examples:**
 For an example demonstrating how to use `ui.window.showText()` to open text content in a new VS Code window, including specifying a language mode, please refer to the [Show Text Demo Script](../demo/components/ui.window.showText.ts).
+
+### File Components
+
+#### `ui.file.open(data?: string | FileOpenData)` <a id="uifileopen"></a>
+
+The `ui.file.open()` method displays a **VS Code native "Open File" dialog**, allowing the user to select one or multiple files. Script execution pauses until the user selects file(s) and confirms, or cancels the dialog. This is useful for scripts that need to obtain file path(s) from the user to perform operations on the selected file(s).
+
+**Parameters:**
+
+* `data?: string | FileOpenData`
+    * If `string`: An optional label for dialogs 'open' button.
+    * If `FileOpenData`: An object with the following properties:
+        * `label?: string`: Optional. A label for dialogs 'open' button.
+        * `filters?: { [key: string]: string[] }`: Optional. An object defining file type filters. The keys are human-readable labels (e.g., "Images"), and the values are arrays of file extensions (e.g., `["png", "jpg"]`).
+        * `canSelectMany?: boolean`: Optional. If `true`, the user can select multiple files. Defaults to `false` (single file selection).
+
+**Returns:**
+
+* `Promise<string[] | undefined>`: A promise that resolves with an array of strings, where each string is the absolute path to a selected file. If the user cancels the dialog, it resolves with `undefined`.
+
+**Usage Examples:**
+For a comprehensive example demonstrating the usage of `ui.file.open()`, please refer to the [File Open Demo Script](../demo/components/ui.file.open.ts).
+
+#### `ui.file.openFolder(data?: string | FileOpenFolderData)` <a id="uifileopenfolder"></a>
+
+The `ui.file.openFolder()` method displays a **VS Code native "Open Folder" dialog**, allowing the user to select one or multiple folders. Script execution pauses until the user selects folder(s) and confirms, or cancels the dialog. This is useful for scripts that need to obtain folder path(s) from the user to perform operations within the selected directory or directories.
+
+**Parameters:**
+
+* `data?: string | FileOpenFolderData`
+    * If `string`: An optional label for the "Open" button in the dialog.
+    * If `FileOpenFolderData`: An object with the following properties:
+        * `label?: string`: Optional. A label for the "Open" button in the dialog.
+        * `canSelectMany?: boolean`: Optional. If `true`, the user can select multiple folders. Defaults to `false` (single folder selection).
+
+**Returns:**
+
+* `Promise<string[] | undefined>`: A promise that resolves with an array of strings, where each string is the absolute path to a selected folder. If the user cancels the dialog, it resolves with `undefined`.
+
+**Usage Examples:**
+For a comprehensive example demonstrating the usage of `ui.file.openFolder()`, please refer to the [File Open Folder Demo Script](../demo/components/ui.file.openFolder.ts).
+
+#### `ui.file.save(data?: string | FileSaveData)` <a id="uifilesave"></a>
+
+The `ui.file.save()` method displays a **VS Code native "Save File" dialog**, allowing the user to specify a file path to save content. Script execution pauses until the user provides a file path and confirms, or cancels the dialog. This is useful for scripts that need to obtain a destination file path from the user to save generated data or results.
+
+**Parameters:**
+
+* `data?: string | FileSaveData`
+    * If `string`: An optional label for the "Save" button in the dialog.
+    * If `FileSaveData`: An object with the following properties:
+        * `label?: string`: Optional. A label for the "Save" button in the dialog.
+        * `filters?: { [key: string]: string[] }`: Optional. An object defining file type filters. The keys are human-readable labels (e.g., "Text Files"), and the values are arrays of file extensions (e.g., `["txt", "md"]`).
+        * `result?: string`: Optional. A default file name to pre-populate the input field in the dialog.
+
+**Returns:**
+
+* `Promise<string | undefined>`: A promise that resolves with a string representing the absolute path where the user intends to save the file. If the user cancels the dialog, it resolves with `undefined`.
+
+**Usage Examples:**
+For a comprehensive example demonstrating the usage of `ui.file.save()`, please refer to the [File Save Demo Script](../demo/components/ui.file.save.ts).
+
+#### `ui.file.showOpen(data?: UiText | FileShowOpenData)` <a id="uifileshowopen"></a>
+
+The `ui.file.showOpen()` method displays an inline interactive component within the "Script UI" panel that allows the user to select file paths. This component includes an input field where users can manually type or paste a file path, and a button that opens the **VS Code native "Open File" dialog** for guided selection. Script execution pauses until the user confirms their selection via a button. This is ideal for scenarios where the user might want to manually input a path or use the graphical file picker.
+
+**Parameters:**
+
+* `data?: UiText | FileShowOpenData`
+    * If `UiText`: An optional label or prompt to display next to the input field.
+    * If `FileShowOpenData`: An object with the following properties:
+        * `label?: UiText`: Optional. A label or prompt to display for the component. This can be a simple string or styled text.
+        * `filters?: { [key: string]: string[] }`: Optional. An object defining file type filters for the native "Open File" dialog. The keys are human-readable labels (e.g., "Text Files"), and the values are arrays of file extensions (e.g., `["txt", "md"]`).
+        * `canSelectMany?: boolean`: Optional. If `true`, the user can select multiple files using the native dialog. Defaults to `false` (single file selection).
+        * `buttons?: UiText[]`: Optional. An array of strings or `UiText` objects to be displayed as action buttons. If not provided, a default `!Proceed` button is used (disabled until input is provided). To make a button required (disabled until input is provided), prefix its label with `!`, e.g., `"!OK"`.
+        * `result?: string[]`: *Internal Use*. This property is part of the return type and should not be set as an input parameter.
+        * `resultButton?: string`: *Internal Use*. This property is part of the return type and should not be set as an input parameter.
+
+**Returns:**
+
+* `Promise<{ result?: string[]; resultButton?: string } | undefined>`: A promise that resolves with an object containing:
+    * `result?: string[]`: An array of strings, representing the absolute paths of the selected files.
+    * `resultButton?: string`: The label of the button pressed by the user. If a button was specified with a `!` prefix (e.g., `"!OK"`), the `resultButton` will be returned *without* the `!` (e.g., `"OK"`).
+    If the component is dismissed (e.g., if the host environment allows external dismissal, though explicit button presses are the intended interaction), it resolves with `undefined`.
+
+**Usage Examples:**
+For a comprehensive example demonstrating the usage of `ui.file.showOpen()`, please refer to the [File Show Open Demo Script](../demo/components/ui.file.showOpen.ts).
+
+#### `ui.file.showOpenFolder(data?: string | FileShowOpenFolderData)` <a id="uifileshowopenfolder"></a>
+
+The `ui.file.showOpenFolder()` method displays an inline interactive component within the "Script UI" panel that allows the user to select folder paths. This component includes an input field where users can manually type or paste a folder path, and a button that opens the **VS Code native "Open Folder" dialog** for guided selection. Script execution pauses until the user confirms their selection via a button. This is ideal for scenarios where the user might want to manually input a path or use the graphical folder picker.
+
+**Parameters:**
+
+* `data?: string | FileShowOpenFolderData`
+    * If `string`: An optional label or prompt to display next to the input field.
+    * If `FileShowOpenFolderData`: An object with the following properties:
+        * `label?: UiText`: Optional. A label or prompt to display for the component. This can be a simple string or styled text.
+        * `canSelectMany?: boolean`: Optional. If `true`, the user can select multiple folders using the native dialog. Defaults to `false` (single folder selection).
+        * `buttons?: UiText[]`: Optional. An array of strings or `UiText` objects to be displayed as action buttons. If not provided, a default `!Proceed` button is used (disabled until input is provided). To make a button required (disabled until input is provided), prefix its label with `!`, e.g., `"!Select"`.
+        * `result?: string[]`: *Internal Use*. This property is part of the return type and should not be set as an input parameter.
+        * `resultButton?: string`: *Internal Use*. This property is part of the return type and should not be set as an input parameter.
+
+**Returns:**
+
+* `Promise<{ result?: string[]; resultButton?: string } | undefined>`: A promise that resolves with an object containing:
+    * `result?: string[]`: An array of strings, representing the absolute paths of the selected folders.
+    * `resultButton?: string`: The label of the button pressed by the user. If a button was specified with a `!` prefix (e.g., `"!Select"`), the `resultButton` will be returned *without* the `!` (e.g., `"Select"`).
+    If the component is dismissed (e.g., if the host environment allows external dismissal, though explicit button presses are the intended interaction), it resolves with `undefined`.
+
+**Usage Examples:**
+For a comprehensive example demonstrating the usage of `ui.file.showOpenFolder()`, please refer to the [File Show Open Folder Demo Script](../demo/components/ui.file.showOpenFolder.ts).
+
+#### `ui.file.showSave(data?: UiText | FileShowSaveData)` <a id="uifileshowsave"></a>
+
+The `ui.file.showSave()` method displays an inline interactive component within the "Script UI" panel that allows the user to specify a file path for saving. This component includes an input field where users can manually type a new or existing file path, and a button that opens the **VS Code native "Save File" dialog** for guided path selection. Script execution pauses until the user provides a file path and confirms their selection via a button. This is useful for scripts that need to obtain a destination file path from the user to save generated data or results, offering both manual input and graphical selection options.
+
+**Parameters:**
+
+* `data?: UiText | FileShowSaveData`
+    * If `UiText`: An optional label or prompt to display next to the input field.
+    * If `FileShowSaveData`: An object with the following properties:
+        * `label?: UiText`: Optional. A label or prompt to display for the component. This can be a simple string or styled text.
+        * `filters?: { [key: string]: string[] }`: Optional. An object defining file type filters for the native "Save File" dialog. The keys are human-readable labels (e.g., "Text Files"), and the values are arrays of file extensions (e.g., `["txt", "md"]`).
+        * `buttons?: UiText[]`: Optional. An array of strings or `UiText` objects to be displayed as action buttons. If not provided, a default `!Proceed` button is used (disabled until input is provided). To make a button required (disabled until input is provided), prefix its label with `!`, e.g., `"!Save"`.
+        * `result?: string`: *Internal Use*. This property is part of the return type and should not be set as an input parameter.
+        * `resultButton?: string`: *Internal Use*. This property is part of the return type and should not be set as an input parameter.
+
+**Returns:**
+
+* `Promise<{ result?: string; resultButton?: string } | undefined>`: A promise that resolves with an object containing:
+    * `result?: string`: A string representing the absolute path where the user intends to save the file.
+    * `resultButton?: string`: The label of the button pressed by the user. If a button was specified with a `!` prefix (e.g., `"!Save"`), the `resultButton` will be returned *without* the `!` (e.g., `"Save"`).
+    If the component is dismissed (e.g., if the host environment allows external dismissal, though explicit button presses are the intended interaction), it resolves with `undefined`.
+
+**Usage Examples:**
+For a comprehensive example demonstrating the usage of `ui.file.showSave()`, please refer to the [File Show Save Demo Script](../demo/components/ui.file.showSave.ts).
 
 ### Event Subscriptions
 

@@ -1,6 +1,6 @@
 [project]
 name = "interactive-script-py"
-version = "1.0.5"
+version = "1.0.6"
 description = "A Python library to communicate with 'Interactive Script' VSCode extension."
 authors = [
     { name="Andriy Viyatyk" }
