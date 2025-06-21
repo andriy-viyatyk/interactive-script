@@ -15,9 +15,15 @@ export async function mockData() {
         const data = await response.text();
         const jsonData = parseJson(data);
 
+        const graphResponse = await fetch('/mock/miserables.json'); // graph.json
+        if (!graphResponse.ok) {
+            return;
+        }
+        const graphData = await graphResponse.json();
+
         // mock input data
         const appInput: WebViewInput = {
-            viewType: "output",  // "grid" | "output"
+            viewType: "graph",  // "grid" | "output" | "graph"
             gridInput: {
                 jsonData: jsonData,
                 csvData: !jsonData && data ? data : undefined,
@@ -27,6 +33,10 @@ export async function mockData() {
                 title: "[test.ts]",
                 filePath: "d:/projects/interactive-script/test/test.ts",
                 withHeader: true,
+            },
+            graphInput: {
+                jsonData: graphData,
+                graphTitle: ["Test ", {text: "Graph", styles: {color: "blue"}}],
             },
         }
         window.appInput = appInput;

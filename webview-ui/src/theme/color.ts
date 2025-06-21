@@ -1,13 +1,27 @@
+function getVsCodeCssColor(cssVariableName: string, defaultValue = '#cccccc') {
+    const bodyStyles = window.getComputedStyle(document.body);
+    const resolvedValue = bodyStyles.getPropertyValue(cssVariableName).trim();
+
+    if (resolvedValue && !resolvedValue.startsWith('var(')) {
+        return resolvedValue;
+    }
+
+    return defaultValue;
+}
+
 const vscode = {
     focusBorder: "var(--vscode-focusBorder, #007acc)",
     editor: {
         background: "var(--vscode-editor-background, #1f1f1f)",
         foreground: "var(--vscode-editor-foreground, #cccccc)",
-        selectionBackground: "var(--vscode-editor-selectionBackground, #264f78)",
-        selectionHighlightBackground: "var(--vscode-editor-selectionHighlightBackground, rgba(173, 214, 255, 0.15))",
+        selectionBackground:
+            "var(--vscode-editor-selectionBackground, #264f78)",
+        selectionHighlightBackground:
+            "var(--vscode-editor-selectionHighlightBackground, rgba(173, 214, 255, 0.15))",
     },
     editorInlayHint: {
-        background: "var(--vscode-editorInlayHint-background, rgba(97, 97, 97, 0.1))",
+        background:
+            "var(--vscode-editorInlayHint-background, rgba(97, 97, 97, 0.1))",
         foreground: "var(--vscode-editorInlayHint-foreground, #969696)",
     },
     sidebar: {
@@ -26,12 +40,16 @@ const vscode = {
     },
     icon: {
         foreground: "var(--vscode-icon-foreground, #cccccc)",
-        disabled: "var(--vscode-debugIcon-breakpointDisabledForeground, #848484)",
+        disabled:
+            "var(--vscode-debugIcon-breakpointDisabledForeground, #848484)",
     },
     minimapSlider: {
-        background: "var(--vscode-minimapSlider-background, rgba(121, 121, 121, 0.2))",
-        hoverBackground: "var(--vscode-minimapSlider-hoverBackground, rgba(100, 100, 100, 0.35))",
-        activeBackground: "var(--vscode-minimapSlider-activeBackground, rgba(191, 191, 191, 0.2))",
+        background:
+            "var(--vscode-minimapSlider-background, rgba(121, 121, 121, 0.2))",
+        hoverBackground:
+            "var(--vscode-minimapSlider-hoverBackground, rgba(100, 100, 100, 0.35))",
+        activeBackground:
+            "var(--vscode-minimapSlider-activeBackground, rgba(191, 191, 191, 0.2))",
     },
     terminal: {
         ansiBlack: "var(--vscode-terminal-ansiBlack, #000000)",
@@ -51,9 +69,12 @@ const vscode = {
         ansiBrightCyan: "var(--vscode-terminal-ansiBrightCyan, #29b8db)",
     },
     terminalSymbolIcon: {
-        methodForeground: "var(--vscode-terminalSymbolIcon-methodForeground, #b180d7)",
-        argumentForeground: "var(--vscode-terminalSymbolIcon-argumentForeground, #75beff)",
-        optionForeground: "var(--vscode-terminalSymbolIcon-optionForeground, #ee9d28)",
+        methodForeground:
+            "var(--vscode-terminalSymbolIcon-methodForeground, #b180d7)",
+        argumentForeground:
+            "var(--vscode-terminalSymbolIcon-argumentForeground, #75beff)",
+        optionForeground:
+            "var(--vscode-terminalSymbolIcon-optionForeground, #ee9d28)",
     },
     list: {
         errorForeground: "var(--vscode-list-errorForeground, #f88070)",
@@ -69,18 +90,20 @@ const vscode = {
         purple: "var(--vscode-charts-purple, #b180d7)",
     },
     button: {
-        secondaryBackground: "var(--vscode-button-secondaryBackground, #313131)",
+        secondaryBackground:
+            "var(--vscode-button-secondaryBackground, #313131)",
         background: "var(--vscode-button-background, #0078d4)",
         hoverBackground: "var(--vscode-button-hoverBackground, #026ec1)",
-        activeSelectionForeground: "var(--vscode-button-activeSelectionForeground, #ffffff)",
+        activeSelectionForeground:
+            "var(--vscode-button-activeSelectionForeground, #ffffff)",
         foreground: "var(--vscode-button-foreground, #ffffff)",
     },
-}
+};
 
 const color = {
     background: {
-        default: vscode.editor.background, 
-        dark: vscode.sidebar.background, 
+        default: vscode.editor.background,
+        dark: vscode.sidebar.background,
         light: vscode.button.secondaryBackground,
         selection: vscode.button.background,
     },
@@ -99,15 +122,15 @@ const color = {
         active: vscode.button.hoverBackground,
     },
     border: {
-        active: vscode.focusBorder, 
-        default: vscode.input.border, 
-        light: vscode.sidebar.border, 
+        active: vscode.focusBorder,
+        default: vscode.input.border,
+        light: vscode.sidebar.border,
     },
     shadow: {
         default: vscode.widget.shadow,
     },
     grid: {
-        headerCellBackground: vscode.sidebar.background, 
+        headerCellBackground: vscode.sidebar.background,
         headerCellColor: vscode.sidebar.foreground,
         dataCellBackground: vscode.editor.background,
         borderColor: vscode.sidebar.border,
@@ -117,7 +140,7 @@ const color = {
             hovered: vscode.minimapSlider.background,
             border: vscode.focusBorder,
             borderLight: vscode.input.border,
-        }
+        },
     },
     misc: {
         blue: vscode.charts.blue,
@@ -125,6 +148,29 @@ const color = {
         red: vscode.list.errorForeground,
         yellow: vscode.charts.yellow,
         cian: vscode.terminal.ansiBrightCyan,
+    },
+    graph: {
+        node: {
+            default: "deepskyblue",
+            highlight: "limegreen",
+            selected: "lightpink",
+        },
+        nodeBorder: {
+            default: "deepskyblue",
+            highlight: "forestgreen",
+            selected: "salmon",
+        },
+        link: {
+            default: "lightslategray",
+            selected: "lightpink",
+        },
+        getLabelColors: () => ({
+            background: getVsCodeCssColor("--vscode-minimapSlider-background", "rgba(121, 121, 121, 0.2)"), // vscode.minimapSlider.background,
+            text: getVsCodeCssColor("--vscode-editor-foreground", "#cccccc"), // vscode.editor.foreground,
+        }),
+        svg: {
+            background: vscode.editor.background,
+        },
     },
 };
 
