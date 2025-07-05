@@ -27,8 +27,6 @@ function New-ViewMessage {
     return $viewMessage
 }
 
-# The New-TextWithStyle and styledText functions have been entirely removed.
-
 function Wait-ForResponse {
     param (
         [Parameter(Mandatory=$true)]
@@ -38,13 +36,7 @@ function Wait-ForResponse {
         [string]$ExpectedCommand # e.g., "input.confirm"
     )
 
-    # PowerShell doesn't have a direct equivalent of 'await' for stdin.
-    # We'll poll stdin in a loop until we get the expected response.
-    # IMPORTANT: This is a blocking loop. For long-running scripts, consider
-    # incorporating a timeout or a more sophisticated non-blocking read if your host supports it.
     while ($true) {
-        # Read a line from stdin. In a typical interactive script environment,
-        # this will block until a line is available.
         $inputLine = Read-Host
 
         # Check if the line is a command response
@@ -68,12 +60,113 @@ function Wait-ForResponse {
     }
 }
 
+# --- New Progress Object Definition ---
+function New-ProgressObject {
+    param (
+        [string]$InitialLabel = "",
+        [int]$InitialMax = $null,
+        [int]$InitialValue = $null,
+        [bool]$InitialCompleted = $false
+    )
+
+    $progressObject = New-Object -TypeName PSObject
+
+    # --- KEY FIX: Capture the object itself in a local variable for reliable self-reference ---
+    # This variable will be captured by the closures of the script methods.
+    $selfRef = $progressObject
+
+    # Internal properties to hold the state and command info
+    # Changed: Use -InputObject for Add-Member
+    [void](Add-Member -InputObject $progressObject -MemberType NoteProperty -Name "_commandId" -Value (New-Guid))
+    [void](Add-Member -InputObject $progressObject -MemberType NoteProperty -Name "_commandType" -Value "output.progress")
+    [void](Add-Member -InputObject $progressObject -MemberType NoteProperty -Name "_progressData" -Value ([PSCustomObject]@{
+        label = $InitialLabel
+        max = $InitialMax
+        value = $InitialValue
+        completed = $InitialCompleted
+    }))
+
+    # --- Internal method to send the update command ---
+    # Reference $selfRef instead of $this
+    $sendUpdateScript = {
+        # Get current progress data via $selfRef
+        $currentProgressData = $selfRef._progressData
+
+        # Create the ViewMessage
+        $commandMessage = New-ViewMessage -Command $selfRef._commandType -Data $currentProgressData -CommandId $selfRef._commandId -IsEvent $false
+
+        # Serialize and send the command
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Return null to prevent implicit output from this internal method
+        return $null
+    }.GetNewClosure()
+    # Changed: Use -InputObject for Add-Member
+    [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "_SendUpdate" -Value $sendUpdateScript)
+
+    # --- Public methods to update properties and send updates ---
+
+    # Getters (read-only properties for simplicity, as setters trigger updates)
+    # Reference $selfRef instead of $this
+    # Changed: Use -InputObject for Add-Member
+    [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "GetLabel" -Value { return $selfRef._progressData.label; }.GetNewClosure())
+    [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "GetMax" -Value { return $selfRef._progressData.max; }.GetNewClosure())
+    [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "GetValue" -Value { return $selfRef._progressData.value; }.GetNewClosure())
+    [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "IsCompleted" -Value { return $selfRef._progressData.completed; }.GetNewClosure())
+
+
+    # Setters (update property and send command)
+    # Reference $selfRef instead of $this
+    # Changed: Use -InputObject for Add-Member
+    [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "UpdateLabel" -Value {
+        param([string]$newLabel)
+        $selfRef._progressData.label = $newLabel
+        [void]$selfRef._SendUpdate() # Ensure _SendUpdate's return is also voided
+        # return $selfRef # Return the object itself for chaining
+    }.GetNewClosure())
+
+    [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "UpdateMax" -Value {
+        param([int]$newMax)
+        $selfRef._progressData.max = $newMax
+        [void]$selfRef._SendUpdate()
+        # return $selfRef
+    }.GetNewClosure())
+
+    [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "UpdateValue" -Value {
+        param([int]$newValue)
+        $selfRef._progressData.value = $newValue
+        [void]$selfRef._SendUpdate()
+        # return $selfRef
+    }.GetNewClosure())
+
+    [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "Complete" -Value {
+        param([string]$completeLabel = $null)
+        $selfRef._progressData.completed = $true
+        if ($completeLabel) {
+            $selfRef._progressData.label = $completeLabel
+        }
+        [void]$selfRef._SendUpdate()
+        # return $selfRef
+    }.GetNewClosure())
+
+    # --- Initial send of the progress command ---
+    [void]$selfRef._SendUpdate()
+
+    # Override ToString() to prevent implicit output of the object itself
+    # Changed: Use -InputObject for Add-Member
+    [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "ToString" -Value { return ""; } -Force)
+
+    return $progressObject
+}
+
+
 # --- Create the 'Ui' object and add its methods ---
 
 # Create the Ui object
 $script:Ui = New-Object -TypeName PSObject
 
-# Helper script block to create a log method for the Ui object
+# Helper function to create a log method for the Ui object
 function _Add-UiLogMethod {
     param (
         [Parameter(Mandatory=$true)]
@@ -97,7 +190,9 @@ function _Add-UiLogMethod {
         return $null
     }.GetNewClosure()
 
-    $script:Ui | Add-Member -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock
+    # Changed: Use -InputObject for Add-Member explicitly
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null # Explicitly return null
 }
 
 function _Add-UiConfirmMethod {
@@ -146,7 +241,9 @@ function _Add-UiConfirmMethod {
         return $response # This will be the 'result' property (e.g., button label)
     }.GetNewClosure()
 
-    $script:Ui | Add-Member -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock
+    # Changed: Use -InputObject for Add-Member explicitly
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null # Explicitly return null
 }
 
 function _Add-UiShowGridMethod {
@@ -187,8 +284,40 @@ function _Add-UiShowGridMethod {
         return $null
     }.GetNewClosure()
 
-    $script:Ui | Add-Member -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock
+    # Changed: Use -InputObject for Add-Member explicitly
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null # Explicitly return null
 }
+
+
+# --- New: Add _Add-UiShowProgressMethod ---
+function _Add-UiShowProgressMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Label, # Initial label for the progress bar
+
+            [Parameter(Mandatory=$false)]
+            [int]$Max = $null, # Optional max value
+
+            [Parameter(Mandatory=$false)]
+            [int]$Value = $null # Optional initial value
+        )
+        # Create a new Progress object. Its constructor will send the initial command.
+        return New-ProgressObject -InitialLabel $Label -InitialMax $Max -InitialValue $Value
+    }.GetNewClosure()
+
+    # Changed: Use -InputObject for Add-Member explicitly
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null # Explicitly return null
+}
+
 
 # Add all log methods to the Ui object
 _Add-UiLogMethod -MethodName "Log" -CommandType "log.log"
@@ -203,3 +332,6 @@ _Add-UiConfirmMethod -MethodName "dialog_confirm" -CommandType "input.confirm"
 
 # Add the show_grid method to the Ui object
 _Add-UiShowGridMethod -MethodName "show_grid" -CommandType "output.grid"
+
+# Add the show_progress method to the Ui object
+_Add-UiShowProgressMethod -MethodName "show_progress" -CommandType "output.progress"
