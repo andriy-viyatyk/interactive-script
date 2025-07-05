@@ -343,6 +343,47 @@ function _Add-UiConfirmMethod {
     $script:Ui | Add-Member -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock
 }
 
+function _Add-UiShowGridMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$false)] # Title can be optional
+            [string]$Title = $null, # This parameter will now *always* be a string
+
+            [Parameter(Mandatory=$true)]
+            [array]$Data # Expects an array of objects
+        )
+
+        # Prepare the data for the command
+        $gridData = [PSCustomObject]@{
+            data = $Data # Pass the raw PowerShell array here. ConvertTo-Json will handle it.
+        }
+
+        # Directly use the provided $Title string if it's not null or empty
+        if (-not [string]::IsNullOrEmpty($Title)) {
+            $gridData | Add-Member -MemberType NoteProperty -Name "title" -Value $Title -Force
+        }
+
+        # Create the ViewMessage for output.grid
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $gridData -IsEvent $false
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10 # Adjust depth as needed
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # show_grid typically doesn't expect a direct response, so return null.
+        return $null
+    }.GetNewClosure()
+
+    $script:Ui | Add-Member -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock
+}
+
 # Add all log methods to the Ui object
 _Add-UiLogMethod -MethodName "Log" -CommandType "log.log"
 _Add-UiLogMethod -MethodName "Text" -CommandType "log.text"
@@ -353,3 +394,6 @@ _Add-UiLogMethod -MethodName "Success" -CommandType "log.success"
 
 # Add the dialog_confirm method to the Ui object
 _Add-UiConfirmMethod -MethodName "dialog_confirm" -CommandType "input.confirm"
+
+# Add the show_grid method to the Ui object
+_Add-UiShowGridMethod -MethodName "show_grid" -CommandType "output.grid"
