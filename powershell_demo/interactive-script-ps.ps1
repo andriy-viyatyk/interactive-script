@@ -16,7 +16,7 @@ function New-ViewMessage {
         [bool]$IsEvent = $false # Default to false if not provided
     )
 
-    # CRITICAL FIX: Explicitly create a PSCustomObject for the view message itself
+    # Explicitly create a PSCustomObject for the view message itself
     $viewMessage = [PSCustomObject]@{
         command = $Command
         commandId = $CommandId
@@ -46,16 +46,20 @@ function styledText {
         [string]$CommandTypeInternal = "log.text" # Default command type if not specified by ui_log/info etc.
     )
 
-    # Internal ArrayList to hold UiTextBlock objects
-    $textBlocks = [System.Collections.ArrayList]::new()
-    $textBlocks.Add((New-TextWithStyle -Text $InitialText)) | Out-Null # Add initial text block
-
     # Create a custom PowerShell object (PSObject) to hold our data and methods
     $styledTextObject = New-Object -TypeName PSObject
 
-    # Add properties to the custom object
-    $styledTextObject | Add-Member -MemberType NoteProperty -Name "_textBlocks" -Value $textBlocks
-    $styledTextObject | Add-Member -MemberType NoteProperty -Name "_commandType" -Value $CommandTypeInternal # Store the command type
+    # --- FIX: Initialize _textBlocks directly as a NoteProperty with a new ArrayList ---
+    $styledTextObject | Add-Member -MemberType NoteProperty -Name "_textBlocks" -Value ([System.Collections.ArrayList]::new())
+    # Now, add the initial text block directly to the property's ArrayList
+    [void]$styledTextObject._textBlocks.Add((New-TextWithStyle -Text $InitialText))
+
+    # Add other properties
+    $styledTextObject | Add-Member -MemberType NoteProperty -Name "_commandType" -Value $CommandTypeInternal
+    $styledTextObject | Add-Member -MemberType NoteProperty -Name "_commandId" -Value (New-Guid)
+
+    # --- FIX: Override ToString() to prevent implicit object output ---
+    $styledTextObject | Add-Member -MemberType ScriptMethod -Name "ToString" -Value { return ""; } -Force
 
     # --- Chaining Methods ---
 
@@ -64,14 +68,15 @@ function styledText {
         param (
             [string]$Text = ""
         )
-        $this._textBlocks.Add((New-TextWithStyle -Text $Text)) | Out-Null
+        [void]$this._textBlocks.Add((New-TextWithStyle -Text $Text))
         return $this # Return the object for chaining
-    }.GetNewClosure() # Create a closure to access $this (the object itself)
+    }.GetNewClosure()
     $styledTextObject | Add-Member -MemberType ScriptMethod -Name "Then" -Value $thenScript
 
 
     # Helper to get the last text block
     $getLastLineScript = {
+        # This will now reliably access $this._textBlocks which is guaranteed to be an ArrayList
         return $this._textBlocks[$this._textBlocks.Count - 1]
     }.GetNewClosure()
     $styledTextObject | Add-Member -MemberType ScriptMethod -Name "_GetLastLine" -Value $getLastLineScript
@@ -84,7 +89,7 @@ function styledText {
             [string]$Color
         )
         $lastLine = $this._GetLastLine()
-        $lastLine.styles.color = $Color # This now works correctly as 'styles' is always a mutable hashtable
+        $lastLine.styles.color = $Color
         return $this
     }.GetNewClosure()
     $styledTextObject | Add-Member -MemberType ScriptMethod -Name "Color" -Value $colorScript
@@ -115,10 +120,10 @@ function styledText {
 
     $fontSizeScript = {
         param (
-            [string]$Size # Accept string or number, PowerShell will convert to string for CSS
+            [string]$Size
         )
         $lastLine = $this._GetLastLine()
-        $lastLine.styles.fontSize = "$($Size)px" # Assuming numbers are in px, adjust as needed
+        $lastLine.styles.fontSize = "$($Size)px"
         return $this
     }.GetNewClosure()
     $styledTextObject | Add-Member -MemberType ScriptMethod -Name "FontSize" -Value $fontSizeScript
@@ -146,10 +151,9 @@ function styledText {
 
     $styleScript = {
         param (
-            [hashtable]$StylesToApply # A hashtable of additional styles
+            [hashtable]$StylesToApply
         )
         $lastLine = $this._GetLastLine()
-        # Merge new styles with existing ones into a new hashtable
         $mergedStyles = @{}
         $lastLine.styles.GetEnumerator() | ForEach-Object { $mergedStyles[$_.Key] = $_.Value }
         $StylesToApply.GetEnumerator() | ForEach-Object { $mergedStyles[$_.Key] = $_.Value }
@@ -172,7 +176,6 @@ function styledText {
             $currentStyles = $textBlock.styles
 
             if ($currentStyles.Count -eq 0) {
-                # If styles are empty, ensure it's an empty JSON object {}
                 $stylesJson = "{}"
             } else {
                 # Manually build styles JSON object
@@ -181,16 +184,13 @@ function styledText {
                     $key = $_.Key
                     $value = $_.Value
 
-                    # Handle string values (most CSS properties are strings)
                     if ($value -is [string]) {
                         $escapedValue = $value -replace '"', '\"'
                         $styleProperties += "`"$($key)`":`"$($escapedValue)`""
                     }
-                    # Handle numeric values (e.g., border-radius, font-size if passed as number)
                     elseif ($value -is [int] -or $value -is [double]) {
                         $styleProperties += "`"$($key)`":$($value)"
                     }
-                    # For any other types, convert to string and escape
                     else {
                         $escapedValue = "$($value)" -replace '"', '\"'
                         $styleProperties += "`"$($key)`":`"$($escapedValue)`""
@@ -198,7 +198,6 @@ function styledText {
                 }
                 $stylesJson = "{" + ($styleProperties -join ",") + "}"
             }
-            # Add the text block JSON object to dataParts
             $dataParts += "{" + "`"text`":`"$($textValue)`"," + "`"styles`":$($stylesJson)" + "}"
         }
         # Join individual text block JSON strings into a JSON array string
@@ -207,7 +206,7 @@ function styledText {
         # 2. Prepare top-level properties (ensure they are properly quoted JSON strings)
         $commandJson = "`"$($this._commandType)`""
         $commandIdJson = "`"$(New-Guid)`"" # Generate a new GUID for each command
-        $isEventJson = "false" # Boolean value, no quotes needed in raw JSON
+        $isEventJson = "false"
 
         # 3. Assemble the final JSON payload string using a HERE-STRING
         $payload = @"
@@ -221,11 +220,14 @@ function styledText {
         # Remove newlines and tabs to compress the JSON
         $payload = ($payload -replace "`r?`n", "") -replace "`t", ""
 
-        Write-Host "[>-command-<] $payload"
+        # FIX: Added -NoNewline here as per your successful finding
+        Write-Host "[>-command-<] $payload" -NoNewline
+        # --- FIX: Explicitly return null to prevent any implicit output from this method ---
+        return $null
     }.GetNewClosure()
     $styledTextObject | Add-Member -MemberType ScriptMethod -Name "Print" -Value $printScript
 
-    return $styledTextObject # Return the created object
+    return $styledTextObject # Return the created object for chaining
 }
 
 # --- Create the 'Ui' object and add its methods ---
@@ -246,9 +248,9 @@ function _Add-UiLogMethod {
             [Parameter(Mandatory=$true)]
             [string]$Message
         )
-        # Call styledText with the initial message and the specific log command type
+        # Call styledText, which creates the object. Its ToString() override prevents implicit output.
         return styledText -InitialText $Message -CommandTypeInternal $CommandType
-    }.GetNewClosure() # Ensure it closes over the current scope to access styledText
+    }.GetNewClosure()
 
     $script:Ui | Add-Member -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock
 }
