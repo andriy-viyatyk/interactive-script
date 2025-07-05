@@ -88,7 +88,7 @@
             {
                 "command": "interactiveScript.openSettings",
                 "title": "Open Interactive Script Settings",
-                "icon": "$(gear)", 
+                "icon": "$(gear)",
                 "category": "Interactive Script"
             }
         ],
@@ -191,8 +191,11 @@
                     "items": {
                         "type": "string"
                     },
-                    "default": ["-ExecutionPolicy", "Bypass"],
-                    "markdownDescription": "Additional command-line arguments to pass to the `powershell` executable. E.g., `[\"-NoLogo\", \"-ExecutionPolicy\", \"Bypass\"]`"
+                    "default": [
+                        "-ExecutionPolicy",
+                        "Bypass"
+                    ],
+                    "markdownDescription": "Additional command-line arguments to pass to the `pwsh` executable. E.g., `[\"-NoLogo\", \"-ExecutionPolicy\", \"Bypass\"]`"
                 }
             }
         }
@@ -224,6 +227,7 @@
     ],
     "license": "ISC",
     "dependencies": {
+        "anser": "^2.3.2",
         "uuid": "^11.1.0"
     }
 }

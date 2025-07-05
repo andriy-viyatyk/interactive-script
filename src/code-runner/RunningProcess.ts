@@ -21,6 +21,7 @@ import { WorkingDirectoryType } from "../types";
 import { isFileOpenCommand } from "../../shared/commands/file-open";
 import { isFileSaveCommand } from "../../shared/commands/file-save";
 import { isFileOpenFolderCommand } from "../../shared/commands/file-openFolder";
+import { handleColorCoding } from "./handleColorCoding";
 
 export class RunningProcess extends vscode.Disposable {
     private child: cp.ChildProcessWithoutNullStreams | null = null;
@@ -89,7 +90,7 @@ export class RunningProcess extends vscode.Disposable {
             return;
         }
 
-        this.view?.messageToOutput(commands.log.log(line));
+        this.view?.messageToOutput(commands.log.log(handleColorCoding(line)));
     };
 
     private onError = (error: string) => {
@@ -99,7 +100,7 @@ export class RunningProcess extends vscode.Disposable {
             return;
         }
 
-        this.view?.messageToOutput(commands.log.error(error));
+        this.view?.messageToOutput(commands.log.error(handleColorCoding(error)));
     };
 
     private onStdout = (data: Buffer) => {
@@ -215,7 +216,7 @@ export class RunningProcess extends vscode.Disposable {
             command = "node";
             args = config.get<string[]>('nodeArgs', []);
         } else if (fileExtension === ".ps1") {
-            command = "powershell";
+            command = "pwsh";
             args = config.get<string[]>('powershellArgs', ["-ExecutionPolicy", "Bypass"]);
             args.push("-File");
         }

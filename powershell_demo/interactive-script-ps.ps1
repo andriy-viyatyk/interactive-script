@@ -1,4 +1,7 @@
-# interactive_script_powershell_lib.ps1
+# interactive_script_powershell_ps.ps1
+
+# Set the output encoding for the current PowerShell session to UTF8 without BOM
+$OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 
 # Helper function to generate a new GUID
 function New-Guid {
@@ -37,7 +40,7 @@ function Wait-ForResponse {
     )
 
     while ($true) {
-        $inputLine = Read-Host
+        $inputLine = [Console]::In.ReadLine() # Read-Host is producing duplicated output in stdout
 
         # Check if the line is a command response
         if ($inputLine.StartsWith("[>-command-<]")) {
@@ -123,21 +126,18 @@ function New-ProgressObject {
         param([string]$newLabel)
         $selfRef._progressData.label = $newLabel
         [void]$selfRef._SendUpdate() # Ensure _SendUpdate's return is also voided
-        # return $selfRef # Return the object itself for chaining
     }.GetNewClosure())
 
     [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "UpdateMax" -Value {
         param([int]$newMax)
         $selfRef._progressData.max = $newMax
         [void]$selfRef._SendUpdate()
-        # return $selfRef
     }.GetNewClosure())
 
     [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "UpdateValue" -Value {
         param([int]$newValue)
         $selfRef._progressData.value = $newValue
         [void]$selfRef._SendUpdate()
-        # return $selfRef
     }.GetNewClosure())
 
     [void](Add-Member -InputObject $progressObject -MemberType ScriptMethod -Name "Complete" -Value {
@@ -147,7 +147,6 @@ function New-ProgressObject {
             $selfRef._progressData.label = $completeLabel
         }
         [void]$selfRef._SendUpdate()
-        # return $selfRef
     }.GetNewClosure())
 
     # --- Initial send of the progress command ---
@@ -318,6 +317,99 @@ function _Add-UiShowProgressMethod {
     return $null # Explicitly return null
 }
 
+# --- Add _Add-UiSelectRecordMethod for input.selectRecord ---
+function _Add-UiSelectRecordMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Title, # Equivalent to 'title?: UiText'
+            [Parameter(Mandatory=$true)]
+            [array]$Records, # Equivalent to 'records: any[]' in TypeScript
+            [bool]$Multiple = $false, # Equivalent to 'multiple?: boolean'
+            [string[]]$Buttons = $null # Equivalent to 'buttons?: UiText[]'
+        )
+
+        # Prepare the data for the command
+        $selectRecordData = [PSCustomObject]@{
+            records = $Records
+            multiple = $Multiple
+        }
+
+        if (-not [string]::IsNullOrEmpty($Title)) {
+            $selectRecordData | Add-Member -MemberType NoteProperty -Name "title" -Value $Title -Force
+        }
+        if ($Buttons -and $Buttons.Count -gt 0) {
+            $selectRecordData | Add-Member -MemberType NoteProperty -Name "buttons" -Value $Buttons -Force
+        }
+
+        # Create the ViewMessage for input.selectRecord
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $selectRecordData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain 'result' (selected records) and 'resultButton'
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        return $response # This will be the object containing result and resultButton
+    }.GetNewClosure()
+
+    # Changed: Use -InputObject for Add-Member explicitly
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null # Explicitly return null
+}
+
+# --- New: Add _Add-UiShowTextMethod for output.text ---
+function _Add-UiShowTextMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Title, # Corrected: Comma after Title
+            [Parameter(Mandatory=$true)]
+            [string]$Text  # Corrected: No trailing comma after Text
+        )
+
+        # Prepare the data for the command
+        $textData = [PSCustomObject]@{
+            text = $Text;  # Corrected: Semicolon or new line, not comma for object properties
+            title = $Title
+        }
+
+        # Create the ViewMessage for output.text
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $textData -IsEvent $false
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # show_text typically doesn't expect a direct response, so return null.
+        return $null
+    }.GetNewClosure()
+
+    # Changed: Use -InputObject for Add-Member explicitly
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null # Explicitly return null
+}
+
 
 # Add all log methods to the Ui object
 _Add-UiLogMethod -MethodName "Log" -CommandType "log.log"
@@ -327,11 +419,12 @@ _Add-UiLogMethod -MethodName "Warn" -CommandType "log.warn"
 _Add-UiLogMethod -MethodName "Error" -CommandType "log.error"
 _Add-UiLogMethod -MethodName "Success" -CommandType "log.success"
 
-# Add the dialog_confirm method to the Ui object
+# Add the dialog methods to the Ui object
 _Add-UiConfirmMethod -MethodName "dialog_confirm" -CommandType "input.confirm"
+_Add-UiSelectRecordMethod -MethodName "dialog_select_record" -CommandType "input.selectRecord"
 
-# Add the show_grid method to the Ui object
+# Add the show methods to the Ui object
 _Add-UiShowGridMethod -MethodName "show_grid" -CommandType "output.grid"
-
-# Add the show_progress method to the Ui object
+_Add-UiShowTextMethod -MethodName "show_text" -CommandType "output.text"
 _Add-UiShowProgressMethod -MethodName "show_progress" -CommandType "output.progress"
+
