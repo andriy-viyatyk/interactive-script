@@ -214,6 +214,10 @@ export class RunningProcess extends vscode.Disposable {
         } else if (fileExtension === ".js") {
             command = "node";
             args = config.get<string[]>('nodeArgs', []);
+        } else if (fileExtension === ".ps1") {
+            command = "powershell";
+            args = config.get<string[]>('powershellArgs', ["-ExecutionPolicy", "Bypass"]);
+            args.push("-File");
         }
         
         const workingDirectoryOption = config.get<WorkingDirectoryType>('workingDirectory');

@@ -23,7 +23,7 @@ export async function mockData() {
 
         // mock input data
         const appInput: WebViewInput = {
-            viewType: "graph",  // "grid" | "output" | "graph"
+            viewType: "output",  // "grid" | "output" | "graph"
             gridInput: {
                 jsonData: jsonData,
                 csvData: !jsonData && data ? data : undefined,
