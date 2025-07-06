@@ -25,6 +25,12 @@ interface CommandDateInputViewProps {
     onCheckSize?: () => void;
 }
 
+function validDateOrNull(date?: string | Date): Date | null {
+    if (!date) return null;
+    const parsedDate = new Date(date);
+    return isNaN(parsedDate.getTime()) ? null : parsedDate;
+}
+
 export function CommandDateInputView({
     item,
     replayMessage,
@@ -34,7 +40,7 @@ export function CommandDateInputView({
     const [date, setDate] = useItemState<Date | null>(
         item.commandId,
         "date",
-        null,
+        validDateOrNull(item.data?.result),
     );
     const disabled = Boolean(item.data?.resultButton);
 

@@ -36,7 +36,7 @@ function ansiColorToCss(ansiColor: string | number): string | undefined {
     const colorMap: Record<string | number, string> = {
         // Standard colors
         black: "#000000", 30: "#000000",
-        red: "#ff0000", 31: "#ff0000",
+        red: "#f14c4c", 31: "#f14c4c",
         green: "#00ff00", 32: "#00ff00",
         yellow: "#ffff00", 33: "#ffff00",
         blue: "#0000ff", 34: "#0000ff",
@@ -45,7 +45,7 @@ function ansiColorToCss(ansiColor: string | number): string | undefined {
         white: "#ffffff", 37: "#ffffff",
         // Bright colors
         brightBlack: "#808080", 90: "#808080",
-        brightRed: "#ff5555", 91: "#ff5555",
+        brightRed: "#ff6666", 91: "#ff6666",
         brightGreen: "#55ff55", 92: "#55ff55",
         brightYellow: "#ffff55", 93: "#ffff55",
         brightBlue: "#5555ff", 94: "#5555ff",

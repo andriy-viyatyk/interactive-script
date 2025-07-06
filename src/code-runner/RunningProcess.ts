@@ -182,6 +182,7 @@ export class RunningProcess extends vscode.Disposable {
         if (this.child) {
             const line = `${commandLine}${JSON.stringify(message)}\n`;
             this.child.stdin.write(line);
+            console.log("Message sent to process:", message);
         }
     }
 
@@ -291,6 +292,7 @@ export class RunningProcess extends vscode.Disposable {
                     });
                 } else {
                     this.view?.messageToOutput(commandObj);
+                    console.log("Message sent:", commandObj);
                 }
                 return true;
             }

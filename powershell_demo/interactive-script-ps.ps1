@@ -1,4 +1,28 @@
-# interactive_script_powershell_ps.ps1
+# interactive_script_ps.ps1
+
+<#
+.SYNOPSIS
+    PowerShell client library for the Interactive Script Visual Studio Code extension.
+
+.DESCRIPTION
+    This PowerShell script provides a set of functions and a 'Ui' object to enable
+    communication between PowerShell scripts and the "Interactive Script" Visual Studio Code extension.
+    It allows PowerShell scripts to interact with the extension's UI components,
+    such as displaying logs, confirmations, grids, text, and progress bars.
+
+    Designed to be used in conjunction with the [Interactive Script](https://marketplace.visualstudio.com/items?itemName=andriy-viyatyk.interactive-script)
+    extension for Visual Studio Code.
+
+.LINK
+    For detailed documentation, examples, and usage instructions, please visit the
+    [project repository](https://github.com/andriy-viyatyk/interactive-script).
+
+.NOTES
+    Author: Andriy Viyatyk
+    Version: 1.0.0
+    Date: July 5, 2025
+    License: ISC
+#>
 
 # Set the output encoding for the current PowerShell session to UTF8 without BOM
 $OutputEncoding = [System.Text.UTF8Encoding]::new($false)
@@ -411,6 +435,339 @@ function _Add-UiShowTextMethod {
 }
 
 
+# --- New: Add _Add-UiButtonsMethod for input.buttons ---
+function _Add-UiButtonsMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string[]]$Buttons, # Expects an array of strings for button labels
+
+            [Parameter(Mandatory=$false)]
+            [object]$BodyStyles = $null # Optional object for bodyStyles
+        )
+
+        # Prepare the data for the command
+        $buttonsData = [PSCustomObject]@{
+            buttons = $Buttons
+        }
+
+        if ($BodyStyles) {
+            # Add bodyStyles if provided. ConvertTo-Json will handle its serialization.
+            $buttonsData | Add-Member -MemberType NoteProperty -Name "bodyStyles" -Value $BodyStyles -Force
+        }
+
+        # Create the ViewMessage for input.buttons
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $buttonsData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain the 'result' property with the label of the clicked button.
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        return $response # This will be the 'result' property (the clicked button's label)
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiCheckboxesMethod for input.checkboxes ---
+function _Add-UiCheckboxesMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Title, # Corresponds to CheckboxesData.title
+
+            [Parameter(Mandatory=$true)]
+            [string[]]$Items, # Array of strings, to be mapped to CheckboxItem[]
+
+            [Parameter(Mandatory=$false)]
+            [string[]]$Buttons = $null, # Optional array of strings for buttons
+
+            [Parameter(Mandatory=$false)]
+            [object]$BodyStyles = $null # Optional object for bodyStyles
+        )
+
+        # Map the array of strings to an array of CheckboxItem objects { label: string }
+        $checkboxItems = $Items | ForEach-Object {
+            [PSCustomObject]@{
+                label = $_
+                # checked = $false # 'checked' is optional in TS, so we can omit it or set default
+            }
+        }
+
+        # Prepare the data for the command
+        $checkboxesData = [PSCustomObject]@{
+            title = $Title
+            items = $checkboxItems
+        }
+
+        if ($Buttons -and $Buttons.Count -gt 0) {
+            $checkboxesData | Add-Member -MemberType NoteProperty -Name "buttons" -Value $Buttons -Force
+        }
+        if ($BodyStyles) {
+            $checkboxesData | Add-Member -MemberType NoteProperty -Name "bodyStyles" -Value $BodyStyles -Force
+        }
+
+        # Create the ViewMessage for input.checkboxes
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $checkboxesData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain 'result' (array of checked item labels)
+        # and 'resultButton' (label of clicked button)
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        return $response # This will be the object containing result and resultButton
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiRadioboxesMethod for input.radioboxes ---
+function _Add-UiRadioboxesMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Title, # Corresponds to RadioboxesData.title
+
+            [Parameter(Mandatory=$true)]
+            [string[]]$Items, # Array of strings, directly maps to UiText[]
+
+            [Parameter(Mandatory=$false)]
+            [string[]]$Buttons = $null, # Optional array of strings for buttons
+
+            [Parameter(Mandatory=$false)]
+            [object]$BodyStyles = $null # Optional object for bodyStyles
+        )
+
+        # Prepare the data for the command
+        # For RadioboxesData, 'items' is UiText[], and UiText can be a string, so direct use is fine.
+        $radioboxesData = [PSCustomObject]@{
+            title = $Title
+            items = $Items
+        }
+
+        if ($Buttons -and $Buttons.Count -gt 0) {
+            $radioboxesData | Add-Member -MemberType NoteProperty -Name "buttons" -Value $Buttons -Force
+        }
+        if ($BodyStyles) {
+            $radioboxesData | Add-Member -MemberType NoteProperty -Name "bodyStyles" -Value $BodyStyles -Force
+        }
+
+        # Create the ViewMessage for input.radioboxes
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $radioboxesData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain 'result' (the label of the selected option)
+        # and 'resultButton' (label of clicked button)
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        return $response # This will be the object containing result and resultButton
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiTextInputMethod for input.text ---
+function _Add-UiTextInputMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Title, # Corresponds to TextInputData.title
+
+            [Parameter(Mandatory=$false)]
+            [string[]]$Buttons = $null, # Optional array of strings for buttons
+
+            [Parameter(Mandatory=$false)]
+            [string]$InitialText = $null # Optional initial text for the input field
+        )
+
+        # Prepare the data for the command
+        $textInputData = [PSCustomObject]@{
+            title = $Title
+        }
+
+        if ($Buttons -and $Buttons.Count -gt 0) {
+            $textInputData | Add-Member -MemberType NoteProperty -Name "buttons" -Value $Buttons -Force
+        }
+        if ($InitialText) {
+            $textInputData | Add-Member -MemberType NoteProperty -Name "result" -Value $InitialText -Force # 'result' is used for initial text in TS def
+        }
+
+        # Create the ViewMessage for input.text
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $textInputData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain 'result' (the text user typed)
+        # and 'resultButton' (label of clicked button)
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        return $response # This will be the object containing result and resultButton
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiInputDateMethod for input.date ---
+function _Add-UiInputDateMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Title, # Corresponds to DateInputData.title
+
+            [Parameter(Mandatory=$false)]
+            [string[]]$Buttons = $null, # Optional array of strings for buttons
+
+            [Parameter(Mandatory=$false)]
+            [object]$InitialDate = $null # Can be a [datetime] object or a string
+        )
+
+        # Prepare the data for the command
+        $dateInputData = [PSCustomObject]@{
+            title = $Title
+        }
+
+        if ($Buttons -and $Buttons.Count -gt 0) {
+            $dateInputData | Add-Member -MemberType NoteProperty -Name "buttons" -Value $Buttons -Force
+        }
+
+        $parsedDateTime = $null # Initialize a variable to hold the parsed datetime
+
+        # If InitialDate is a string, attempt to parse it
+        if ($InitialDate -is [string] -and -not [string]::IsNullOrEmpty($InitialDate)) {
+            try {
+                # Attempt to parse the string into a DateTime object.
+                # AdjustToUniversal will convert the parsed date to UTC if it has timezone info.
+                $parsedDateTime = [datetime]::Parse($InitialDate, $null, [System.Globalization.DateTimeStyles]::AdjustToUniversal)
+            }
+            catch {
+                Write-Warning "Could not parse '$InitialDate' as a date string for initial date: $($_.Exception.Message)"
+                # If parsing fails, $parsedDateTime remains $null, so no initial date will be sent.
+            }
+        }
+        # If InitialDate was already a [datetime] object, use it directly
+        elseif ($InitialDate -is [datetime]) {
+            $parsedDateTime = $InitialDate
+        }
+
+        # If a valid datetime object was obtained (either passed directly or successfully parsed from string)
+        if ($parsedDateTime) {
+            # Convert to UTC and then format to ISO 8601 string for JavaScript Date compatibility.
+            # The 'Z' suffix indicates UTC time.
+            $isoUtcDateString = $parsedDateTime.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+            $dateInputData | Add-Member -MemberType NoteProperty -Name "result" -Value $isoUtcDateString -Force # 'result' is used for initial value in TS def
+        }
+
+        # Create the ViewMessage for input.date
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $dateInputData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain 'result' (the selected date as UTC ISO string)
+        # and 'resultButton' (label of clicked button)
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        # Post-process the response: if 'result' is a DateTime object, convert it to local time
+        if ($response -and $response.result -is [datetime]) {
+            try {
+                # The extension sends UTC, so the DateTime object received here should be Kind: Utc.
+                # Convert it to the local system time.
+                if ($response.result.Kind -eq [System.DateTimeKind]::Utc) {
+                    $response.result = $response.result.ToLocalTime()
+                }
+            }
+            catch {
+                Write-Warning "Failed to convert DateTime to local time: $($_.Exception.Message)"
+            }
+        } elseif ($response -and $response.result -is [string] -and -not [string]::IsNullOrEmpty($response.result)) {
+            # This block handles cases where it might still be a string (e.g., if ConvertFrom-Json fails for some reason or format changes).
+            # This is less likely now given PowerShell's auto-conversion.
+            try {
+                $response.result = [datetime]::Parse($response.result, $null, [System.Globalization.DateTimeStyles]::RoundtripKind).ToLocalTime()
+            } catch {
+                Write-Warning "Failed manual parse of date string '$($response.result)': $($_.Exception.Message)"
+            }
+        }
+
+        return $response # This will be the object containing result (DateTime or string) and resultButton
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+
 # Add all log methods to the Ui object
 _Add-UiLogMethod -MethodName "Log" -CommandType "log.log"
 _Add-UiLogMethod -MethodName "Text" -CommandType "log.text"
@@ -422,9 +779,13 @@ _Add-UiLogMethod -MethodName "Success" -CommandType "log.success"
 # Add the dialog methods to the Ui object
 _Add-UiConfirmMethod -MethodName "dialog_confirm" -CommandType "input.confirm"
 _Add-UiSelectRecordMethod -MethodName "dialog_select_record" -CommandType "input.selectRecord"
+_Add-UiButtonsMethod -MethodName "dialog_buttons" -CommandType "input.buttons"
+_Add-UiCheckboxesMethod -MethodName "dialog_checkboxes" -CommandType "input.checkboxes"
+_Add-UiRadioboxesMethod -MethodName "dialog_radioboxes" -CommandType "input.radioboxes"
+_Add-UiTextInputMethod -MethodName "dialog_textInput" -CommandType "input.text"
+_Add-UiInputDateMethod -MethodName "dialog_inputDate" -CommandType "input.date"
 
 # Add the show methods to the Ui object
 _Add-UiShowGridMethod -MethodName "show_grid" -CommandType "output.grid"
 _Add-UiShowTextMethod -MethodName "show_text" -CommandType "output.text"
 _Add-UiShowProgressMethod -MethodName "show_progress" -CommandType "output.progress"
-
