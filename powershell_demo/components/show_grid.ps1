@@ -1,6 +1,6 @@
 . "$PSScriptRoot\..\interactive-script-ps.ps1"
 
-$ui.log("You can show a grid with an array of objects using the `show_grid` method.");
+$ui.text("You can show a grid with an array of objects using the `show_grid` method.");
 $simpleData = @(
     [PSCustomObject]@{label = "one"; value = 1},
     [PSCustomObject]@{label = "two"; value = 2},
@@ -12,7 +12,7 @@ $simpleData = @(
 $ui.show_grid("Simple Explicit List", $simpleData)
 $ui.log("");
 
-$ui.log("Also you can use some list of objects returned by powershell commands, like Get-Service, Get-Process, etc.");
+$ui.text("Also you can use some list of objects returned by powershell commands, like Get-Service, Get-Process, etc.");
 $services = Get-Service | Select-Object -Property Name,
     Status,
     DisplayName,

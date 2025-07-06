@@ -161,7 +161,7 @@ APIs include:
   - [`ui.dialog.selectRecord()`](documentation/api.md#uidialogselectrecord)
 
 - **Inline Components**
-  - [`ui.input.select)`](documentation/api.md#uiinlineselect)
+  - [`ui.inline.select()`](documentation/api.md#uiinlineselect)
   - [`ui.inline.confirm()`](documentation/api.md#uiinlineconfirm)
   - [`ui.inline.textInput()`](documentation/api.md#uiinlinetextinput)
   - [`ui.inline.dateInput()`](documentation/api.md#uiinlinedateinput)

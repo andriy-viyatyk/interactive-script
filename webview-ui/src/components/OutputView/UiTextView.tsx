@@ -4,6 +4,9 @@ import { UiText } from "../../../../shared/ViewMessage";
 const UiTextViewRoot = styled.span({
     display: "contents",
     whiteSpace: "pre-wrap",
+    "& .inner-span": {
+        display: "inline-block",
+    },
 });
 
 export interface UiTextViewProps {
