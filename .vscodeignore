@@ -12,6 +12,7 @@ interactive-script-py
 shared/
 demo/
 python_demo/
+powershell_demo/
 images/
 pyrightconfig.json
 documentation

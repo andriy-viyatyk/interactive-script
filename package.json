@@ -4,7 +4,7 @@
     "description": "Provides interactive UI elements for the JS and TS scripts.",
     "publisher": "andriy-viyatyk",
     "author": "Andriy Viyatyk",
-    "version": "1.0.7-dev",
+    "version": "1.0.8",
     "repository": {
         "type": "git",
         "url": "https://github.com/andriy-viyatyk/interactive-script.git"
@@ -88,7 +88,7 @@
             {
                 "command": "interactiveScript.openSettings",
                 "title": "Open Interactive Script Settings",
-                "icon": "$(gear)", 
+                "icon": "$(gear)",
                 "category": "Interactive Script"
             }
         ],
@@ -103,7 +103,7 @@
             "view/title": [
                 {
                     "command": "interactiveScript.runScript",
-                    "when": "view == interactiveScript.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py) && !interactiveScript.scriptRunning",
+                    "when": "view == interactiveScript.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py || resourceExtname == .ps1) && !interactiveScript.scriptRunning",
                     "group": "navigation@1"
                 },
                 {
@@ -113,7 +113,7 @@
                 },
                 {
                     "command": "interactiveScript.runScriptSeparate",
-                    "when": "view == interactiveScript.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py)",
+                    "when": "view == interactiveScript.bottomPanel && (resourceExtname == .ts || resourceExtname == .js || resourceExtname == .py || resourceExtname == .ps1)",
                     "group": "navigation@3"
                 },
                 {
@@ -185,6 +185,17 @@
                     },
                     "default": [],
                     "markdownDescription": "Additional command-line arguments to pass to the `python` executable. E.g., `[\"-u\", \"-OO\"]`"
+                },
+                "interactiveScript.powershellArgs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "-ExecutionPolicy",
+                        "Bypass"
+                    ],
+                    "markdownDescription": "Additional command-line arguments to pass to the `pwsh` executable. E.g., `[\"-NoLogo\", \"-ExecutionPolicy\", \"Bypass\"]`"
                 }
             }
         }
@@ -205,10 +216,11 @@
         "script",
         "runner",
         "ui",
-        "components",
+        "gui",
         "typescript",
         "javascript",
         "python",
+        "powershell",
         "json",
         "csv",
         "grid",
@@ -216,6 +228,7 @@
     ],
     "license": "ISC",
     "dependencies": {
+        "anser": "^2.3.2",
         "uuid": "^11.1.0"
     }
 }

@@ -1,6 +1,6 @@
 # Interactive Script
 
-**Interactive Script** is a Visual Studio Code extension that lets you run Node.js **and now Python** scripts interactively inside VS Code, using a dedicated **"Script UI"** panel. Your scripts can dynamically output styled text, interactive dialogs, grids, progress indicators, and more — all rendered inside the editor, without leaving VS Code.
+**Interactive Script** is a Visual Studio Code extension that lets you run Node.js, Python **and now PowerShell** scripts interactively inside VS Code, using a dedicated **"Script UI"** panel. Your scripts can dynamically output styled text, interactive dialogs, grids, progress indicators, and more — all rendered inside the editor, without leaving VS Code.
 
 [![Demo Video](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/demo.gif)](https://github.com/andriy-viyatyk/interactive-script)
 
@@ -15,13 +15,12 @@ VS Code extensions update automatically, but client libraries must be updated ma
 
 Please refer to the [**Version Compatibility Guide**](documentation/compatibility.md) for detailed information on matching extension and client library versions. We strongly recommend keeping your client libraries up-to-date with the extension.
 
-
 ## Key Features
 
 - Adds a **"Script UI"** view in the bottom panel of VS Code
-- Shows a **"Run"** button when a `.js`, `.ts`, or `.py` file is active, to execute the script
-- Spawns a Node.js, ts-node, or Python process, streaming `stdout` and `stdin` to/from the **Script UI** panel
-- Requires the [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) or [`interactive-script-py`](https://pypi.org/project/interactive-script-py/) library to build interactive scripts with:
+- Shows a **"Run"** button when a `.js`, `.ts`, `.py`, or `.ps1` file is active, to execute the script
+- Spawns a Node.js, ts-node, Python, or PowerShell process, streaming `stdout` and `stdin` to/from the **Script UI** panel
+- Requires the [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js), [`interactive-script-py`](https://pypi.org/project/interactive-script-py/) library, or the [`interactive-script-ps.ps1`](https://github.com/andriy-viyatyk/interactive-script/blob/main/powershell_demo/interactive-script-ps.ps1) module to build interactive scripts with:
   - Styled log output (`ui.log`, `ui.error`, `ui.warn`, `ui.success`, etc.)
   - Interactive dialogs: buttons, confirms, text inputs, checkboxes, radio buttons
   - Embedded grids and text blocks in the panel
@@ -34,10 +33,11 @@ Please refer to the [**Version Compatibility Guide**](documentation/compatibilit
 
 ## How to use
 
-1. Open a `.js`, `.ts`, or `.py` file in VS Code.
+1. Open a `.js`, `.ts`, `.py`, or `.ps1` file in VS Code.
 2. Open the **"Script UI"** panel (located in the bottom panel).
 3. Click the **"Run"** button in the header of the **"Script UI"** panel to execute the active file.
-4. If your script uses [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) (JavaScript/TypeScript) or [`interactive-script-py`](https://pypi.org/project/interactive-script-py/) (Python), it can send messages to the panel and receive input from the user through the `ui` object.
+4. If your script uses [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js) (JavaScript/TypeScript), [`interactive-script-py`](https://pypi.org/project/interactive-script-py/) (Python), or [`interactive-script-ps.ps1`](https://github.com/andriy-viyatyk/interactive-script/blob/main/powershell_demo/interactive-script-ps.ps1) (PowerShell), it can send messages to the panel and receive input from the user through the `ui` object.
+
 
 #### JavaScript / TypeScript Example:
 
@@ -74,6 +74,20 @@ async def demo():
 asyncio.run(demo())
 ```
 
+#### PowerShell Example:
+
+```
+. 'powershell_demo/interactive-script-ps.ps1'
+
+$ui.Log("Hello from PowerShell!")
+$pressed = $ui.dialog_confirm("Do you like this extension?")
+if ($pressed -eq "Yes") {
+    $ui.Success("Awesome! 🎉")
+} else {
+    $ui.Warn("That's okay!")
+}
+```
+
 The script’s outputs (styled logs, dialogs, grids, etc.) appear inside **"Script UI"**, interacting with the user live.
 
 ## Grid Viewer
@@ -106,6 +120,7 @@ Example demo scripts are available in the [GitHub repository](https://github.com
 
 - `demo/` – contains JavaScript/TypeScript example scripts using [`interactive-script-js`](https://www.npmjs.com/package/interactive-script-js)
 - `python_demo/` – contains Python example scripts using [`interactive-script-py`](https://pypi.org/project/interactive-script-py/)
+- `powershell_demo/` – contains PowerShell example scripts using [`interactive-script-ps.ps1`](https://github.com/andriy-viyatyk/interactive-script/blob/main/powershell_demo/interactive-script-ps.ps1)
 
 #### Try the JavaScript/TypeScript demos:
 
@@ -120,8 +135,15 @@ Example demo scripts are available in the [GitHub repository](https://github.com
 3. Run `pip install interactive-script-py`.
 4. Open a `.py` file in VS Code, open the **"Script UI"** panel, and click **"Run"**.
 
-> These demo scripts are useful for testing or exploring how to build interactive scripts using the `interactive-script-js` library.
+#### Try the PowerShell demos:
 
+1. Open the `powershell_demo` folder in a terminal.
+
+2. No installation is required; the `interactive-script-ps.ps1` module is available directly in the `powershell_demo` folder.
+
+3. Open a `.ps1` file in VS Code, open the **"Script UI"** panel, and click **"Run"**.
+
+> These demo scripts are useful for testing or exploring how to build interactive scripts using the `interactive-script-js`, `interactive-script-py`, or `interactive-script-ps.ps1` library/module.
 
 Example snippet from the demo:
 
@@ -161,7 +183,7 @@ APIs include:
   - [`ui.dialog.selectRecord()`](documentation/api.md#uidialogselectrecord)
 
 - **Inline Components**
-  - [`ui.input.select)`](documentation/api.md#uiinlineselect)
+  - [`ui.inline.select()`](documentation/api.md#uiinlineselect)
   - [`ui.inline.confirm()`](documentation/api.md#uiinlineconfirm)
   - [`ui.inline.textInput()`](documentation/api.md#uiinlinetextinput)
   - [`ui.inline.dateInput()`](documentation/api.md#uiinlinedateinput)
@@ -210,7 +232,7 @@ APIs are similar to the JavaScript version, including:
 
 - **Inline Components**
   - [`ui.inline.select()`](documentation/api.md#uiinlineselect)
-  - [`ui.inline.confirm`](documentation/api.md#uiinlineconfirm)
+  - [`ui.inline.confirm()`](documentation/api.md#uiinlineconfirm)
   - [`ui.inline.text_input()`](documentation/api.md#uiinlinetextinput)
   - [`ui.inline.date_input()`](documentation/api.md#uiinlinedateinput)
 
@@ -235,6 +257,47 @@ APIs are similar to the JavaScript version, including:
   - [`ui.on.console_log(callback)`](documentation/api.md#uionconsolelogcallback)
   - [`ui.on.console_error(callback)`](documentation/api.md#uionconsoleerrorcallback)
 
+
+## Using `interactive-script-ps`
+
+PowerShell scripts must dot-source the [`interactive-script-ps.ps1`](https://github.com/andriy-viyatyk/interactive-script/blob/main/powershell_demo/interactive-script-ps.ps1) module to communicate with the extension’s UI.
+
+APIs are similar to the JavaScript and Python versions, including:
+
+- **Logging & Output**
+  - [`ui.Log()`](powershell_demo/components/text.ps1), ['ui.Error()'](powershell_demo/components/text.ps1), [`ui.Warn()`](powershell_demo/components/text.ps1), [`ui.Info()`](powershell_demo/components/text.ps1), [`ui.Success()`](powershell_demo/components/text.ps1), [`ui.Text()`](powershell_demo/components/text.ps1)
+
+- **Dialogs**
+  - [`ui.dialog_confirm()`](powershell_demo/components/dialog_confirm.ps1)
+  - [`ui.dialog_buttons()`](powershell_demo/components/dialog_buttons.ps1)
+  - [`ui.dialog_checkboxes()`](powershell_demo/components/dialog_checkboxes.ps1)
+  - [`ui.dialog_radioboxes()`](powershell_demo/components/dialog_radioboxes.ps1)
+  - [`ui.dialog_dateInput()`](powershell_demo/components/dialog_dateInput.ps1)
+  - [`ui.dialog_textInput()`](powershell_demo/components/dialog_textInput.ps1)
+  - [`ui.dialog_select_record()`](powershell_demo/components/dialog_select_record.ps1)
+
+- **Inline Components**
+  - [`ui.inline_select()`](powershell_demo/components/inline_select.ps1)
+  - [`ui.inline_confirm()`](powershell_demo/components/inline_confirm.ps1)
+  - [`ui.inline_textInput()`](powershell_demo/components/inline_textInput.ps1)
+  - [`ui.inline_dateInput()`](powershell_demo/components/inline_dateInput.ps1)
+
+- **Output Components**
+  - [`ui.show_grid()`](powershell_demo/components/show_grid.ps1)
+  - [`ui.show_text()`](powershell_demo/components/show_text.ps1)
+  - [`ui.show_progress()`](powershell_demo/components/show_progress.ps1)
+
+- **Window Components**
+  - [`ui.window_show_grid()`](powershell_demo/components/window_show_grid.ps1)
+  - [`ui.window_show_text()`](powershell_demo/components/window_show_text.ps1)
+
+- **File Components**
+  - [`ui.file_open()`](powershell_demo/components/file_open.ps1)
+  - [`ui.file_openFolder()`](powershell_demo/components/file_openFolder.ps1)
+  - [`ui.file_save()`](powershell_demo/components/file_save.ps1)
+  - [`ui.file_showOpen()`](powershell_demo/components/file_showOpen.ps1)
+  - [`ui.file_showOpenFolder()`](powershell_demo/components/file_showOpenFolder.ps1)
+  - [`ui.file_showSave()`](powershell_demo/components/file_showSave.ps1)
 
 ## Contributing
 

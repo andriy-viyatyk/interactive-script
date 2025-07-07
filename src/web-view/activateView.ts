@@ -34,7 +34,7 @@ export function activateView(context: vscode.ExtensionContext) {
                 }
             }
 
-            const gridView = views.createView(context, "grid");
+            const gridView = views.createView(context, isCsv ? "grid" : "json");
             gridView.createGridPanel(fileName, data, undefined, isCsv);
         }
     );

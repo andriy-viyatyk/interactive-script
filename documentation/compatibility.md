@@ -34,8 +34,9 @@ VS Code will then install the selected older version of the extension. Remember 
 
 We strive to maintain backward compatibility where possible, but significant changes in the extension may require a corresponding update to the client libraries. Refer to the table below for recommended and required pairings.
 
-| VS Code Extension Version | `interactive-script-js` Version | `interactive-script-py` Version | Notes / Breaking Changes |
+| VS Code Extension Version | `interactive-script-js` Version | `interactive-script-py` Version | `interactive-script-ps` Version |
 | :--- | :--- | :--- | :--- |
+| 1.0.8 | 1.0.6 | 1.0.6 | 1.0.0 |
 | 1.0.7 | 1.0.6 | 1.0.6 |
 | 1.0.6 | 1.0.5 | 1.0.5 |
 | 1.0.5 | 1.0.4 | 1.0.4 |

@@ -4,6 +4,9 @@ import { UiText } from "../../../../shared/ViewMessage";
 const UiTextViewRoot = styled.span({
     display: "contents",
     whiteSpace: "pre-wrap",
+    "& .inner-span": {
+        display: "inline-block",
+    },
 });
 
 export interface UiTextViewProps {
@@ -22,7 +25,7 @@ export function UiTextView({ uiText, className }: Readonly<UiTextViewProps>) {
                 if (typeof item === "string") {
                     return item;
                 }
-                return <span key={index} className="inner-span" style={item.styles}>
+                return <span key={index} className="inner-span" style={typeof item.styles === "object" ? item.styles : undefined}>
                     {item.text}
                 </span>
             });

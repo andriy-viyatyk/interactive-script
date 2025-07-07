@@ -19,7 +19,7 @@ async function fileOpenFolderDemo() {
         result: ["C:\\"], // initial folder to open
     });
     ui.log("You selected the following folder:");
-    ui.log(folder).color("lightgreen").print();
+    ui.log(folder.join("\n")).color("lightgreen").print();
 
     ui.log("");
     ui.success("End of Demo");

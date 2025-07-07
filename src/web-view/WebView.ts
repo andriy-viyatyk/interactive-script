@@ -191,14 +191,13 @@ export class WebView implements vscode.WebviewViewProvider {
         columns?: GridColumn[],
         isCsv?: boolean
     ) => {
-        this.type = "grid";
         this.createPanel(
             title,
             vscode.Uri.file(
                 path.join(this.context.extensionPath, "icons", "av.svg") // Path to your icon
             ),
             {
-                viewType: "grid",
+                viewType: this.type,
                 gridInput: {
                     jsonData: isCsv ? undefined : data,
                     csvData: isCsv ? data : undefined,
@@ -213,14 +212,13 @@ export class WebView implements vscode.WebviewViewProvider {
     createOutputPanel = (filePath: string) => {
         const fileName = path.basename(filePath);
 
-        this.type = "output";
         this.createPanel(
             `[ ${fileName} ]`,
             vscode.Uri.file(
                 path.join(this.context.extensionPath, "icons", "arrowRight.svg") // Path to your icon
             ),
             {
-                viewType: "output",
+                viewType: this.type,
                 outputInput: {
                     withHeader: true,
                     title: fileName,

@@ -10,6 +10,7 @@ import { OutputDialogButtons } from "../OutputDialog/OutputDialogButtons";
 import clsx from "clsx";
 import { useItemState } from "../OutputViewContext";
 import AsyncComponent from "../../../controls/AsyncComponent";
+import { validDateOrNull } from "../../utils";
 
 const CommandDateInputViewRoot = styled(OutputDialog)({
     "&.disabled .react-datepicker": {
@@ -34,7 +35,7 @@ export function CommandDateInputView({
     const [date, setDate] = useItemState<Date | null>(
         item.commandId,
         "date",
-        null,
+        validDateOrNull(item.data?.result),
     );
     const disabled = Boolean(item.data?.resultButton);
 

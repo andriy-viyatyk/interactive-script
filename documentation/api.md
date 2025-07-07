@@ -232,7 +232,7 @@ The method accepts an optional `UiText` prompt or a `DateInputData` object for m
 * **Default Button**: If no `buttons` array is explicitly provided, the dialog will show a single "Proceed" button. This default "Proceed" button behaves as `!Proceed`, meaning it will be disabled until the user selects a date.
 
 **Usage Examples:**
-For comprehensive examples demonstrating the usage of `ui.dialog.dateInput()`, including basic date selection, custom buttons, and initial date values, please refer to the [Date Input Demo Script](../demo/components/dateInput.ts).
+For comprehensive examples demonstrating the usage of `ui.dialog.dateInput()`, including basic date selection, custom buttons, and initial date values, please refer to the [Date Input Demo Script](../demo/components/ui.dialog.dateInput.ts).
 
 #### `ui.dialog.checkboxes(params: UiText[] | CheckboxesData)` <a id="uidialogcheckboxes"></a>
 

@@ -1,7 +1,7 @@
 import { GridColumn } from "./commands/output-grid";
 import { UiText } from "./ViewMessage";
 
-export type WebViewType = "grid" | "output";
+export type WebViewType = "grid" | "output" | "graph" | "json";
 
 export interface WebViewInput {
     viewType?: WebViewType;
@@ -15,5 +15,9 @@ export interface WebViewInput {
         withHeader?: boolean;
         title?: string;
         filePath?: string;
-    }
+    };
+    graphInput?: {
+        jsonData?: any;
+        graphTitle?: UiText;
+    };
 }
