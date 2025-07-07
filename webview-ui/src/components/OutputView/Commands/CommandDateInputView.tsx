@@ -10,6 +10,7 @@ import { OutputDialogButtons } from "../OutputDialog/OutputDialogButtons";
 import clsx from "clsx";
 import { useItemState } from "../OutputViewContext";
 import AsyncComponent from "../../../controls/AsyncComponent";
+import { validDateOrNull } from "../../utils";
 
 const CommandDateInputViewRoot = styled(OutputDialog)({
     "&.disabled .react-datepicker": {
@@ -23,12 +24,6 @@ interface CommandDateInputViewProps {
     replayMessage: (message: ViewMessage) => void;
     updateMessage: (message: ViewMessage) => void;
     onCheckSize?: () => void;
-}
-
-function validDateOrNull(date?: string | Date): Date | null {
-    if (!date) return null;
-    const parsedDate = new Date(date);
-    return isNaN(parsedDate.getTime()) ? null : parsedDate;
 }
 
 export function CommandDateInputView({

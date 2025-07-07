@@ -767,6 +767,478 @@ function _Add-UiInputDateMethod {
     return $null
 }
 
+# --- New: Add _Add-UiInlineConfirmMethod for inline.confirm ---
+function _Add-UiInlineConfirmMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Message, # Corresponds to InlineConfirmData.message
+            [string[]]$Buttons = $null # Corresponds to InlineConfirmData.buttons
+        )
+
+        # 1. Prepare the data for the command
+        $inlineConfirmData = [PSCustomObject]@{
+            message = $Message
+        }
+
+        if ($Buttons -and $Buttons.Count -gt 0) {
+            $inlineConfirmData | Add-Member -MemberType NoteProperty -Name "buttons" -Value $Buttons -Force
+        }
+
+        # 2. Create the ViewMessage for inline.confirm
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $inlineConfirmData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # 3. Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline # Send the command to the extension
+
+        # 4. Wait for the response from the extension via stdin
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        return $response # This will be the 'result' property (e.g., button label)
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiInlineSelectMethod for inline.select ---
+function _Add-UiInlineSelectMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Label, # Corresponds to SelectData.label
+
+            [Parameter(Mandatory=$true)]
+            [array]$Options, # Corresponds to SelectData.options (list of objects)
+
+            [Parameter(Mandatory=$false)]
+            [string]$LabelKey = $null, # Corresponds to SelectData.labelKey
+
+            [Parameter(Mandatory=$false)]
+            [string[]]$Buttons = $null # Corresponds to SelectData.buttons
+        )
+
+        # Prepare the data for the command
+        $selectData = [PSCustomObject]@{
+            label = $Label
+            options = $Options # Pass the raw PowerShell array here. ConvertTo-Json will handle it.
+        }
+
+        if (-not [string]::IsNullOrEmpty($LabelKey)) {
+            $selectData | Add-Member -MemberType NoteProperty -Name "labelKey" -Value $LabelKey -Force
+        }
+        if ($Buttons -and $Buttons.Count -gt 0) {
+            $selectData | Add-Member -MemberType NoteProperty -Name "buttons" -Value $Buttons -Force
+        }
+
+        # Create the ViewMessage for inline.select
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $selectData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain 'result' (the selected option object)
+        # and 'resultButton' (label of clicked button)
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        return $response # This will be the object containing result and resultButton
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiWindowShowTextMethod for window.text ---
+function _Add-UiWindowShowTextMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Text, # Corresponds to WindowTextData.text
+
+            [Parameter(Mandatory=$false)]
+            [string]$Language = $null # Corresponds to WindowTextData.language
+        )
+
+        # Prepare the data for the command
+        $windowTextData = [PSCustomObject]@{
+            text = $Text
+        }
+
+        if (-not [string]::IsNullOrEmpty($Language)) {
+            $windowTextData | Add-Member -MemberType NoteProperty -Name "language" -Value $Language -Force
+        }
+
+        # Create the ViewMessage for window.text
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $windowTextData -IsEvent $false
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # window.text typically doesn't expect a direct response, so return null.
+        return $null
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiFileOpenMethod for file.open ---
+function _Add-UiFileOpenMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$false)]
+            [bool]$CanSelectMany = $false, # Corresponds to FileOpenData.canSelectMany
+
+            [Parameter(Mandatory=$false)]
+            [hashtable]$Filters = $null # Corresponds to FileOpenData.filters ({ [key: string]: string[] })
+        )
+
+        # Prepare the data for the command
+        $fileOpenData = [PSCustomObject]@{} # Start with an empty object
+
+        # Add canSelectMany if it's true (default is false, so no need to send if false)
+        if ($CanSelectMany) {
+            $fileOpenData | Add-Member -MemberType NoteProperty -Name "canSelectMany" -Value $true -Force
+        }
+
+        # Add filters if provided and not empty
+        if ($Filters -and $Filters.Count -gt 0) {
+            # PowerShell hashtables serialize well to JSON objects for this structure
+            $fileOpenData | Add-Member -MemberType NoteProperty -Name "filters" -Value $Filters -Force
+        }
+
+        # Create the ViewMessage for file.open
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $fileOpenData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain the 'data' property, which has the 'result' (array of file paths)
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        # The extension will send back the result in responseObject.data.result
+        return $response
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiFileOpenFolderMethod for file.openFolder ---
+function _Add-UiFileOpenFolderMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$false)]
+            [bool]$CanSelectMany = $false # Corresponds to FileOpenFolderData.canSelectMany
+        )
+
+        # Prepare the data for the command
+        $fileOpenFolderData = [PSCustomObject]@{} # Start with an empty object
+
+        # Add canSelectMany if it's true (default is false, so no need to send if false)
+        if ($CanSelectMany) {
+            $fileOpenFolderData | Add-Member -MemberType NoteProperty -Name "canSelectMany" -Value $true -Force
+        }
+
+        # Create the ViewMessage for file.openFolder
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $fileOpenFolderData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain the 'data' property, which has the 'result' (array of folder paths)
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        # The extension will send back the result in responseObject.data.result
+        return $response
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiFileSaveMethod for file.save ---
+function _Add-UiFileSaveMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$false)]
+            [hashtable]$Filters = $null # Corresponds to FileSaveData.filters ({ [key: string]: string[] })
+        )
+
+        # Prepare the data for the command
+        $fileSaveData = [PSCustomObject]@{} # Start with an empty object
+
+        # Add filters if provided and not empty
+        if ($Filters -and $Filters.Count -gt 0) {
+            # PowerShell hashtables serialize well to JSON objects for this structure
+            $fileSaveData | Add-Member -MemberType NoteProperty -Name "filters" -Value $Filters -Force
+        }
+
+        # Create the ViewMessage for file.save
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $fileSaveData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain the 'data' property, which has the 'result' (single file path string)
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        # The extension will send back the result in responseObject.data.result
+        return $response
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiFileShowOpenMethod for file.showOpen ---
+function _Add-UiFileShowOpenMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Label, # Corresponds to FileShowOpenData.label
+
+            [Parameter(Mandatory=$false)]
+            [bool]$CanSelectMany = $false, # Corresponds to FileShowOpenData.canSelectMany
+
+            [Parameter(Mandatory=$false)]
+            [hashtable]$Filters = $null, # Corresponds to FileShowOpenData.filters
+
+            [Parameter(Mandatory=$false)]
+            [string[]]$Buttons = $null # Corresponds to FileShowOpenData.buttons
+        )
+
+        # Prepare the data for the command
+        $fileShowOpenData = [PSCustomObject]@{
+            label = $Label
+        }
+
+        # Add canSelectMany if it's true (default is false, so no need to send if false)
+        if ($CanSelectMany) {
+            $fileShowOpenData | Add-Member -MemberType NoteProperty -Name "canSelectMany" -Value $true -Force
+        }
+
+        # Add filters if provided and not empty
+        if ($Filters -and $Filters.Count -gt 0) {
+            $fileShowOpenData | Add-Member -MemberType NoteProperty -Name "filters" -Value $Filters -Force
+        }
+
+        # Add buttons if provided and not empty
+        if ($Buttons -and $Buttons.Count -gt 0) {
+            $fileShowOpenData | Add-Member -MemberType NoteProperty -Name "buttons" -Value $Buttons -Force
+        }
+
+        # Create the ViewMessage for file.showOpen
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $fileShowOpenData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain 'result' (array of selected file paths)
+        # and 'resultButton' (label of clicked button)
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        return $response # This will be the object containing result and resultButton
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiFileShowOpenFolderMethod for file.showOpenFolder ---
+function _Add-UiFileShowOpenFolderMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Label, # Corresponds to FileShowOpenFolderData.label
+
+            [Parameter(Mandatory=$false)]
+            [bool]$CanSelectMany = $false, # Corresponds to FileShowOpenFolderData.canSelectMany
+
+            [Parameter(Mandatory=$false)]
+            [string[]]$Buttons = $null # Corresponds to FileShowOpenFolderData.buttons
+        )
+
+        # Prepare the data for the command
+        $fileShowOpenFolderData = [PSCustomObject]@{
+            label = $Label
+        }
+
+        # Add canSelectMany if it's true (default is false, so no need to send if false)
+        if ($CanSelectMany) {
+            $fileShowOpenFolderData | Add-Member -MemberType NoteProperty -Name "canSelectMany" -Value $true -Force
+        }
+
+        # Add buttons if provided and not empty
+        if ($Buttons -and $Buttons.Count -gt 0) {
+            $fileShowOpenFolderData | Add-Member -MemberType NoteProperty -Name "buttons" -Value $Buttons -Force
+        }
+
+        # Create the ViewMessage for file.showOpenFolder
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $fileShowOpenFolderData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain 'result' (array of selected folder paths)
+        # and 'resultButton' (label of clicked button)
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        return $response # This will be the object containing result and resultButton
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
+# --- New: Add _Add-UiFileShowSaveMethod for file.showSave ---
+function _Add-UiFileShowSaveMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [string]$Label, # Corresponds to FileShowSaveData.label
+
+            [Parameter(Mandatory=$false)]
+            [hashtable]$Filters = $null, # Corresponds to FileShowSaveData.filters
+
+            [Parameter(Mandatory=$false)]
+            [string[]]$Buttons = $null # Corresponds to FileShowSaveData.buttons
+        )
+
+        # Prepare the data for the command
+        $fileShowSaveData = [PSCustomObject]@{
+            label = $Label
+        }
+
+        # Add filters if provided and not empty
+        if ($Filters -and $Filters.Count -gt 0) {
+            $fileShowSaveData | Add-Member -MemberType NoteProperty -Name "filters" -Value $Filters -Force
+        }
+
+        # Add buttons if provided and not empty
+        if ($Buttons -and $Buttons.Count -gt 0) {
+            $fileShowSaveData | Add-Member -MemberType NoteProperty -Name "buttons" -Value $Buttons -Force
+        }
+
+        # Create the ViewMessage for file.showSave
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $fileShowSaveData -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        # The response will contain 'result' (single selected file path)
+        # and 'resultButton' (label of clicked button)
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        return $response # This will be the object containing result and resultButton
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
 
 # Add all log methods to the Ui object
 _Add-UiLogMethod -MethodName "Log" -CommandType "log.log"
@@ -783,9 +1255,27 @@ _Add-UiButtonsMethod -MethodName "dialog_buttons" -CommandType "input.buttons"
 _Add-UiCheckboxesMethod -MethodName "dialog_checkboxes" -CommandType "input.checkboxes"
 _Add-UiRadioboxesMethod -MethodName "dialog_radioboxes" -CommandType "input.radioboxes"
 _Add-UiTextInputMethod -MethodName "dialog_textInput" -CommandType "input.text"
-_Add-UiInputDateMethod -MethodName "dialog_inputDate" -CommandType "input.date"
+_Add-UiInputDateMethod -MethodName "dialog_dateInput" -CommandType "input.date"
+
+# Add the new inline methods to the Ui object
+_Add-UiInlineConfirmMethod -MethodName "inline_confirm" -CommandType "inline.confirm"
+_Add-UiInputDateMethod -MethodName "inline_dateInput" -CommandType "inline.date"
+_Add-UiTextInputMethod -MethodName "inline_textInput" -CommandType "inline.text"
+_Add-UiInlineSelectMethod -MethodName "inline_select" -CommandType "inline.select"
 
 # Add the show methods to the Ui object
 _Add-UiShowGridMethod -MethodName "show_grid" -CommandType "output.grid"
 _Add-UiShowTextMethod -MethodName "show_text" -CommandType "output.text"
 _Add-UiShowProgressMethod -MethodName "show_progress" -CommandType "output.progress"
+
+# Add the window methods to the Ui object
+_Add-UiShowGridMethod -MethodName "window_show_grid" -CommandType "window.grid"
+_Add-UiWindowShowTextMethod -MethodName "window_show_text" -CommandType "window.text"
+
+# Add the file methods to the Ui object
+_Add-UiFileOpenMethod -MethodName "file_open" -CommandType "file.open"
+_Add-UiFileOpenFolderMethod -MethodName "file_openFolder" -CommandType "file.openFolder"
+_Add-UiFileSaveMethod -MethodName "file_save" -CommandType "file.save"
+_Add-UiFileShowOpenMethod -MethodName "file_showOpen" -CommandType "file.showOpen"
+_Add-UiFileShowOpenFolderMethod -MethodName "file_showOpenFolder" -CommandType "file.showOpenFolder"
+_Add-UiFileShowSaveMethod -MethodName "file_showSave" -CommandType "file.showSave"

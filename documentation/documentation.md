@@ -10,6 +10,8 @@
     * Detailed documentation for the `interactive-script-js` and `interactive-script-py` client library APIs.
 * [**Version Compatibility Guide**](compatibility.md)
     * Crucial information on matching extension and client library versions to ensure stable operation.
+* [**Extension Settings**](settings.md)
+    * Information on configuring the "Interactive Script" VS Code extension.
 
 ---
 

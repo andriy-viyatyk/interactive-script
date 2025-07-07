@@ -19,7 +19,6 @@ async def file_open_folder_demo():
         "canSelectMany": True,     # allow selecting multiple folders
         "result": ["C:\\"],        # initial folder to open
     })
-    ui.log("You selected the following folder:")
     ui.log("You selected the following folder:") \
         .then(f"\n{folder if folder else 'No folder selected'}") \
         .color("lime") \

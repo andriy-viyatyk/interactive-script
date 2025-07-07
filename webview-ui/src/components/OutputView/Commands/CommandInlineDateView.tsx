@@ -9,6 +9,7 @@ import AsyncComponent from "../../../controls/AsyncComponent";
 import color from "../../../theme/color";
 import { useState } from "react";
 import clsx from "clsx";
+import { validDateOrNull } from "../../utils";
 
 const CommandInlineDateRoot = styled(OutputDialog)({
     "& .react-datepicker": {
@@ -32,7 +33,7 @@ export function CommandInlineDateView({
     const [date, setDate] = useItemState<Date | null>(
         item.commandId,
         "date",
-        null,
+        validDateOrNull(item.data?.result),
     );
     const [open, setOpen] = useState(false);
 
