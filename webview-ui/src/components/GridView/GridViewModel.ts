@@ -5,7 +5,7 @@ import { resolveState } from "../../common/utils/utils";
 import { TGlobalState } from "../../common/classes/state";
 import { TOnGetFilterOptions } from "../../controls/AVGrid/filters/useFilters";
 import { UiText } from "../../../../shared/ViewMessage";
-import { getWorkingData } from "../useGridData";
+import { getRowKey, getWorkingData } from "../useGridData";
 import { defaultCompare, filterRows } from "../../controls/AVGrid/avGridUtils";
 
 const defaultGridViewState = {
@@ -101,6 +101,15 @@ class GridViewModel extends TModel<GridViewState> {
         return (visibleRows === rows)
             ? `[${rows} rows]`
             : `[${visibleRows} of ${rows} rows]`;
+    }
+
+    editRow = (columnKey: string, rowKey: string, value: any) => {
+        this.state.update((s) => {
+            const row = s.rows.find((r) => getRowKey(r) === rowKey);
+            if (row) {
+                (row as any)[columnKey] = value;
+            }
+        });
     }
 }
 

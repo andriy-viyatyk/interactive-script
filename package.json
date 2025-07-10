@@ -1,10 +1,10 @@
 {
     "name": "interactive-script",
     "displayName": "Interactive Script",
-    "description": "Provides interactive UI elements for the JS and TS scripts.",
+    "description": "Provides interactive UI elements for the JS, TS, PY and PS1 scripts.",
     "publisher": "andriy-viyatyk",
     "author": "Andriy Viyatyk",
-    "version": "1.0.8",
+    "version": "1.0.9-dev",
     "repository": {
         "type": "git",
         "url": "https://github.com/andriy-viyatyk/interactive-script.git"

@@ -1,8 +1,8 @@
-import React, { RefObject, useCallback, useEffect } from 'react';
-import { CellEdit, CellFocus, CellMouseEvent, Column } from './avGridTypes';
-import RenderGridModel from '../RenderGrid/RenderGridModel';
-import { useComponentState } from '../../common/classes/state';
-import { getGridFocus, getGridSelection } from './useUtils';
+import React, { RefObject, useCallback, useEffect, useRef } from "react";
+import { CellEdit, CellFocus, CellMouseEvent, Column } from "./avGridTypes";
+import RenderGridModel from "../RenderGrid/RenderGridModel";
+import { useComponentState } from "../../common/classes/state";
+import { getGridFocus, getGridSelection } from "./useUtils";
 
 interface UseEditingProps<R> {
     focus?: CellFocus<R>;
@@ -13,6 +13,7 @@ interface UseEditingProps<R> {
     renderGridRef: RefObject<RenderGridModel | null>;
     getRowKey: (row: any) => string;
     editRow?: (columnKey: string, rowKey: string, value: any) => void;
+    editable?: boolean;
 }
 
 export function useEditing<R>({
@@ -24,60 +25,68 @@ export function useEditing<R>({
     renderGridRef,
     getRowKey,
     editRow,
+    editable,
 }: UseEditingProps<R>) {
     const cellEdit = useComponentState<CellEdit<R>>({
-        columnKey: '',
-        rowKey: '',
+        columnKey: "",
+        rowKey: "",
         value: undefined,
     });
 
-    const editCell = useCallback((col: Column<R>, row: R, val: any) => {
-        if (!col.editable) return;
-        
-        const value = col.validate
-            ? col.validate(col, row, val)
-            : val;
-        editRow?.(col.key.toString(), getRowKey(row), value);
-    }, [editRow, getRowKey]);
+    const editStateRef = useRef<{ editTime: number }>({
+        editTime: new Date().getTime(),
+    });
+
+    const editCell = useCallback(
+        (col: Column<R>, row: R, val: any) => {
+            if (!editable || col.readonly) return;
+
+            const value = col.validate ? col.validate(col, row, val) : val;
+            editRow?.(col.key.toString(), getRowKey(row), value);
+        },
+        [editRow, editable, getRowKey]
+    );
 
     const deleteRange = useCallback(() => {
         const gridSelection = getGridSelection(focus, rows, columns, getRowKey);
         if (gridSelection) {
             gridSelection.columns.forEach((col) => {
-                if (col.editable) {
+                if (editable && !col.readonly) {
                     gridSelection.rows.forEach((row) => {
                         editCell(col, row, undefined);
                     });
                 }
             });
         }
-    }, [columns, editCell, focus, getRowKey, rows]);
+    }, [columns, editCell, editable, focus, getRowKey, rows]);
 
     const closeEdit = useCallback(
-        (commit: boolean) => {
+        (commit: boolean, focusGrid: boolean = true) => {
             const editState = cellEdit.get();
             let rowIndex = -1;
 
             if (editState.rowKey && editState.columnKey) {
                 rowIndex = rows.findIndex(
-                    (r) => getRowKey(r) === editState.rowKey,
+                    (r) => getRowKey(r) === editState.rowKey
                 );
                 const row = rows[rowIndex];
                 const column = columns.find(
-                    (c) => c.key === editState.columnKey,
+                    (c) => c.key === editState.columnKey
                 );
                 if (commit && column && row) {
                     editCell(column, row, editState.value);
                 }
             }
-            cellEdit.set({ columnKey: '', rowKey: '', value: undefined });
+            cellEdit.set({ columnKey: "", rowKey: "", value: undefined });
 
             if (rowIndex >= 0) {
                 renderGridRef.current?.update({ rows: [rowIndex + 1] });
-                renderGridRef.current?.gridRef.current?.focus();
+                if (focusGrid) {
+                    renderGridRef.current?.gridRef.current?.focus();
+                }
             }
         },
-        [cellEdit, columns, editCell, getRowKey, renderGridRef, rows],
+        [cellEdit, columns, editCell, getRowKey, renderGridRef, rows]
     );
 
     const openEdit = useCallback(
@@ -85,21 +94,22 @@ export function useEditing<R>({
             columnKey: keyof R | string,
             rowKey: string,
             value: any,
-            dontSelect: boolean,
+            dontSelect: boolean
         ) => {
             const cellState = cellEdit.get();
             const cellValue =
                 cellState.columnKey === columnKey && cellState.rowKey === rowKey
-                    ? (cellState.value)
-                    : '';
+                    ? cellState.value
+                    : "";
+            editStateRef.current.editTime = new Date().getTime();
             cellEdit.set({
                 columnKey,
                 rowKey,
-                value: `${cellValue ?? ''}${value ?? ''}`,
+                value: `${cellValue ?? ""}${value ?? ""}`,
                 dontSelect,
             });
         },
-        [cellEdit],
+        [cellEdit]
     );
 
     useEffect(() => {
@@ -115,32 +125,46 @@ export function useEditing<R>({
     }, [cellEdit, closeEdit, focus]);
 
     const getEditItems = useCallback(() => {
-        const gridFocus = editRow ? getGridFocus(focus, rows, columns, getRowKey) : undefined;
+        const gridFocus = editRow
+            ? getGridFocus(focus, rows, columns, getRowKey)
+            : undefined;
 
         if (gridFocus && gridFocus.rowIndex >= 0) {
             renderGridRef.current?.update({ rows: [gridFocus.rowIndex + 1] });
         }
 
-        return gridFocus && gridFocus.column.editable && gridFocus.row
-            ? { column: gridFocus.column, row: gridFocus.row, rowIndex: gridFocus.rowIndex }
+        return gridFocus &&
+            editable &&
+            !gridFocus.column.readonly &&
+            gridFocus.row
+            ? {
+                  column: gridFocus.column,
+                  row: gridFocus.row,
+                  rowIndex: gridFocus.rowIndex,
+              }
             : { column: undefined, row: undefined, rowIndex: -1 };
-    }, [editRow, focus, columns, rows, getRowKey, renderGridRef]);
+    }, [editRow, focus, columns, rows, getRowKey, renderGridRef, editable]);
 
     const onAreaKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLDivElement>) => {
             let keyHandled = false;
             if (
-                ['Enter', 'F2', 'Delete', 'Escape', 'ArrowLeft', 'ArrowRight'].includes(
-                    e.key,
-                ) &&
+                [
+                    "Enter",
+                    "F2",
+                    "Delete",
+                    "Escape",
+                    "ArrowLeft",
+                    "ArrowRight",
+                ].includes(e.key) &&
                 focus
             ) {
                 const { column, row } = getEditItems();
                 if (row && column) {
                     const editState = cellEdit.get();
                     switch (e.key) {
-                        case 'Enter':
-                        case 'F2':
+                        case "Enter":
+                        case "F2":
                             if (
                                 editState.columnKey === focus.columnKey &&
                                 editState.rowKey === focus.rowKey
@@ -151,18 +175,18 @@ export function useEditing<R>({
                                     focus.columnKey,
                                     focus.rowKey,
                                     row[column.key as keyof R],
-                                    false,
+                                    false
                                 );
                             }
                             break;
-                        case 'Delete':
+                        case "Delete":
                             deleteRange();
                             break;
-                        case 'Escape':
+                        case "Escape":
                             closeEdit(false);
                             break;
-                        case 'ArrowLeft':
-                        case 'ArrowRight':
+                        case "ArrowLeft":
+                        case "ArrowRight":
                             keyHandled = Boolean(editState.columnKey);
                             break;
                         default:
@@ -180,7 +204,7 @@ export function useEditing<R>({
             ) {
                 const { column } = getEditItems();
                 if (column) {
-                    openEdit(focus.columnKey, focus.rowKey, '', true); // e.key
+                    openEdit(focus.columnKey, focus.rowKey, "", true); // e.key
                 }
             }
 
@@ -188,7 +212,15 @@ export function useEditing<R>({
                 onAreaKeyDownProp?.(e);
             }
         },
-        [cellEdit, closeEdit, deleteRange, focus, getEditItems, onAreaKeyDownProp, openEdit],
+        [
+            cellEdit,
+            closeEdit,
+            deleteRange,
+            focus,
+            getEditItems,
+            onAreaKeyDownProp,
+            openEdit,
+        ]
     );
 
     const onMouseDown = useCallback<CellMouseEvent>(
@@ -212,18 +244,26 @@ export function useEditing<R>({
                             focus.columnKey,
                             focus.rowKey,
                             row[col.key],
-                            true,
+                            true
                         );
                     }
                 }
             }
             onMouseDownProps(e, row, col, rowIndex, colIndex);
         },
-        [cellEdit, focus, getEditItems, getRowKey, onMouseDownProps, openEdit],
+        [cellEdit, focus, getEditItems, getRowKey, onMouseDownProps, openEdit]
     );
+
+    const onBlur = useCallback(() => {
+        // allow blur to transfer focus to cell input
+        if (editStateRef.current.editTime + 50 < new Date().getTime()) {
+            closeEdit(true, false);
+        }
+    }, [closeEdit]);
 
     return {
         onAreaKeyDown,
+        onBlur,
         cellEdit,
         onMouseDown,
         editCell,

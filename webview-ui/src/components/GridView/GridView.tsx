@@ -177,7 +177,8 @@ export default function GridView() {
                     searchString={state.search}
                     filters={state.filters}
                     onVisibleRowsChanged={onVisibleRowsChanged}
-                    focusOnClick
+                    editRow={model.editRow}
+                    editable
                 />
             </GridViewRoot>
         </FiltersProvider>

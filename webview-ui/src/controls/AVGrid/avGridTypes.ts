@@ -35,6 +35,7 @@ export interface TAVGridContext<R = any> {
     editRow?: (columnKey: string, rowKey: string, value: any) => void;
     readonly?: boolean;
     searchString?: string;
+    editable?: boolean;
 }
 
 export interface TCellRendererProps<R = any> extends RenderCellParams {
@@ -102,7 +103,7 @@ export interface Column<R = any> {
     dataAlignment?: TAlignment;
     filterType?: TFilterType;
     formatValue?: (column: Column<R>, row: R) => string;
-    editable?: boolean;
+    readonly?: boolean;
     validate?: (column: Column<R>, row: R, value: any) => any;
 }
 

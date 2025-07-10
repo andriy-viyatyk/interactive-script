@@ -9,6 +9,7 @@ import { mockData } from './mock-data.ts';
 import { Poppers } from './dialogs/Poppers.tsx';
 import { Global } from '@emotion/react';
 import { globalStyles } from './theme/global-styles.ts';
+import './handleVSCodeDoubleFocus';
 
 declare function acquireVsCodeApi(): any;
 
@@ -35,3 +36,4 @@ function renderApp() {
     </StrictMode>
   );
 }
+
