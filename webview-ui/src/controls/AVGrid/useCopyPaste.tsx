@@ -153,6 +153,8 @@ export function useCopyPaste<R>({
                         break;
                     }
                     case 'KeyV': {
+                        e.preventDefault();
+                        e.stopPropagation();
                         pasteFromClipboard();
                         break;
                     }

@@ -22,14 +22,13 @@ function onWindowFocus() {
         ) {
             // Use a short timeout to allow the browser/VSCode's default focus logic to complete
             setTimeout(() => {
-                if (lastFocusedElement && lastFocusedElement.focus) {
-                    lastFocusedElement.focus();
+                if (lastFocusedElement) {
+                    lastFocusedElement.focus?.();
                 }
             }, 50); // Adjust delay if necessary
         }
     } else if (currentActiveElement instanceof HTMLElement) {
         lastFocusedElement = currentActiveElement;
-        console.log('Focused element:', lastFocusedElement.tagName, lastFocusedElement.className);
     }
     
 }
