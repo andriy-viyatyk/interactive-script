@@ -1,9 +1,7 @@
 import {
-    CSSProperties,
     forwardRef,
     HTMLAttributes,
     ReactNode,
-    SetStateAction,
     useCallback,
     useEffect,
     useImperativeHandle,
@@ -14,12 +12,9 @@ import styled from "@emotion/styled";
 import clsx from "clsx";
 
 import {
-    CellFocus,
-    Column,
     TAVGridContext,
     TCellRenderer,
     TCellRendererProps,
-    TFilter,
 } from "./avGridTypes";
 import { RefType, RenderCellFunc, RerenderInfo } from "../RenderGrid/types";
 import { AVGridProvider } from "./useAVGridContext";
@@ -40,6 +35,7 @@ import { useCopyPaste } from "./useCopyPaste";
 import { HighlightedTextProvider } from "../useHighlightedText";
 import { useContextMenu } from "./useContextMenu";
 import { FilterPoper } from "./filters/FilterPoper";
+import { AVGridProps } from "./model/AVGridModel";
 
 const RenderGridStyled = styled(RenderGrid)(
     {
@@ -188,39 +184,6 @@ function Cell(props: Readonly<TCellRendererProps>) {
             className={className}
         />
     );
-}
-
-export interface AVGridProps<R> {
-    className?: string;
-    columns: Column<R>[];
-    rows: R[];
-    configName?: string;
-    rowHeight?: number;
-    selected?: ReadonlySet<string>;
-    setSelected?: (value: SetStateAction<ReadonlySet<string>>) => void;
-    loading?: boolean;
-    getRowKey: (row: R) => string;
-    disableFiltering?: boolean;
-    disableSorting?: boolean;
-    onClick?: (row: R, col: Column<R>) => void;
-    onDoubleClick?: (row: R, col: Column<R>) => void;
-    onCellClass?: (row: R, col: Column<R>) => string;
-    onColumnsChanged?: () => void;
-    focus?: CellFocus;
-    setFocus?: (value: SetStateAction<CellFocus | undefined>) => void;
-    editRow?: (columnKey: string, rowKey: string, value: any) => void;
-    fitToWidth?: boolean;
-    onAddRows?: (count: number, insertIndex?: number) => R[];
-    onDeleteRows?: (rowKeys: string[]) => void;
-    growToHeight?: CSSProperties["height"];
-    growToWidth?: CSSProperties["height"];
-    searchString?: string;
-    readonly?: boolean;
-    filters?: TFilter[];
-    onVisibleRowsChanged?: () => void;
-    scrollToFocus?: boolean;
-    onMouseDown?: (e: React.MouseEvent) => void;
-    editable?: boolean;
 }
 
 export type AVGridRef = {

@@ -2,7 +2,7 @@ import { CellFocus, Column } from "./avGridTypes";
 
 export function getGridFocus<R>(
     focus: CellFocus<R> | undefined,
-    rows: R[],
+    rows: readonly R[],
     columns: Column<R>[],
     getRowKey: (row: any) => string,
 ) {
@@ -22,7 +22,7 @@ export function getGridFocus<R>(
 
 export function getGridSelection<R>(
     focus: CellFocus<R> | undefined,
-    rows: R[],
+    rows: readonly R[],
     columns: Column<R>[],
     getRowKey: (row: any) => string,
 ) {

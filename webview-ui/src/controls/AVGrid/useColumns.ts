@@ -22,7 +22,6 @@ interface UseColumnsProps<R = unknown> {
 export function useColumns<R = unknown>(props: UseColumnsProps<R>) {
     const {
         columns: propsColumns,
-        configName,
         update,
         onColumnsChanged,
     } = props;
@@ -37,12 +36,12 @@ export function useColumns<R = unknown>(props: UseColumnsProps<R>) {
             });
             onColumnsChanged?.();
         },
-        [configName, onColumnsChanged],
+        [onColumnsChanged],
     );
 
     React.useEffect(() => {
         setColumns(propsColumns);
-    }, [propsColumns, configName]);
+    }, [propsColumns]);
 
     const onColumnResize = useCallback<TOnColumnResize>(
         (columnKey, width) => {
