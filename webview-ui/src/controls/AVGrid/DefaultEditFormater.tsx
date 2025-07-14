@@ -22,27 +22,25 @@ const EditCellTextRoot = styled(TextField)({
     },
 });
 
-export function DefaultEditFormater({ context }: TCellRendererProps) {
+export function DefaultEditFormater({ model }: TCellRendererProps) {
     const editRef = useRef<HTMLInputElement>(null);
-
-    const cellEdit = context.cellEdit;
 
     useEffect(() => {
         editRef.current?.focus();
-        if (!cellEdit?.get().dontSelect) {
+        if (!model.state.get().cellEdit.dontSelect) {
             editRef.current?.select();
         }
-    }, [cellEdit]);
+    }, [model]);
 
-    const { value, columnKey } = cellEdit.use() ?? {};
+    const { value, columnKey } = model.state.use(s => s.cellEdit);
 
     return columnKey ? (
         <EditCellTextRoot
             ref={editRef}
             value={value ?? ''}
             onChange={(v) =>
-                cellEdit?.update((s) => {
-                    s.value = v;
+                model.state.update((s) => {
+                    s.cellEdit.value = v;
                 })
             }
             onKeyDown={(e) => {

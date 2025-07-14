@@ -89,8 +89,8 @@ function SortIcon({ direction }: { direction?: TSortDirection }) {
     return null;
 }
 
-export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
-    const column = context.columns[col];
+export function HeaderCell({ key, col, style, model }: TCellRendererProps) {
+    const column = model.data.columns[col];
     const headerRef = useRef<HTMLElement>(undefined);
     const resizingRef = useRef(false);
     const hasResized = useRef(false);
@@ -99,17 +99,18 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
     const columnFiltered = filter.filters.find(
         (f) => f.columnKey === column.key
     );
+    const sortColumn = model.state.use(s => s.sortColumn);
 
     const handleClick = () => {
         if (hasResized.current) {
             hasResized.current = false;
             return;
         }
-        if (context.disableSorting) {
+        if (model.props.disableSorting) {
             return;
         }
 
-        context.setSortColumn((old) => {
+        model.models.sortColumn.setSortColumn((old) => {
             if (old?.key === (column.key as string)) {
                 return old.direction === "desc"
                     ? undefined
@@ -117,7 +118,7 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
             }
             return { key: column.key as string, direction: "asc" };
         });
-        context.update({ all: true });
+        model.update({ all: true });
     };
 
     function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
@@ -140,7 +141,7 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
             const { left } = currentTarget.getBoundingClientRect();
             const width = e.clientX + offset - left;
             if (width > 0) {
-                context.onColumnResize(column?.key as string, width);
+                model.events.columnResize(column?.key as string, width);
             }
         }
 
@@ -175,7 +176,7 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
     const [{ isOver }, drop] = useDrop({
         accept: ["COLUMN_DRAG", "FREEZE_DRAG"],
         drop({ key: dropKey }: { key: string }) {
-            context.onColumnsReorder(dropKey, column.key as string);
+            model.events.columnsReorder(dropKey, column.key as string);
         },
         collect: (monitor) => ({
             isOver: monitor.isOver(),
@@ -236,11 +237,11 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
             qa-column={column.key}
         >
             {Boolean(
-                context.sortColumn && column.key === context.sortColumn.key
-            ) && <SortIcon direction={context.sortColumn?.direction} />}
+                sortColumn && column.key === sortColumn.key
+            ) && <SortIcon direction={sortColumn?.direction} />}
             <span className="header-cell-title">{column?.name}</span>
             <span className="flex-space" />
-            {Boolean(column.filterType) && !context.disableFiltering && (
+            {Boolean(column.filterType) && !model.props.disableFiltering && (
                 <Button
                     size="small"
                     type="icon"

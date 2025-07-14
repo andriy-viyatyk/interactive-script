@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
-import { TAVGridContext } from "./avGridTypes";
+import { AVGridModel } from "./model/AVGridModel";
 
 const AVGridContext =
-    createContext<TAVGridContext | undefined>(undefined);
+    createContext<AVGridModel<any> | undefined>(undefined);
 export const AVGridProvider = AVGridContext.Provider;
 
-export function useAVGridContext(): TAVGridContext {
+export function useAVGridContext(): AVGridModel<any> {
     const avGridContext = useContext(AVGridContext);
 
     if (avGridContext === undefined) {

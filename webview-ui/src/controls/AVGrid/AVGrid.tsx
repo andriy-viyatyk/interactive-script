@@ -3,39 +3,27 @@ import {
     HTMLAttributes,
     ReactNode,
     useCallback,
-    useEffect,
     useImperativeHandle,
     useMemo,
-    useRef,
 } from "react";
 import styled from "@emotion/styled";
 import clsx from "clsx";
 
 import {
-    TAVGridContext,
     TCellRenderer,
     TCellRendererProps,
 } from "./avGridTypes";
-import { RefType, RenderCellFunc, RerenderInfo } from "../RenderGrid/types";
+import { RefType, RenderCellFunc } from "../RenderGrid/types";
 import { AVGridProvider } from "./useAVGridContext";
-import RenderGridModel from "../RenderGrid/RenderGridModel";
 import RenderGrid from "../RenderGrid/RenderGrid";
 import color from "../../theme/color";
 import { CircularProgress } from "../CircularProgress";
-import { defaultColumnWidth, useColumns } from "./useColumns";
-import { useSortColumn } from "./useSortColumn";
-import { useRows } from "./useRows";
-import { useSelected } from "./useSelected";
-import { useHovered } from "./useHovered";
 import { HeaderCell } from "./HeaderCell";
 import { DataCell } from "./DataCell";
-import { useFocus } from "./useFocus";
-import { useEditing } from "./useEditing";
-import { useCopyPaste } from "./useCopyPaste";
 import { HighlightedTextProvider } from "../useHighlightedText";
-import { useContextMenu } from "./useContextMenu";
 import { FilterPoper } from "./filters/FilterPoper";
-import { AVGridProps } from "./model/AVGridModel";
+import { AVGridModel, AVGridProps, defaultAVGridState } from "./model/AVGridModel";
+import { useComponentModel } from "../../common/classes/model";
 
 const RenderGridStyled = styled(RenderGrid)(
     {
@@ -164,276 +152,55 @@ const LoadingContainerRoot = styled.div({
 });
 
 function Cell(props: Readonly<TCellRendererProps>) {
-    const { col, row, context } = props;
+    const { col, row, model } = props;
     const Renderer: TCellRenderer =
         row === 0
-            ? context.columns[col].haderRenderer ?? HeaderCell
-            : context.columns[col].cellRenderer ?? DataCell;
+            ? model.data.columns[col].haderRenderer ?? HeaderCell
+            : model.data.columns[col].cellRenderer ?? DataCell;
 
     const className = clsx({
         "row-selected":
             row > 0 &&
-            context.selected.has(context.getRowKey(context.rows[row - 1])),
-        "row-hovered": row > 0 && context.hovered === row - 1,
+            model.props.selected?.has(model.props.getRowKey(model.data.rows[row - 1])),
+        "row-hovered": row > 0 && model.data.hovered === row - 1,
     });
     return (
         <Renderer
             {...props}
             row={row - 1}
-            context={context}
+            model={model}
             className={className}
         />
     );
 }
 
-export type AVGridRef = {
-    context: TAVGridContext;
-    gridRef: RenderGridModel | null;
-};
-
 function AVGridComponent<R = any>(
     props: AVGridProps<R>,
-    ref?: RefType<AVGridRef | undefined>
+    ref?: RefType<AVGridModel<R> | undefined>
 ) {
-    const {
-        className,
-        columns: propsColumns,
-        rows: propsRows,
-        configName,
-        rowHeight,
-        selected: propsSelected,
-        setSelected,
-        loading,
-        getRowKey,
-        disableFiltering,
-        disableSorting,
-        onClick,
-        onDoubleClick,
-        onCellClass,
-        onColumnsChanged,
-        focus,
-        setFocus,
-        editRow,
-        fitToWidth,
-        onAddRows,
-        onDeleteRows,
-        searchString,
-        readonly,
-        filters,
-        onVisibleRowsChanged,
-        scrollToFocus,
-        onMouseDown: propsOnMouseDown,
-        editable,
-    } = props;
+    const model = useComponentModel(props, AVGridModel<R>, defaultAVGridState);
+    model.useModel();
 
-    const renderGridRef = useRef<RenderGridModel>(null);
-
-    const update = useCallback((rerender?: RerenderInfo) => {
-        if (renderGridRef.current) renderGridRef.current.update(rerender);
-    }, []);
-
-    useEffect(() => {
-        update({ all: true });
-    }, [update, propsColumns, propsRows, propsSelected, readonly]);
-
-    const { columns, onColumnResize, onColumnsReorder, lastIsStatusIndex } =
-        useColumns<R>({
-            columns: propsColumns,
-            configName,
-            update,
-            onColumnsChanged,
-        });
-
-    const { sortColumn, setSortColumn, rowCompare } = useSortColumn({
-        columns,
-    });
-
-    const rows = useRows({
-        columns,
-        rows: propsRows,
-        rowCompare,
-        sortDirection: sortColumn?.direction,
-        searchString,
-        filters,
-    });
-
-    useEffect(() => {
-        update({ all: true });
-        onVisibleRowsChanged?.();
-    }, [rows, update]);
-
-    const { selected, allSelected } = useSelected({
-        rows,
-        selected: propsSelected,
-        getRowKey,
-    });
-
-    const { hovered, setHovered } = useHovered({ update });
-
-    const {
-        onMouseDown: onMouseDownFocus,
-        onDragStart,
-        onDragEnter,
-        onDragEnd,
-        onAreaKeyDown: onAreaKeyDownFocus,
-    } = useFocus({
-        rows,
-        columns,
-        focus,
-        setFocus,
-        getRowKey,
-        renderGridRef,
-        onMouseDown: propsOnMouseDown,
-    });
-
-    const {
-        onAreaKeyDown: onAreaKeyDownEditing,
-        onBlur,
-        cellEdit,
-        onMouseDown,
-        editCell,
-    } = useEditing({
-        focus,
-        rows,
-        columns,
-        onAreaKeyDown: onAreaKeyDownFocus,
-        onMouseDown: onMouseDownFocus,
-        renderGridRef,
-        getRowKey,
-        editRow,
-        editable,
-    });
-
-    const { 
-        onAreaKeyDown,
-        copySelection,
-        canPasteFromClipboard,
-        pasteFromClipboard,
-     } = useCopyPaste({
-        onAreaKeyDown: onAreaKeyDownEditing,
-        focus,
-        setFocus,
-        rows,
-        columns,
-        getRowKey,
-        editCell,
-        onAddRows,
-    });
-
-    const { onAreaContextMenu } = useContextMenu({
-        focus,
-        rows,
-        columns,
-        getRowKey,
-        copySelection,
-        onAddRows,
-        onDeleteRows,
-        canPasteFromClipboard,
-        pasteFromClipboard,
-    });
-
-    const getColumnWidth = useCallback(
-        (idx: number) => columns[idx]?.width ?? defaultColumnWidth,
-        [columns]
-    );
-
-    const context: TAVGridContext = useMemo(
-        () => ({
-            update,
-            columns,
-            onColumnResize,
-            onColumnsReorder,
-            sortColumn,
-            setSortColumn,
-            rows,
-            selected,
-            setSelected,
-            allSelected,
-            hovered,
-            setHovered,
-            getRowKey,
-            disableFiltering,
-            disableSorting,
-            onClick,
-            onMouseDown,
-            onDoubleClick,
-            onCellClass,
-            focus,
-            setFocus,
-            onDragStart,
-            onDragEnter,
-            onDragEnd,
-            cellEdit,
-            editRow,
-            readonly,
-            searchString,
-            editable,
-        }),
-        [
-            update,
-            columns,
-            onColumnResize,
-            onColumnsReorder,
-            sortColumn,
-            setSortColumn,
-            rows,
-            selected,
-            setSelected,
-            allSelected,
-            hovered,
-            setHovered,
-            getRowKey,
-            disableFiltering,
-            disableSorting,
-            onClick,
-            onMouseDown,
-            onDoubleClick,
-            onCellClass,
-            focus,
-            setFocus,
-            onDragStart,
-            onDragEnter,
-            onDragEnd,
-            cellEdit,
-            editRow,
-            readonly,
-            searchString,
-            editable,
-        ]
-    );
-
-    useImperativeHandle(ref, () => ({
-        context,
-        gridRef: renderGridRef.current,
-    }));
-
-    useEffect(() => {
-        if (scrollToFocus && focus && focus.rowKey) {
-            const rowIndex = rows.findIndex((row) => getRowKey(row) === focus.rowKey);
-            if (rowIndex >= 0) {
-                renderGridRef.current?.scrollToRow(rowIndex + 1, "center");
-            }
-        }
-    }, []);
+    useImperativeHandle(ref, () => model);
 
     const renderCell: RenderCellFunc = useCallback(
         ({ key, ...cellProps }) => {
-            return <Cell key={key} {...cellProps} context={context} />;
+            return <Cell key={key} {...cellProps} model={model} />;
         },
-        [context]
+        [model]
     );
 
     const contentProps = useMemo<HTMLAttributes<HTMLDivElement>>(() => {
         return {
-            onMouseLeave: () => setHovered(-1),
-            tabIndex: setFocus ? 0 : undefined,
-            onKeyDown: onAreaKeyDown,
-            onContextMenu: onAreaContextMenu,
-            onBlur: onBlur,
+            onMouseLeave: model.events.content.mouseLeave,
+            tabIndex: model.props.setFocus ? 0 : undefined,
+            onKeyDown: model.events.content.keyDown,
+            onContextMenu: model.events.content.contextMenu,
+            onBlur: model.events.content.blur,
         };
-    }, [onAreaContextMenu, onAreaKeyDown, onBlur, setFocus, setHovered]);
+    }, [model]);
 
-    if (loading) {
+    if (model.props.loading) {
         return (
             <LoadingContainerRoot>
                 <CircularProgress />
@@ -442,32 +209,32 @@ function AVGridComponent<R = any>(
     }
 
     let extraElement = null as ReactNode;
-    if (onAddRows) {
+    if (model.props.onAddRows) {
         extraElement = (
-            <span className="add-row-button" onClick={() => onAddRows(1)}>
+            <span className="add-row-button" onClick={() => model.props.onAddRows?.(1)}>
                 <span className="add-row-plus">+</span>add row
             </span>
         );
     }
 
     return (
-        <HighlightedTextProvider value={searchString}>
-            <AVGridProvider value={context}>
+        <HighlightedTextProvider value={model.props.searchString}>
+            <AVGridProvider value={model}>
                 <RenderGridStyled
-                    ref={renderGridRef}
-                    className={className}
-                    columnCount={columns.length}
-                    rowCount={rows.length + 1}
-                    columnWidth={getColumnWidth}
+                    ref={model.setRenderModel}
+                    className={model.props.className}
+                    columnCount={model.models.columns.columnCount}
+                    rowCount={model.models.rows.rowCount}
+                    columnWidth={model.models.columns.getColumnWidth}
                     renderCell={renderCell}
                     stickyTop={1}
-                    stickyLeft={lastIsStatusIndex + 1}
-                    rowHeight={rowHeight}
+                    stickyLeft={model.data.lastIsStatusIndex + 1}
+                    rowHeight={model.props.rowHeight}
                     contentProps={contentProps}
-                    fitToWidth={fitToWidth}
+                    fitToWidth={model.props.fitToWidth}
                     extraElement={extraElement}
-                    growToHeight={props.growToHeight}
-                    growToWidth={props.growToWidth}
+                    growToHeight={model.props.growToHeight}
+                    growToWidth={model.props.growToWidth}
                 />
                 <FilterPoper />
             </AVGridProvider>
@@ -476,5 +243,5 @@ function AVGridComponent<R = any>(
 }
 
 export default forwardRef(AVGridComponent) as <R>(
-    props: AVGridProps<R> & { ref?: RefType<AVGridRef | undefined> }
+    props: AVGridProps<R> & { ref?: RefType<AVGridModel<R> | undefined> }
 ) => ReturnType<typeof AVGridComponent>;

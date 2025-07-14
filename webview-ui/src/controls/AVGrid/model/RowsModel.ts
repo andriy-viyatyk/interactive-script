@@ -12,6 +12,10 @@ export class RowsModel<R> {
         this.model.data.onChange.subscribe(this.onDataChange);
     }
 
+    get rowCount() {
+        return this.model.data.rows.length + 1; // +1 for header row
+    }
+
     filter = (rows: readonly R[]) => {
         return filterRows(rows, this.model.data.columns, this.model.props.searchString, this.model.props.filters);
     }
@@ -50,5 +54,6 @@ export class RowsModel<R> {
 
         this.model.data.rows = rows;
         this.model.data.change();
+        this.model.update({ all: true });
     }
 }

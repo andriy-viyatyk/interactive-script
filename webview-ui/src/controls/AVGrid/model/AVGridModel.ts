@@ -56,6 +56,17 @@ export interface AVGridState<R> {
     cellEdit: CellEdit<R>;
 }
 
+export const defaultAVGridState: AVGridState<any> = {
+    columns: [],
+    sortColumn: undefined,
+    cellEdit: {
+        columnKey: "",
+        rowKey: "",
+        value: undefined,
+        dontSelect: false,
+    },
+}
+
 export class AVGridModels<R> {
     columns: ColumnsModel<R>;
     sortColumn: SortColumnModel;
@@ -108,4 +119,8 @@ export class AVGridModel<R> extends TComponentModel<AVGridState<R>, AVGridProps<
     }
 
     update = (rerender?: RerenderInfo) => this.renderModel?.update(rerender);
+
+    setRenderModel = (renderModel: RenderGridModel) => {
+        this.renderModel = renderModel;
+    }
 }

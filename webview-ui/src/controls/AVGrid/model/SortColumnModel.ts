@@ -1,8 +1,9 @@
-import { useEffect } from "react";
-import { TRowCompare } from "../avGridTypes";
+import { SetStateAction, useEffect } from "react";
+import { TRowCompare, TSortColumn } from "../avGridTypes";
 import { defaultCompare } from "../avGridUtils";
 import { AVGridDataChangeEvent } from "./AVGridData";
 import { AVGridModel } from "./AVGridModel";
+import { resolveState } from "../../../common/utils/utils";
 
 export class SortColumnModel {
     model: AVGridModel<any>;
@@ -36,5 +37,12 @@ export class SortColumnModel {
         }
         this.model.data.rowCompare = rowCompare;
         this.model.data.change();
+    }
+
+    setSortColumn = (sortColumn: SetStateAction<TSortColumn | undefined>) => {
+        const sColumn = resolveState(sortColumn, () => this.model.state.get().sortColumn);
+        this.model.state.update(s => {
+            s.sortColumn = sColumn;
+        });
     }
 }

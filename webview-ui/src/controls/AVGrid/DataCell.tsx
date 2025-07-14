@@ -7,7 +7,6 @@ import { CheckIcon } from "../../theme/icons";
 import { falseString, formatDispayValue } from "./avGridUtils";
 import { OverflowTooltipText } from "../OverflowTooltipText";
 import color from "../../theme/color";
-import { focusClass } from "./useFocus";
 import { DefaultEditFormater } from "./DefaultEditFormater";
 import { useCallback } from "react";
 
@@ -38,9 +37,9 @@ const DataCellRoot = styled.div(
 );
 
 export function DefaultCellFormater(props: TCellRendererProps) {
-    const { col, row: rowIndex, context } = props;
-    const column = context.columns[col];
-    const row = context.rows[rowIndex];
+    const { col, row: rowIndex, model } = props;
+    const column = model.data.columns[col];
+    const row = model.data.rows[rowIndex];
     const highlightedText = useHighlightedText();
 
     let value: any = null;
@@ -69,71 +68,62 @@ export function DefaultCellFormater(props: TCellRendererProps) {
 }
 
 export function DataCell(props: Readonly<TCellRendererProps>) {
-    const { col, row, style, context, className } = props;
-    const column = context.columns[col];
-    const cellEdit = context.cellEdit?.use();
+    const { col, row, style, model, className } = props;
+    const column = model.data.columns[col];
+    const cellEdit = model.state.use(s => s.cellEdit);
     const isEdit =
         cellEdit?.columnKey === column.key &&
-        cellEdit?.rowKey === context.getRowKey(context.rows[row]);
+        cellEdit?.rowKey === model.props.getRowKey(model.data.rows[row]);
     const Formater =
         (isEdit ? column.editFormater : column.cellFormater) ??
         (isEdit ? DefaultEditFormater : DefaultCellFormater);
 
-    const {
-        onDragStart: contextDragStart,
-        onMouseDown: contextMouseDown,
-        onDragEnter: contextDragEnter,
-        onDragEnd: contextDragEnd,
-        setHovered: contextSetHovered,
-        onClick: contextOnClick,
-        onDoubleClick: contextOnDoubleClick,
-        rows,
-    } = context;
+    const rows = model.data.rows;
 
     const onMouseEnter = useCallback(() => {
-        contextSetHovered(row);
-    }, [contextSetHovered, row]);
+        model.models.update.setHovered(row);
+    }, [model, row]);
 
     const onMouseLeave = useCallback(() => {
-        contextSetHovered(-1);
-    }, [contextSetHovered]);
+        model.models.update.setHovered(-1);
+    }, [model]);
 
     const onMouseDown = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
-            contextMouseDown?.(e, rows[row], column, row, col);
+            model.events.cell.mouseDown(e, rows[row], column, row, col);
         },
-        [col, column, contextMouseDown, row, rows]
+        [col, column, model, row, rows]
     );
 
     const onDragStart = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
-            if (!isEdit) contextDragStart?.(e, rows[row], column, row, col);
+            if (!isEdit) model.events.cell.dragStart(e, rows[row], column, row, col);
         },
-        [col, column, contextDragStart, rows, isEdit, row]
+        [col, column, model, rows, isEdit, row]
     );
 
     const onDragEnter = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
-            contextSetHovered(row);
-            if (!isEdit) contextDragEnter?.(e, rows[row], column, row, col);
+            model.models.update.setHovered(row);
+            if (!isEdit) model.events.cell.dragEnter(e, rows[row], column, row, col);
         },
-        [contextSetHovered, row, isEdit, contextDragEnter, rows, column, col]
+        [model, row, isEdit, rows, column, col]
     );
 
     const onDragEnd = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
-            if (!isEdit) contextDragEnd?.(e, rows[row], column, row, col);
+            if (!isEdit) model.events.cell.dragEnd(e, rows[row], column, row, col);
         },
-        [col, column, contextDragEnd, rows, isEdit, row]
+        [col, column, model, rows, isEdit, row]
     );
 
     const onClick = useCallback(() => {
-        contextOnClick?.(rows[row], column, row, col);
-    }, [contextOnClick, col, column, rows, row]);
+        model.events.cell.click(rows[row], column, row, col);
+    }, [col, column, model, rows, row]);
 
     const onDoubleClick = useCallback(() => {
-        contextOnDoubleClick?.(rows[row], column);
-    }, [column, contextOnDoubleClick, row, rows]);
+        model.events.cell.doubleClick(rows[row], column);
+    }, [column, model, row, rows]);
 
     return (
         <DataCellRoot
@@ -148,14 +138,14 @@ export function DataCell(props: Readonly<TCellRendererProps>) {
                     "dataCell-alignRight": column.dataAlignment === "right",
                     isEdit,
                 },
-                context.focus ? focusClass(col, row, context) : undefined,
-                context.onCellClass?.(context.rows[row], column)
+                model.props.focus ? model.models.focus.focusClass(col, row) : undefined,
+                model.props.onCellClass?.(model.data.rows[row], column)
             )}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             onClick={onClick}
             onDoubleClick={onDoubleClick}
-            draggable={Boolean(context.setFocus && !isEdit)}
+            draggable={Boolean(model.props.setFocus && !isEdit)}
             onDragStart={onDragStart}
             onDragEnter={onDragEnter}
             onDragEnd={onDragEnd}

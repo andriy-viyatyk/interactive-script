@@ -1,6 +1,7 @@
 import React, { ComponentType, ReactNode, SetStateAction } from 'react';
 import { Percent, RenderCellParams, RerenderInfo } from '../RenderGrid/types';
 import { IState } from '../../common/classes/state';
+import { AVGridModel } from './model/AVGridModel';
 
 export type CellClickEvent = (row: any, col: Column, rowIndex: number, colIndex: number) => void;
 export type CellMouseEvent = (e: React.MouseEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number) => void;
@@ -39,7 +40,7 @@ export interface TAVGridContext<R = any> {
 }
 
 export interface TCellRendererProps<R = any> extends RenderCellParams {
-    context: TAVGridContext<R>;
+    model: AVGridModel<R>;
     className?: string;
 }
 

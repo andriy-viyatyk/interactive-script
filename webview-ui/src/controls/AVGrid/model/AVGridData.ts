@@ -34,8 +34,8 @@ export class AVGridData<R> {
     change = (event?: Partial<AVGridDataChangeEvent>) => {
         const changeEvent = {...event, ...this._changeEvent};
         if (event || Object.getOwnPropertyNames(changeEvent).some((key: any) => (changeEvent as any)[key])) {
-            this.onChange.send(changeEvent);
             this._changeEvent = {...defaultChangeEvent};
+            this.onChange.send(changeEvent);
         }
     }
 

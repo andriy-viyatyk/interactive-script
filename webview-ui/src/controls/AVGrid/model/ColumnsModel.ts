@@ -15,6 +15,10 @@ export class ColumnsModel<R> {
         this.model.events.onColumnsChanged.subscribe(this.updateColumnsData);
     }
 
+    get columnCount() {
+        return this.model.data.columns.length;
+    }
+
     getColumnWidth = (idx: number) => this.model.data.columns[idx]?.width ?? defaultColumnWidth
 
     onColumnResize = (data?: {columnKey: string, width: number}) => {
