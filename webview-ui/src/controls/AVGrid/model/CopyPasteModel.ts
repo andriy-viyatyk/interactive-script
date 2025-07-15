@@ -6,7 +6,7 @@ import { getGridSelection } from "../useUtils";
 import { AVGridModel } from "./AVGridModel";
 
 export class CopyPasteModel<R> {
-    model: AVGridModel<R>;
+    readonly model: AVGridModel<R>;
 
     constructor(model: AVGridModel<R>) {
         this.model = model;
@@ -45,51 +45,6 @@ export class CopyPasteModel<R> {
             }
         }
         return false;
-    }
-
-    expandPasteRange = (rowCount: number, colCount: number) => {
-        let pasteColumns: Column<R>[] = [];
-        let pasteRows: R[] = [];
-
-        const { focus, setFocus, getRowKey, onAddRows } = this.model.props;
-        if (!focus) return { pasteColumns, pasteRows };
-        const { rows, columns } = this.model.data;
-
-        const startRowIndex = rows.findIndex(r => getRowKey(r) === focus.rowKey);
-        const startColIndex = columns.findIndex(c => c.key === focus.columnKey);
-        if (startRowIndex < 0 || startColIndex < 0) return { pasteColumns, pasteRows };
-
-        let endRowIndex = startRowIndex + rowCount - 1;
-        let newRows: R[] = [];
-        if (endRowIndex >= rows.length) {
-            newRows = onAddRows?.(endRowIndex - rows.length + 1) ?? [];
-            endRowIndex = rows.length - 1 + newRows.length;
-        }
-
-        const endColIndex = Math.min(startColIndex + colCount - 1, columns.length - 1);
-
-        pasteColumns = columns.slice(startColIndex, endColIndex + 1);
-        pasteRows = rows.slice(startRowIndex, endRowIndex + 1).concat(newRows);
-
-        if (pasteColumns.length && pasteRows.length && setFocus) {
-            setFocus({
-                columnKey: pasteColumns[0].key,
-                rowKey: getRowKey(pasteRows[0]),
-                isDragging: false,
-                selection: {
-                    colKeyStart: pasteColumns[pasteColumns.length - 1].key,
-                    rowKeyStart: getRowKey(pasteRows[pasteRows.length - 1]),
-                    colKeyEnd: pasteColumns[0].key,
-                    rowKeyEnd: getRowKey(pasteRows[0]),
-                    colStart: endColIndex,
-                    rowStart: startRowIndex + pasteRows.length - 1,
-                    colEnd: startColIndex,
-                    rowEnd: startRowIndex,
-                }
-            });
-        }
-
-        return { pasteColumns, pasteRows };
     }
 
     pasteFromClipboard = async () => {
@@ -138,7 +93,52 @@ export class CopyPasteModel<R> {
         }
     }
 
-    onContentAreaKeyDown = (e?: React.KeyboardEvent<HTMLDivElement>) => {
+    private expandPasteRange = (rowCount: number, colCount: number) => {
+        let pasteColumns: Column<R>[] = [];
+        let pasteRows: R[] = [];
+
+        const { focus, setFocus, getRowKey, onAddRows } = this.model.props;
+        if (!focus) return { pasteColumns, pasteRows };
+        const { rows, columns } = this.model.data;
+
+        const startRowIndex = rows.findIndex(r => getRowKey(r) === focus.rowKey);
+        const startColIndex = columns.findIndex(c => c.key === focus.columnKey);
+        if (startRowIndex < 0 || startColIndex < 0) return { pasteColumns, pasteRows };
+
+        let endRowIndex = startRowIndex + rowCount - 1;
+        let newRows: R[] = [];
+        if (endRowIndex >= rows.length) {
+            newRows = onAddRows?.(endRowIndex - rows.length + 1) ?? [];
+            endRowIndex = rows.length - 1 + newRows.length;
+        }
+
+        const endColIndex = Math.min(startColIndex + colCount - 1, columns.length - 1);
+
+        pasteColumns = columns.slice(startColIndex, endColIndex + 1);
+        pasteRows = rows.slice(startRowIndex, endRowIndex + 1).concat(newRows);
+
+        if (pasteColumns.length && pasteRows.length && setFocus) {
+            setFocus({
+                columnKey: pasteColumns[0].key,
+                rowKey: getRowKey(pasteRows[0]),
+                isDragging: false,
+                selection: {
+                    colKeyStart: pasteColumns[pasteColumns.length - 1].key,
+                    rowKeyStart: getRowKey(pasteRows[pasteRows.length - 1]),
+                    colKeyEnd: pasteColumns[0].key,
+                    rowKeyEnd: getRowKey(pasteRows[0]),
+                    colStart: endColIndex,
+                    rowStart: startRowIndex + pasteRows.length - 1,
+                    colEnd: startColIndex,
+                    rowEnd: startRowIndex,
+                }
+            });
+        }
+
+        return { pasteColumns, pasteRows };
+    }
+
+    private onContentAreaKeyDown = (e?: React.KeyboardEvent<HTMLDivElement>) => {
         if (!e) return;
         const { focus } = this.model.props;
         if (e.ctrlKey && focus) {

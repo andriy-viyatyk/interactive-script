@@ -9,7 +9,6 @@ import { AVGridData } from "./AVGridData";
 import { SortColumnModel } from "./SortColumnModel";
 import { RowsModel } from "./RowsModel";
 import { SelectedModel } from "./SelectedModel";
-import { UpdateModel } from "./UpdateModel";
 import { AVGridEvents } from "./AVGridEvents";
 import { FocusModel } from "./FocusModel";
 import { EditingModel } from "./EditingModel";
@@ -21,7 +20,6 @@ export interface AVGridProps<R> {
     className?: string;
     columns: Column<R>[];
     rows: R[];
-    configName?: string;
     rowHeight?: number;
     selected?: ReadonlySet<string>;
     setSelected?: (value: SetStateAction<ReadonlySet<string>>) => void;
@@ -68,23 +66,21 @@ export const defaultAVGridState: AVGridState<any> = {
 }
 
 export class AVGridModels<R> {
-    columns: ColumnsModel<R>;
-    sortColumn: SortColumnModel;
-    rows: RowsModel<R>;
-    selected: SelectedModel<R>;
-    update: UpdateModel<R>
-    focus: FocusModel<R>;
-    editing: EditingModel<R>;
-    copyPaste: CopyPasteModel<R>;
-    contextMenu: ContextMenuModel<R>;
-    effects: EffectsModel<R>;
+    readonly columns: ColumnsModel<R>;
+    readonly sortColumn: SortColumnModel;
+    readonly rows: RowsModel<R>;
+    readonly selected: SelectedModel<R>;
+    readonly focus: FocusModel<R>;
+    readonly editing: EditingModel<R>;
+    readonly copyPaste: CopyPasteModel<R>;
+    readonly contextMenu: ContextMenuModel<R>;
+    readonly effects: EffectsModel<R>;
 
     constructor(model: AVGridModel<R>) {
         this.columns = new ColumnsModel<R>(model);
         this.sortColumn = new SortColumnModel(model);
         this.rows = new RowsModel<R>(model);
         this.selected = new SelectedModel<R>(model);
-        this.update = new UpdateModel<R>(model);
         this.focus = new FocusModel<R>(model);
         this.editing = new EditingModel<R>(model);
         this.copyPaste = new CopyPasteModel<R>(model);
@@ -95,9 +91,9 @@ export class AVGridModels<R> {
 
 export class AVGridModel<R> extends TComponentModel<AVGridState<R>, AVGridProps<R>> {
     renderModel: RenderGridModel | null = null;
-    data: AVGridData<R>;
-    events: AVGridEvents;
-    models: AVGridModels<R>;
+    readonly data: AVGridData<R>;
+    readonly events: AVGridEvents<R>;
+    readonly models: AVGridModels<R>;
 
     constructor(
         modelState: IState<AVGridState<R>> | (new (defaultState: AVGridState<R>) => IState<AVGridState<R>>),
@@ -105,7 +101,7 @@ export class AVGridModel<R> extends TComponentModel<AVGridState<R>, AVGridProps<
     ) {
         super(modelState, defaultState);
         this.data = new AVGridData<R>([], []);
-        this.events = new AVGridEvents();
+        this.events = new AVGridEvents(this);
         this.models = new AVGridModels<R>(this);
     }
 

@@ -81,11 +81,11 @@ export function DataCell(props: Readonly<TCellRendererProps>) {
     const rows = model.data.rows;
 
     const onMouseEnter = useCallback(() => {
-        model.models.update.setHovered(row);
+        model.models.effects.setHovered(row);
     }, [model, row]);
 
     const onMouseLeave = useCallback(() => {
-        model.models.update.setHovered(-1);
+        model.models.effects.setHovered(-1);
     }, [model]);
 
     const onMouseDown = useCallback(
@@ -104,7 +104,7 @@ export function DataCell(props: Readonly<TCellRendererProps>) {
 
     const onDragEnter = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
-            model.models.update.setHovered(row);
+            model.models.effects.setHovered(row);
             if (!isEdit) model.events.cell.dragEnter(e, rows[row], column, row, col);
         },
         [model, row, isEdit, rows, column, col]

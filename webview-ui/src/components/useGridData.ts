@@ -79,7 +79,7 @@ export function getGridData(
     return { columns, rows };
 }
 
-export function removeIdColumn(rows?: any[]): any[] | undefined {
+export function removeIdColumn(rows?: readonly any[]): any[] | undefined {
     if (!rows) return rows;
     return rows.map((row) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

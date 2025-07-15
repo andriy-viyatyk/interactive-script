@@ -1,12 +1,13 @@
 import { SetStateAction } from "react";
 import { TModel } from "../../common/classes/model";
-import { CellFocus, Column, TAVGridContext, TFilter } from "../../controls/AVGrid/avGridTypes";
+import { CellFocus, Column, TFilter } from "../../controls/AVGrid/avGridTypes";
 import { resolveState } from "../../common/utils/utils";
 import { TGlobalState } from "../../common/classes/state";
 import { TOnGetFilterOptions } from "../../controls/AVGrid/filters/useFilters";
 import { UiText } from "../../../../shared/ViewMessage";
 import { getRowKey, getWorkingData } from "../useGridData";
 import { defaultCompare, filterRows } from "../../controls/AVGrid/avGridUtils";
+import { AVGridModel } from "../../controls/AVGrid/model/AVGridModel";
 
 const defaultGridViewState = {
     isCsv: false,
@@ -23,7 +24,7 @@ const defaultGridViewState = {
 type GridViewState = typeof defaultGridViewState;
 
 class GridViewModel extends TModel<GridViewState> {
-    gridRef: TAVGridContext | undefined = undefined;
+    gridRef: AVGridModel<any> | undefined = undefined;
 
     setFocus = (focus?: SetStateAction<CellFocus | undefined>) => {
         this.state.update((s) => {
@@ -97,7 +98,7 @@ class GridViewModel extends TModel<GridViewState> {
 
     get recordsCount() {
         const rows = this.state.get().rows.length;
-        const visibleRows = this.gridRef?.rows.length ?? rows;
+        const visibleRows = this.gridRef?.data.rows.length ?? rows;
         return (visibleRows === rows)
             ? `[${rows} rows]`
             : `[${visibleRows} of ${rows} rows]`;

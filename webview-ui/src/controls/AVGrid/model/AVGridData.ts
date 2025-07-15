@@ -14,7 +14,7 @@ const defaultChangeEvent = {
 export type AVGridDataChangeEvent = typeof defaultChangeEvent;
 
 export class AVGridData<R> {
-    onChange = new Subscription<AVGridDataChangeEvent>();
+    readonly onChange = new Subscription<AVGridDataChangeEvent>();
     private _changeEvent: AVGridDataChangeEvent = {...defaultChangeEvent};
 
     // Fields

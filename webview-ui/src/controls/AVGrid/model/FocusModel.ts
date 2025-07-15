@@ -4,7 +4,7 @@ import { CellFocus, Column } from "../avGridTypes";
 import { AVGridDataChangeEvent } from "./AVGridData";
 import { AVGridModel } from "./AVGridModel";
 
-type SelType = 'click' | 'shiftClick' | 'rightClick' | 'startDrag' | 'drag';
+type SelType = "click" | "shiftClick" | "rightClick" | "startDrag" | "drag";
 
 function getSelectionRange(focus?: CellFocus) {
     let res = {
@@ -12,27 +12,38 @@ function getSelectionRange(focus?: CellFocus) {
         rowEnd: -1,
         colStart: -1,
         colEnd: -1,
-    }
+    };
     if (focus && focus.selection) {
-        const rowRange = [focus.selection.rowStart, focus.selection.rowEnd].sort((a, b) => a - b);
-        const colRange = [focus.selection.colStart, focus.selection.colEnd].sort((a, b) => a - b);
+        const rowRange = [
+            focus.selection.rowStart,
+            focus.selection.rowEnd,
+        ].sort((a, b) => a - b);
+        const colRange = [
+            focus.selection.colStart,
+            focus.selection.colEnd,
+        ].sort((a, b) => a - b);
         res = {
             rowStart: rowRange[0],
             rowEnd: rowRange[1],
             colStart: colRange[0],
             colEnd: colRange[1],
-        }
+        };
     }
     return res;
 }
 
 function inSelection(col: number, row: number, focus?: CellFocus) {
     const selection = getSelectionRange(focus);
-    return row >= selection.rowStart && row <= selection.rowEnd && col >= selection.colStart && col <= selection.colEnd;
+    return (
+        row >= selection.rowStart &&
+        row <= selection.rowEnd &&
+        col >= selection.colStart &&
+        col <= selection.colEnd
+    );
 }
 
 export class FocusModel<R> {
-    model: AVGridModel<R>;
+    readonly model: AVGridModel<R>;
 
     constructor(model: AVGridModel<R>) {
         this.model = model;
@@ -53,12 +64,14 @@ export class FocusModel<R> {
             focus?.rowKey === getRowKey(rows[row]) &&
             focus?.columnKey === column.key;
         const selection = focus?.selection;
-        const rRange = [selection?.rowStart ?? -1, selection?.rowEnd ?? -1].sort(
-            (a, b) => a - b,
-        );
-        const cRange = [selection?.colStart ?? -1, selection?.colEnd ?? -1].sort(
-            (a, b) => a - b,
-        );
+        const rRange = [
+            selection?.rowStart ?? -1,
+            selection?.rowEnd ?? -1,
+        ].sort((a, b) => a - b);
+        const cRange = [
+            selection?.colStart ?? -1,
+            selection?.colEnd ?? -1,
+        ].sort((a, b) => a - b);
 
         return clsx({
             focused,
@@ -76,16 +89,16 @@ export class FocusModel<R> {
             inSelectionRight:
                 col === cRange[1] && row >= rRange[0] && row <= rRange[1],
         });
-    }
+    };
 
-    onDataChange = (e?: AVGridDataChangeEvent) => {
+    private onDataChange = (e?: AVGridDataChangeEvent) => {
         if (!e) return;
         if (e.rows || e.columns) {
             this.validateFocus();
         }
-    }
+    };
 
-    updateFocus = (
+    private updateFocus = (
         row: any,
         col: Column,
         rowIndex: number,
@@ -97,11 +110,14 @@ export class FocusModel<R> {
         const rows = this.model.data.rows;
 
         this.model.props.setFocus?.((foc) => {
-            if (selType === 'drag' && !foc?.isDragging) {
+            if (selType === "drag" && !foc?.isDragging) {
                 return foc;
             }
 
-            if (selType === 'rightClick' && inSelection(colIndex, rowIndex, foc)) {
+            if (
+                selType === "rightClick" &&
+                inSelection(colIndex, rowIndex, foc)
+            ) {
                 return foc;
             }
 
@@ -112,8 +128,7 @@ export class FocusModel<R> {
                 // skip header (r === 0)
                 oldRow =
                     rowRange.find(
-                        (r) =>
-                            r > 0 && getRowKey(rows[r - 1]) === foc.rowKey,
+                        (r) => r > 0 && getRowKey(rows[r - 1]) === foc.rowKey
                     ) ?? -1;
             }
 
@@ -133,23 +148,23 @@ export class FocusModel<R> {
             };
 
             const startSel =
-                selType === 'startDrag' ||
-                selType === 'click' ||
-                selType === 'rightClick' ||
-                (selType === 'shiftClick' && !foc?.selection) ||
+                selType === "startDrag" ||
+                selType === "click" ||
+                selType === "rightClick" ||
+                (selType === "shiftClick" && !foc?.selection) ||
                 !foc?.selection
                     ? {
-                            rowKeyStart: getRowKey(row),
-                            colKeyStart: col.key as keyof R,
-                            rowStart: rowIndex,
-                            colStart: colIndex,
-                        }
+                          rowKeyStart: getRowKey(row),
+                          colKeyStart: col.key as keyof R,
+                          rowStart: rowIndex,
+                          colStart: colIndex,
+                      }
                     : {
-                            rowKeyStart: foc.selection.rowKeyStart,
-                            colKeyStart: foc.selection.colKeyStart,
-                            rowStart: foc.selection.rowStart,
-                            colStart: foc.selection.colStart,
-                        };
+                          rowKeyStart: foc.selection.rowKeyStart,
+                          colKeyStart: foc.selection.colKeyStart,
+                          rowStart: foc.selection.rowStart,
+                          colStart: foc.selection.colStart,
+                      };
 
             const oldSel = foc?.selection;
 
@@ -167,8 +182,7 @@ export class FocusModel<R> {
             return {
                 rowKey: currentSel.rowKeyEnd,
                 columnKey: currentSel.colKeyEnd,
-                isDragging:
-                    selType === 'startDrag' || Boolean(foc?.isDragging),
+                isDragging: selType === "startDrag" || Boolean(foc?.isDragging),
                 selection: {
                     ...currentSel,
                     ...startSel,
@@ -177,17 +191,17 @@ export class FocusModel<R> {
         });
     };
 
-    validateFocus = () => {
+    private validateFocus = () => {
         const getRowKey = this.model.props.getRowKey;
         const { rows, columns } = this.model.data;
 
         this.model.props.setFocus?.((oldFocus) => {
             if (oldFocus) {
                 const rowIndex = rows.findIndex(
-                    (r) => getRowKey(r) === oldFocus.rowKey,
+                    (r) => getRowKey(r) === oldFocus.rowKey
                 );
                 const colIndex = columns.findIndex(
-                    (c) => c.key === oldFocus.columnKey,
+                    (c) => c.key === oldFocus.columnKey
                 );
                 if (rowIndex < 0 || colIndex < 0) {
                     return undefined;
@@ -195,10 +209,10 @@ export class FocusModel<R> {
                 const oldSelection = oldFocus.selection;
                 if (oldSelection) {
                     const startRowIndex = rows.findIndex(
-                        (r) => getRowKey(r) === oldSelection.rowKeyStart,
+                        (r) => getRowKey(r) === oldSelection.rowKeyStart
                     );
                     const startColIndex = columns.findIndex(
-                        (c) => c.key === oldSelection.colKeyStart,
+                        (c) => c.key === oldSelection.colKeyStart
                     );
                     if (
                         startRowIndex !== oldSelection.rowStart ||
@@ -207,7 +221,10 @@ export class FocusModel<R> {
                         colIndex !== oldSelection.colEnd
                     ) {
                         this.model.renderModel?.update({ all: true });
-                        this.model.renderModel?.scrollToRow(rowIndex + 1, "center");
+                        this.model.renderModel?.scrollToRow(
+                            rowIndex + 1,
+                            "center"
+                        );
                         return {
                             ...oldFocus,
                             selection: {
@@ -223,9 +240,15 @@ export class FocusModel<R> {
             }
             return oldFocus;
         });
-    }
+    };
 
-    onCellMouseDown = (data?: {e: React.MouseEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}) => {
+    private onCellMouseDown = (data?: {
+        e: React.MouseEvent<HTMLDivElement>;
+        row: any;
+        col: Column;
+        rowIndex: number;
+        colIndex: number;
+    }) => {
         if (!data) return;
         this.updateFocus(
             data.row,
@@ -233,83 +256,118 @@ export class FocusModel<R> {
             data.rowIndex,
             data.colIndex,
             data.e.shiftKey
-                ? 'shiftClick'
+                ? "shiftClick"
                 : data.e.button === 0
-                    ? 'click'
-                    : 'rightClick',
+                ? "click"
+                : "rightClick"
         );
-    }
+    };
 
-    onCellDragStart = (data?: {e: React.DragEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}) => {
+    private onCellDragStart = (data?: {
+        e: React.DragEvent<HTMLDivElement>;
+        row: any;
+        col: Column;
+        rowIndex: number;
+        colIndex: number;
+    }) => {
         if (!data) return;
         if (this.model.props.setFocus) {
             const img = new Image();
             img.src =
-                'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
+                "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=";
             data.e.dataTransfer.setDragImage(img, 0, 0);
-            data.e.dataTransfer.setData('text/plain', 'cell-sel');
+            data.e.dataTransfer.setData("text/plain", "cell-sel");
         }
-        this.updateFocus(data.row, data.col, data.rowIndex, data.colIndex, 'startDrag');
-    }
+        this.updateFocus(
+            data.row,
+            data.col,
+            data.rowIndex,
+            data.colIndex,
+            "startDrag"
+        );
+    };
 
-    onCellDragEnter = (data?: {e: React.DragEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}) => {
+    private onCellDragEnter = (data?: {
+        e: React.DragEvent<HTMLDivElement>;
+        row: any;
+        col: Column;
+        rowIndex: number;
+        colIndex: number;
+    }) => {
         if (!data) return;
         data.e.preventDefault();
-        data.e.dataTransfer.dropEffect = 'move';
-        this.updateFocus(data.row, data.col, data.rowIndex, data.colIndex, 'drag');
-    }
+        data.e.dataTransfer.dropEffect = "move";
+        this.updateFocus(
+            data.row,
+            data.col,
+            data.rowIndex,
+            data.colIndex,
+            "drag"
+        );
+    };
 
-    onCellDragEnd = (data?: {e: React.DragEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}) => {
+    private onCellDragEnd = (data?: {
+        e: React.DragEvent<HTMLDivElement>;
+        row: any;
+        col: Column;
+        rowIndex: number;
+        colIndex: number;
+    }) => {
         if (!data) return;
-        this.model.props.setFocus?.((foc) => (foc ? { ...foc, isDragging: false } : undefined));
-    }
+        this.model.props.setFocus?.((foc) =>
+            foc ? { ...foc, isDragging: false } : undefined
+        );
+    };
 
-    onContentKeyDown = (e?: React.KeyboardEvent<HTMLDivElement>) => {
+    private onContentKeyDown = (e?: React.KeyboardEvent<HTMLDivElement>) => {
         if (!e) return;
 
         const { getRowKey, focus } = this.model.props;
         const { rows, columns } = this.model.data;
 
         if (
-            [
-                'ArrowDown',
-                'ArrowUp',
-                'ArrowLeft',
-                'ArrowRight',
-                'Tab',
-            ].includes(e.key)
+            ["ArrowLeft", "ArrowRight"].includes(e.key) &&
+            this.model.models.editing.isEditing
+        ) {
+            return;
+        }
+
+        if (
+            ["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "Tab"].includes(
+                e.key
+            )
         ) {
             e.preventDefault();
             e.stopPropagation();
             let rowIndex = rows.findIndex(
-                (r) => getRowKey(r) === focus?.rowKey,
+                (r) => getRowKey(r) === focus?.rowKey
             );
             let columnIndex = columns.findIndex(
-                (c) => c.key === focus?.columnKey,
+                (c) => c.key === focus?.columnKey
             );
             if (rowIndex >= 0 && columnIndex >= 0) {
                 switch (e.key) {
-                    case 'ArrowDown':
+                    case "ArrowDown":
                         if (rowIndex < rows.length - 1) {
                             rowIndex++;
                         }
                         break;
-                    case 'ArrowUp':
+                    case "ArrowUp":
                         if (rowIndex > 0) {
                             rowIndex--;
                         }
                         break;
-                    case 'ArrowLeft':
+                    case "ArrowLeft":
                         if (columnIndex > 0) {
                             columnIndex--;
                         }
                         break;
-                    case 'ArrowRight':
+                    case "ArrowRight":
                         if (columnIndex < columns.length - 1) {
                             columnIndex++;
                         }
                         break;
-                    case 'Tab': {
+                    case "Tab": {
                         columnIndex =
                             columnIndex < columns.length - 1
                                 ? columnIndex + 1
@@ -328,10 +386,10 @@ export class FocusModel<R> {
                     columns[columnIndex],
                     rowIndex,
                     columnIndex,
-                    (e.shiftKey && e.key !== 'Tab') ? 'shiftClick' : 'click',
-                    true,
+                    e.shiftKey && e.key !== "Tab" ? "shiftClick" : "click",
+                    true
                 );
             }
         }
-    }
+    };
 }

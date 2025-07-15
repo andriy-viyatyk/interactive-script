@@ -4,13 +4,18 @@ import { getGridFocus, getGridSelection } from "../useUtils";
 import { AVGridModel } from "./AVGridModel";
 
 export class EditingModel<R> {
-    model: AVGridModel<R>;
+    readonly model: AVGridModel<R>;
 
     constructor(model: AVGridModel<R>) {
         this.model = model;
         this.model.events.content.onKeyDown.subscribe(this.onContentKeyDown);
         this.model.events.content.onBlur.subscribe(this.onContentBlur);
         this.model.events.cell.onMouseDown.subscribe(this.onCellMouseDown);
+    }
+
+    get isEditing() {
+        const cellEdit = this.model.state.get().cellEdit;
+        return Boolean(cellEdit.columnKey && cellEdit.rowKey);
     }
 
     useModel = () => {
@@ -104,8 +109,8 @@ export class EditingModel<R> {
         }});
     }
 
-    getEditItems = () => {
-        const { editRow, getRowKey, focus, editable } = this.model.props;
+    private getCellForEdit = () => {
+        const { editRow, getRowKey, focus, readonly } = this.model.props;
         const { rows, columns } = this.model.data;
 
         const gridFocus = editRow
@@ -117,7 +122,7 @@ export class EditingModel<R> {
         }
 
         return gridFocus &&
-            editable &&
+            !readonly &&
             !gridFocus.column.readonly &&
             gridFocus.row
             ? {
@@ -128,11 +133,10 @@ export class EditingModel<R> {
             : { column: undefined, row: undefined, rowIndex: -1 };
     }
 
-    onContentKeyDown = (e?: React.KeyboardEvent<HTMLDivElement>) => {
+    private onContentKeyDown = (e?: React.KeyboardEvent<HTMLDivElement>) => {
         if (!e) return;
         const { focus } = this.model.props;
 
-        let keyHandled = false;
         if (
             [
                 "Enter",
@@ -144,7 +148,7 @@ export class EditingModel<R> {
             ].includes(e.key) &&
             focus
         ) {
-            const { column, row } = this.getEditItems();
+            const { column, row } = this.getCellForEdit();
             if (row && column) {
                 const editState = this.model.state.get().cellEdit;
                 switch (e.key) {
@@ -170,10 +174,6 @@ export class EditingModel<R> {
                     case "Escape":
                         this.closeEdit(false);
                         break;
-                    case "ArrowLeft":
-                    case "ArrowRight":
-                        keyHandled = Boolean(editState.columnKey);
-                        break;
                     default:
                         break;
                 }
@@ -187,18 +187,14 @@ export class EditingModel<R> {
             !e.metaKey &&
             focus
         ) {
-            const { column } = this.getEditItems();
+            const { column } = this.getCellForEdit();
             if (column) {
                 this.openEdit(focus.columnKey, focus.rowKey, "", true); // e.key
             }
         }
-
-        if (!keyHandled) {
-            // onAreaKeyDownProp?.(e);
-        }
     }
 
-    onCellMouseDown = (data?: {e: React.MouseEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}) => {
+    private onCellMouseDown = (data?: {e: React.MouseEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}) => {
         if (!data) return;
         const { focus, getRowKey } = this.model.props;
         if (
@@ -212,7 +208,7 @@ export class EditingModel<R> {
                 editState.columnKey !== focus.columnKey &&
                 editState.rowKey !== focus.rowKey
             ) {
-                const { column } = this.getEditItems();
+                const { column } = this.getCellForEdit();
                 if (column) {
                     data.e.stopPropagation();
                     data.e.preventDefault();
@@ -227,7 +223,7 @@ export class EditingModel<R> {
         }
     }
 
-    onContentBlur = () => {
+    private onContentBlur = () => {
         // allow blur to transfer focus to cell input
         if (this.model.data.editTime + 50 < new Date().getTime()) {
             this.closeEdit(true, false);

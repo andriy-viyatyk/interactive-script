@@ -6,7 +6,7 @@ import { AVGridModel } from "./AVGridModel";
 export const defaultColumnWidth = 140;
 
 export class ColumnsModel<R> {
-    model: AVGridModel<R>;
+    readonly model: AVGridModel<R>;
 
     constructor(model: AVGridModel<R>) {
         this.model = model;
@@ -21,7 +21,17 @@ export class ColumnsModel<R> {
 
     getColumnWidth = (idx: number) => this.model.data.columns[idx]?.width ?? defaultColumnWidth
 
-    onColumnResize = (data?: {columnKey: string, width: number}) => {
+        useModel = () => {
+        const propsColumns = this.model.props.columns;
+        useEffect(() => {
+            this.model.state.update(s => {
+                s.columns = propsColumns;
+            });
+            this.updateColumnsData(propsColumns);
+        }, [propsColumns]);
+    }
+
+    private onColumnResize = (data?: {columnKey: string, width: number}) => {
         if (!data) return;
         const {columnKey, width} = data;
         this.model.state.update(s => {
@@ -32,7 +42,7 @@ export class ColumnsModel<R> {
         this.model.events.columnsChanged();
     };
 
-    onColumnsReorder = (data?: {sourceKey: string, targetKey: string}) => {
+    private onColumnsReorder = (data?: {sourceKey: string, targetKey: string}) => {
         if (!data) return;
         const { sourceKey, targetKey } = data;
         this.model.state.update(s => {
@@ -51,16 +61,6 @@ export class ColumnsModel<R> {
             });
         });
         this.model.events.columnsChanged();
-    }
-
-    useModel = () => {
-        const propsColumns = this.model.props.columns;
-        useEffect(() => {
-            this.model.state.update(s => {
-                s.columns = propsColumns;
-            });
-            this.updateColumnsData(propsColumns);
-        }, [propsColumns]);
     }
 
     private updateColumnsData = (propsColumns?: Column<R>[]) => {

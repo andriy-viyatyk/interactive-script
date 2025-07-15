@@ -1,13 +1,14 @@
 import { Subscription } from "../../../common/classes/events";
 import { CellClickEvent, CellDragEvent, CellMouseEvent, Column, TOnColumnResize, TOnColumnsReorder } from "../avGridTypes";
+import { AVGridModel } from "./AVGridModel";
 
 class CellEvents {
-    onClick = new Subscription<{row: any, col: Column, rowIndex: number, colIndex: number}>();
-    onMouseDown = new Subscription<{e: React.MouseEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}>();
-    onDoubleClick = new Subscription<{row: any, col: Column}>();
-    onDragStart = new Subscription<{e: React.DragEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}>();
-    onDragEnter = new Subscription<{e: React.DragEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}>();
-    onDragEnd = new Subscription<{e: React.DragEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}>();
+    readonly onClick = new Subscription<{row: any, col: Column, rowIndex: number, colIndex: number}>();
+    readonly onMouseDown = new Subscription<{e: React.MouseEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}>();
+    readonly onDoubleClick = new Subscription<{row: any, col: Column}>();
+    readonly onDragStart = new Subscription<{e: React.DragEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}>();
+    readonly onDragEnter = new Subscription<{e: React.DragEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}>();
+    readonly onDragEnd = new Subscription<{e: React.DragEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}>();
 
     click: CellClickEvent = (row, col, rowIndex, colIndex) => {
         this.onClick.send({row, col, rowIndex, colIndex});
@@ -35,10 +36,10 @@ class CellEvents {
 }
 
 class ContentEvents {
-    onMouseLeave = new Subscription<undefined>();
-    onKeyDown = new Subscription<React.KeyboardEvent<HTMLDivElement>>();
-    onContextMenu = new Subscription<React.MouseEvent<HTMLDivElement>>();
-    onBlur = new Subscription<React.FocusEvent<HTMLDivElement>>();
+    readonly onMouseLeave = new Subscription<undefined>();
+    readonly onKeyDown = new Subscription<React.KeyboardEvent<HTMLDivElement>>();
+    readonly onContextMenu = new Subscription<React.MouseEvent<HTMLDivElement>>();
+    readonly onBlur = new Subscription<React.FocusEvent<HTMLDivElement>>();
 
     mouseLeave = () => {
         this.onMouseLeave.send(undefined);
@@ -57,13 +58,40 @@ class ContentEvents {
     }
 }
 
-export class AVGridEvents {
-    cell = new CellEvents();
-    content = new ContentEvents();
+export class ToProperties<R> {
+    private readonly events: AVGridEvents<R>;
 
-    onColumnResize = new Subscription<{columnKey: string, width: number}>();
-    onColumnsReorder = new Subscription<{sourceKey: string, targetKey: string}>();
-    onColumnsChanged = new Subscription<undefined>();
+    constructor(events: AVGridEvents<R>) {
+        this.events = events;
+        this.events.cell.onClick.subscribe(this.onClick);
+        this.events.cell.onDoubleClick.subscribe(this.onDoubleClick);
+    }
+
+    private onClick = (data?: {row: any, col: Column, rowIndex: number, colIndex: number}) => {
+        if (!data) return;
+        this.events.model.props.onClick?.(data.row, data.col);
+    }
+
+    private onDoubleClick = (data?: {row: any, col: Column}) => {
+        if (!data) return;
+        this.events.model.props.onDoubleClick?.(data.row, data.col);
+    }
+}
+
+export class AVGridEvents<R> {
+    readonly model: AVGridModel<R>;
+
+    readonly cell = new CellEvents();
+    readonly content = new ContentEvents();
+
+    readonly onColumnResize = new Subscription<{columnKey: string, width: number}>();
+    readonly onColumnsReorder = new Subscription<{sourceKey: string, targetKey: string}>();
+    readonly onColumnsChanged = new Subscription<undefined>();
+
+    constructor(model: AVGridModel<R>) {
+        this.model = model;
+        new ToProperties<R>(this);
+    }
 
     columnResize: TOnColumnResize = (columnKey: string, width: number) => {
         this.onColumnResize.send({columnKey, width});

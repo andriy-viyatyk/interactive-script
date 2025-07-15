@@ -89,10 +89,10 @@ function DataCell(props: Readonly<TCellRendererProps>) {
             style={style}
             className={clsx("data-cell", className)}
             onMouseEnter={() => {
-                model.models.update.setHovered(row);
+                model.models.effects.setHovered(row);
             }}
             onMouseLeave={() => {
-                model.models.update.setHovered(-1);
+                model.models.effects.setHovered(-1);
             }}
         >
             <Button

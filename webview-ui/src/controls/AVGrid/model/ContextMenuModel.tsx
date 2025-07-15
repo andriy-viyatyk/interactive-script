@@ -4,14 +4,14 @@ import { getGridSelection } from "../useUtils";
 import { AVGridModel } from "./AVGridModel";
 
 export class ContextMenuModel<R> {
-    model: AVGridModel<R>;
+    readonly model: AVGridModel<R>;
 
     constructor(model: AVGridModel<R>) {
         this.model = model;
         this.model.events.content.onContextMenu.subscribe(this.onContentContextMenu);
     }
 
-    onContentContextMenu = async (e?: React.MouseEvent<HTMLDivElement>) => {
+    private onContentContextMenu = async (e?: React.MouseEvent<HTMLDivElement>) => {
         if (!e) return;
         const { focus, getRowKey, onAddRows, onDeleteRows } = this.model.props;
         const { rows, columns } = this.model.data;

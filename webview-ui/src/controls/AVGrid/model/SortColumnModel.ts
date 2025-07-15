@@ -6,17 +6,18 @@ import { AVGridModel } from "./AVGridModel";
 import { resolveState } from "../../../common/utils/utils";
 
 export class SortColumnModel {
-    model: AVGridModel<any>;
+    readonly model: AVGridModel<any>;
 
     constructor(model: AVGridModel<any>) {
         this.model = model;
         this.model.data.onChange.subscribe(this.onDataChange);
     }
 
-    onDataChange = (e?: AVGridDataChangeEvent) => {
-        if (e?.columns) {
-            this.updateRowCompare();
-        }
+    setSortColumn = (sortColumn: SetStateAction<TSortColumn | undefined>) => {
+        const sColumn = resolveState(sortColumn, () => this.model.state.get().sortColumn);
+        this.model.state.update(s => {
+            s.sortColumn = sColumn;
+        });
     }
 
     useModel = () => {
@@ -27,7 +28,13 @@ export class SortColumnModel {
         } , [sortColumn]);
     }
 
-    updateRowCompare = () => {
+    private onDataChange = (e?: AVGridDataChangeEvent) => {
+        if (e?.columns) {
+            this.updateRowCompare();
+        }
+    }
+
+    private updateRowCompare = () => {
         let rowCompare: TRowCompare | undefined;
         const sortColumn = this.model.state.get().sortColumn;
         const columns = this.model.data.columns;
@@ -37,12 +44,5 @@ export class SortColumnModel {
         }
         this.model.data.rowCompare = rowCompare;
         this.model.data.change();
-    }
-
-    setSortColumn = (sortColumn: SetStateAction<TSortColumn | undefined>) => {
-        const sColumn = resolveState(sortColumn, () => this.model.state.get().sortColumn);
-        this.model.state.update(s => {
-            s.sortColumn = sColumn;
-        });
     }
 }

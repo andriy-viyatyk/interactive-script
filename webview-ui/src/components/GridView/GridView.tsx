@@ -6,7 +6,7 @@ import { getRowKey } from "../useGridData";
 import { TextField } from "../../controls/TextField";
 import { Button } from "../../controls/Button";
 import { CloseIcon, CopyIcon, SearchIcon } from "../../theme/icons";
-import AVGrid, { AVGridRef } from "../../controls/AVGrid/AVGrid";
+import AVGrid from "../../controls/AVGrid/AVGrid";
 import { GlobalRoot } from "../GlobalRoot";
 import { UiTextView } from "../OutputView/UiTextView";
 import { FlexSpace } from "../../controls/FlexSpace";
@@ -17,6 +17,7 @@ import { showPopupMenu } from "../../dialogs/showPopupMenu";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FiltersProvider } from "../../controls/AVGrid/filters/useFilters";
 import { FilterBar } from "../../controls/AVGrid/filters/FilterBar";
+import { AVGridModel } from "../../controls/AVGrid/model/AVGridModel";
 
 const GridViewRoot = styled(GlobalRoot)({
     position: "absolute",
@@ -73,9 +74,9 @@ const GridViewRoot = styled(GlobalRoot)({
 });
 
 export default function GridView() {
-    const gridRef = useRef<AVGridRef>(undefined);
+    const gridRef = useRef<AVGridModel<any>>(undefined);
     const model = gridViewModel;
-    model.gridRef = gridRef.current?.context;
+    model.gridRef = gridRef.current;
     const state = model.state.use();
     const copyItems = useCopyItems(gridRef);
     const [, /* unused */ setRefresh] = useState(0);

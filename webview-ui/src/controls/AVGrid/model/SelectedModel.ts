@@ -3,7 +3,7 @@ import { AVGridModel } from "./AVGridModel";
 import { AVGridDataChangeEvent } from "./AVGridData";
 
 export class SelectedModel<R> {
-    model: AVGridModel<R>;
+    readonly model: AVGridModel<R>;
 
     constructor(model: AVGridModel<R>) {
         this.model = model;
@@ -17,14 +17,14 @@ export class SelectedModel<R> {
         }, [selected]);
     }
 
-    onDataChange = (e?: AVGridDataChangeEvent) => {
+    private onDataChange = (e?: AVGridDataChangeEvent) => {
         if (!e) return;
         if (e.rows) {
             this.updateSelected();
         }
     }
 
-    updateSelected = () => {
+    private updateSelected = () => {
         const { selected, getRowKey } = this.model.props;
         const rows = this.model.data.rows;
         this.model.data.allSelected = Boolean(
