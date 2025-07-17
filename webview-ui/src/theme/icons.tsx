@@ -3,6 +3,7 @@ import { forwardRef, ReactElement, ReactNode, SVGProps } from "react";
 export interface SvgIconProps extends SVGProps<SVGSVGElement> {
     children?: ReactNode;
     viewBox?: string;
+    title?: string;
 }
 
 const SvgIcon = forwardRef<SVGSVGElement, SvgIconProps>(function SvgIcon(
@@ -14,6 +15,7 @@ const SvgIcon = forwardRef<SVGSVGElement, SvgIconProps>(function SvgIcon(
         viewBox = "0 0 16 16",
         width = 16,
         height = 16,
+        title,
         ...otherProps
     } = props;
 
@@ -25,6 +27,7 @@ const SvgIcon = forwardRef<SVGSVGElement, SvgIconProps>(function SvgIcon(
             height={height}
             {...otherProps}
         >
+            {title && <title>{title}</title>}
             {children}
         </svg>
     );
@@ -502,5 +505,16 @@ export const FolderOpenIcon = createIcon(24)(
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M6 17l2-5h14l-3 8a2 2 0 01-2 1H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h7a2 2 0 012 2v4"
+    />
+);
+
+export const QuestionIcon = createIcon(24)(
+    <path
+        xmlns="http://www.w3.org/2000/svg"
+        d="M12 19V18.99M12 16C12 11.5 16 12.5 16 9C16 6.79086 14.2091 5 12 5C10.1361 5 8.57002 6.27477 8.12598 8"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
     />
 );

@@ -11,16 +11,23 @@ export class ContextMenuModel<R> {
         this.model.events.content.onContextMenu.subscribe(this.onContentContextMenu);
     }
 
+    private disablePaste = async () => {
+        const canPaste = await this.model.models.copyPaste.canPasteFromClipboard();
+        return !canPaste;
+    }
+
     private onContentContextMenu = async (e?: React.MouseEvent<HTMLDivElement>) => {
         if (!e) return;
-        const { focus, getRowKey, onAddRows, onDeleteRows } = this.model.props;
+        const { focus, getRowKey, onAddRows, onDeleteRows, searchString, filters } = this.model.props;
+        const sortColumn = this.model.state.get().sortColumn;
         const { rows, columns } = this.model.data;
+
+        const canInsertRows = !sortColumn && !searchString?.length && !filters?.length;
 
         if (focus && (e.target as HTMLElement).tagName !== 'INPUT') {
             e.stopPropagation();
             e.preventDefault();
             const selection = getGridSelection(focus, rows, columns, getRowKey);
-            const canPaste = false; // await canPasteFromClipboard();
             showPopupMenu(e.clientX, e.clientY, [
                 {
                     label: 'Copy',
@@ -30,7 +37,8 @@ export class ContextMenuModel<R> {
                 {
                     label: 'Paste',
                     onClick: () => this.model.models.copyPaste.pasteFromClipboard(),
-                    invisible: !canPaste,
+                    invisible: !this.model.props.editRow,
+                    disabled: this.disablePaste(),
                     icon: <PasteIcon />,
                 },
                 {
@@ -39,6 +47,8 @@ export class ContextMenuModel<R> {
                     invisible: !onAddRows || !selection?.rows.length,
                     icon: <PlusIcon />,
                     startGroup: true,
+                    disabled: !canInsertRows,
+                    title: !canInsertRows ? "Cannot insert rows while sorting or filtering is applied" : undefined,
                 },
                 {
                     label: `Add ${selection?.rows.length} row${(selection?.rows.length ?? 0) > 1 ? 's' : ''}`,

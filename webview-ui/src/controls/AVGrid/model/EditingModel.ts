@@ -35,7 +35,8 @@ export class EditingModel<R> {
     }
 
     editCell = (col: Column<R>, row: R, val: any) => {
-        if (!this.model.props.editable || col.readonly) return;
+        if (!this.model.props.editRow || col.readonly) return;
+        this.model.models.rows.freezeRows();
 
         const value = col.validate ? col.validate(col, row, val) : val;
         this.model.props.editRow?.(col.key.toString(), this.model.props.getRowKey(row), value);
@@ -48,7 +49,7 @@ export class EditingModel<R> {
         const gridSelection = getGridSelection(focus, rows, columns, getRowKey);
         if (gridSelection) {
             gridSelection.columns.forEach((col) => {
-                if (this.model.props.editable && !col.readonly) {
+                if (this.model.props.editRow && !col.readonly) {
                     gridSelection.rows.forEach((row) => {
                         this.editCell(col, row, undefined);
                     });

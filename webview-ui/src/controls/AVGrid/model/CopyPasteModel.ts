@@ -39,7 +39,7 @@ export class CopyPasteModel<R> {
 
         const selection = getGridSelection(focus, rows, columns, getRowKey);
         if (selection && selection.rows.length && selection.columns.length) {
-            const text = await navigator.clipboard.readText();
+            const text = await navigator.clipboard.readText(); // cause second context menu "Paste" in Firefox
             if (text) {
                 return true;
             }

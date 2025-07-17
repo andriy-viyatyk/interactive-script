@@ -9,6 +9,7 @@ import {
     FilterArrowDownIcon,
     FilterArrowUpIcon,
     FilterTableIcon,
+    QuestionIcon,
 } from "../../theme/icons";
 import { Button } from "../Button";
 import { useFilters } from "./filters/useFilters";
@@ -79,7 +80,10 @@ const HeaderCellRoot = styled.div(
     { label: "HeaderCellRoot" }
 );
 
-function SortIcon({ direction }: { direction?: TSortDirection }) {
+function SortIcon({ direction, frozen }: { direction?: TSortDirection, frozen?: boolean }) {
+    if (frozen) {
+        return <QuestionIcon width={16} height={16} className="sort-icon" title="Rows frozen while editing" />;
+    }
     if (direction === "asc") {
         return <FilterArrowDownIcon width={16} height={16} className="sort-icon" />;
     }
@@ -106,19 +110,8 @@ export function HeaderCell({ key, col, style, model }: TCellRendererProps) {
             hasResized.current = false;
             return;
         }
-        if (model.props.disableSorting) {
-            return;
-        }
 
-        model.models.sortColumn.setSortColumn((old) => {
-            if (old?.key === (column.key as string)) {
-                return old.direction === "desc"
-                    ? undefined
-                    : { key: column.key as string, direction: "desc" };
-            }
-            return { key: column.key as string, direction: "asc" };
-        });
-        model.update({ all: true });
+        model.actions.sortColumn(column.key);
     };
 
     function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
@@ -141,7 +134,7 @@ export function HeaderCell({ key, col, style, model }: TCellRendererProps) {
             const { left } = currentTarget.getBoundingClientRect();
             const width = e.clientX + offset - left;
             if (width > 0) {
-                model.events.columnResize(column?.key as string, width);
+                model.actions.columnResize(column?.key as string, width);
             }
         }
 
@@ -176,7 +169,7 @@ export function HeaderCell({ key, col, style, model }: TCellRendererProps) {
     const [{ isOver }, drop] = useDrop({
         accept: ["COLUMN_DRAG", "FREEZE_DRAG"],
         drop({ key: dropKey }: { key: string }) {
-            model.events.columnsReorder(dropKey, column.key as string);
+            model.actions.columnsReorder(dropKey, column.key as string);
         },
         collect: (monitor) => ({
             isOver: monitor.isOver(),
@@ -238,7 +231,7 @@ export function HeaderCell({ key, col, style, model }: TCellRendererProps) {
         >
             {Boolean(
                 sortColumn && column.key === sortColumn.key
-            ) && <SortIcon direction={sortColumn?.direction} />}
+            ) && <SortIcon direction={sortColumn?.direction} frozen={model.data.rowsFrozen}/>}
             <span className="header-cell-title">{column?.name}</span>
             <span className="flex-space" />
             {Boolean(column.filterType) && !model.props.disableFiltering && (

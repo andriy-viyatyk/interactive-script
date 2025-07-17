@@ -250,6 +250,107 @@ export class RunningProcess extends vscode.Disposable {
         this.child.on("exit", this.onExit);
     };
 
+    // ToDo: Implement debugging for scripts
+    // public debugScript = async (filePath: string) => {
+    //     this.isRunning = true;
+    //     this.view?.messageToOutput(commands.script.start(filePath));
+
+    //     const config = vscode.workspace.getConfiguration('interactiveScript');
+    //     const fileExtension = path.extname(filePath);
+    //     const debugPort = 9229; // Use a fixed or configurable debug port
+
+    //     let command = "node";
+    //     let args: string[] = [];
+    //     let type = "node"; // Debugger type
+
+    //     if (fileExtension === ".ts") {
+    //         command = "ts-node";
+    //         args = config.get<string[]>('tsNodeArgs', []);
+    //         args.unshift(`--inspect-brk=${debugPort}`); // Add debug flag
+    //     } else if (fileExtension === ".js") {
+    //         command = "node";
+    //         args = config.get<string[]>('nodeArgs', []);
+    //         args.unshift(`--inspect-brk=${debugPort}`); // Add debug flag
+    //     } else {
+    //         vscode.window.showWarningMessage(`Debugging is currently only supported for JavaScript (.js) and TypeScript (.ts) files. Found: ${fileExtension}`);
+    //         this.isRunning = false;
+    //         return;
+    //     }
+
+    //     const workingDirectoryOption = config.get<WorkingDirectoryType>('workingDirectory');
+    //     let workDirectory = path.dirname(filePath);
+    //     if (workingDirectoryOption !== "file") {
+    //         const workspaceFolders = vscode.workspace.workspaceFolders;
+    //         if (workspaceFolders && workspaceFolders.length > 0) {
+    //             workDirectory = workspaceFolders[0].uri.fsPath;
+    //         }
+    //     }
+
+    //     args.push(filePath);
+    //     this.fileName = path.basename(filePath);
+    //     this.view?.messageToOutput(
+    //         commands.log.log([
+    //             { text: `[ ${this.fileName} ]`, styles: { color: "lightseagreen" } },
+    //             ` (Debug) "${command}" ${args.map(arg => ` "${arg}"`).join(" ")}`,
+    //         ])
+    //     );
+
+    //     this.child = cp.spawn(`"${command}"`, args.map(arg => `"${arg}"`), {
+    //         cwd: workDirectory,
+    //         shell: true,
+    //     });
+
+    //     this.child.stdout.on("data", this.onStdout);
+    //     this.child.stderr.on("data", this.onStderr);
+    //     this.child.on("exit", this.onExit);
+
+    //     // --- Start Debug Session Programmatically ---
+    //     const workspaceFolders = vscode.workspace.workspaceFolders;
+    //     let rootPath = workspaceFolders && workspaceFolders.length > 0 ? workspaceFolders[0].uri.fsPath : undefined;
+
+    //     // Ensure a workspace folder is open for 'localRoot'
+    //     if (!rootPath) {
+    //         vscode.window.showErrorMessage("Cannot debug: No workspace folder is open.");
+    //         this.isRunning = false;
+    //         return;
+    //     }
+
+    //     const debugConfiguration: vscode.DebugConfiguration = {
+    //         name: "Interactive Script Debugger",
+    //         type: type, // 'node' for JS/TS
+    //         request: "attach",
+    //         port: debugPort,
+    //         host: "localhost",
+    //         protocol: "inspector", // Node.js default
+    //         // Important for sourcemaps if debugging TypeScript
+    //         localRoot: rootPath,
+    //         remoteRoot: rootPath,
+    //         // You can add more options if needed, e.g., "skipFiles"
+    //     };
+
+    //     // Wait a small moment to ensure the process has started and debug port is open
+    //     await new Promise(resolve => setTimeout(resolve, 500));
+
+    //     // Start the debug session
+    //     vscode.debug.startDebugging(vscode.workspace.getWorkspaceFolder(vscode.Uri.file(filePath)), debugConfiguration)
+    //         .then(
+    //             success => {
+    //                 if (success) {
+    //                     vscode.window.showInformationMessage("Debugger attached successfully!");
+    //                     // Optionally, auto-switch to debug view
+    //                     // vscode.commands.executeCommand('workbench.view.debug');
+    //                 } else {
+    //                     vscode.window.showErrorMessage("Failed to attach debugger.");
+    //                     this.isRunning = false;
+    //                 }
+    //             },
+    //             err => {
+    //                 vscode.window.showErrorMessage(`Error starting debugger: ${err.message}`);
+    //                 this.isRunning = false;
+    //             }
+    //         );
+    // };
+
     private handleCommand = (line: string): boolean => {
         if (line.startsWith(commandLine)) {
             const command = line.substring(commandLine.length).trim();

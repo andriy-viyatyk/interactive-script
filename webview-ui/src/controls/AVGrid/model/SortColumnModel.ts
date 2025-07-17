@@ -1,22 +1,28 @@
-import { SetStateAction, useEffect } from "react";
-import { TRowCompare, TSortColumn } from "../avGridTypes";
+import { useEffect } from "react";
+import { TRowCompare } from "../avGridTypes";
 import { defaultCompare } from "../avGridUtils";
 import { AVGridDataChangeEvent } from "./AVGridData";
 import { AVGridModel } from "./AVGridModel";
-import { resolveState } from "../../../common/utils/utils";
 
-export class SortColumnModel {
-    readonly model: AVGridModel<any>;
+export class SortColumnModel<R> {
+    readonly model: AVGridModel<R>;
 
-    constructor(model: AVGridModel<any>) {
+    constructor(model: AVGridModel<R>) {
         this.model = model;
         this.model.data.onChange.subscribe(this.onDataChange);
     }
 
-    setSortColumn = (sortColumn: SetStateAction<TSortColumn | undefined>) => {
-        const sColumn = resolveState(sortColumn, () => this.model.state.get().sortColumn);
+    sortColumn = (columnKey: string | keyof R) => {
         this.model.state.update(s => {
-            s.sortColumn = sColumn;
+            if (s.sortColumn?.key === (columnKey as string)) {
+                if (s.sortColumn.direction === "desc") {
+                    s.sortColumn = undefined;
+                } else {
+                    s.sortColumn = { key: columnKey as string, direction: "desc" };
+                }
+            } else {
+                s.sortColumn = { key: columnKey as string, direction: "asc" };
+            }
         });
     }
 

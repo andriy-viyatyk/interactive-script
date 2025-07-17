@@ -129,6 +129,8 @@ const RenderGridStyled = styled(RenderGrid)(
             left: 4,
             fontSize: 13,
             cursor: "pointer",
+            color: color.text.light,
+            opacity: 0.5,
             "& .add-row-plus": {
                 color: color.icon.disabled,
                 marginRight: 4,
@@ -138,6 +140,7 @@ const RenderGridStyled = styled(RenderGrid)(
                 "& .add-row-plus": {
                     color: color.icon.default,
                 },
+                opacity: 1,
             },
         },
     },
@@ -192,11 +195,11 @@ function AVGridComponent<R = any>(
 
     const contentProps = useMemo<HTMLAttributes<HTMLDivElement>>(() => {
         return {
-            onMouseLeave: model.events.content.mouseLeave,
+            onMouseLeave: model.actions.contentMouseLeave,
+            onKeyDown: model.actions.contentKeyDown,
+            onContextMenu: model.actions.contentContextMenu,
+            onBlur: model.actions.contentBlur,
             tabIndex: model.props.setFocus ? 0 : undefined,
-            onKeyDown: model.events.content.keyDown,
-            onContextMenu: model.events.content.contextMenu,
-            onBlur: model.events.content.blur,
         };
     }, [model]);
 

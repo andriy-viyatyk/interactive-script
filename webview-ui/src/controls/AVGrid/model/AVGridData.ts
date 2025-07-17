@@ -9,6 +9,7 @@ const defaultChangeEvent = {
     allSelected: false,
     hovered: false,
     editTime: false,
+    rowsFrozen: false,
 }
 
 export type AVGridDataChangeEvent = typeof defaultChangeEvent;
@@ -25,6 +26,7 @@ export class AVGridData<R> {
     private _allSelected = false;
     private _hovered = -1;
     private _editTime: number = new Date().getTime();
+    private _rowsFrozen: boolean = false;
 
     constructor(rows: R[], columns: Column<R>[]) {
         this._rows = rows;
@@ -107,5 +109,15 @@ export class AVGridData<R> {
         if (this._editTime === value) return;
         this._editTime = value;
         this._changeEvent.editTime = true;
+    }
+
+    get rowsFrozen(): boolean {
+        return this._rowsFrozen;
+    }
+
+    set rowsFrozen(value: boolean) {
+        if (this._rowsFrozen === value) return;
+        this._rowsFrozen = value;
+        this._changeEvent.rowsFrozen = true;
     }
 }

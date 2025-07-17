@@ -5,7 +5,7 @@ import { resolveState } from "../../common/utils/utils";
 import { TGlobalState } from "../../common/classes/state";
 import { TOnGetFilterOptions } from "../../controls/AVGrid/filters/useFilters";
 import { UiText } from "../../../../shared/ViewMessage";
-import { getRowKey, getWorkingData } from "../useGridData";
+import { getRowKey, getWorkingData, idColumnKey } from "../useGridData";
 import { defaultCompare, filterRows } from "../../controls/AVGrid/avGridUtils";
 import { AVGridModel } from "../../controls/AVGrid/model/AVGridModel";
 
@@ -25,6 +25,7 @@ type GridViewState = typeof defaultGridViewState;
 
 class GridViewModel extends TModel<GridViewState> {
     gridRef: AVGridModel<any> | undefined = undefined;
+    maxRowId = 0;
 
     setFocus = (focus?: SetStateAction<CellFocus | undefined>) => {
         this.state.update((s) => {
@@ -67,6 +68,7 @@ class GridViewModel extends TModel<GridViewState> {
     updateGridData = () => {
         const { withColumns, delimiter } = this.state.get();
         const data = getWorkingData(withColumns, delimiter);
+        this.maxRowId = data.rows.length;
         this.state.update((s) => {
             s.isCsv = data.isCsv ?? false;
             s.columns = data.columns;
@@ -110,6 +112,26 @@ class GridViewModel extends TModel<GridViewState> {
             if (row) {
                 (row as any)[columnKey] = value;
             }
+        });
+    }
+
+    onAddRows = (count: number, insertIndex?: number) => {
+        const newRows = Array.from({ length: count }, () => ({
+            [idColumnKey]: (this.maxRowId++).toString(),
+        }));
+        this.state.update((s) => {
+            if (insertIndex !== undefined) {
+                s.rows.splice(insertIndex, 0, ...newRows);
+            } else {
+                s.rows.push( ...newRows );
+            }
+        });
+        return newRows;
+    }
+
+    onDeleteRows = (rowKeys: string[]) => {
+        this.state.update((s) => {
+            s.rows = s.rows.filter((r) => !rowKeys.includes(getRowKey(r)));
         });
     }
 }

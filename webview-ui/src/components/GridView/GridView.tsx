@@ -179,7 +179,8 @@ export default function GridView() {
                     filters={state.filters}
                     onVisibleRowsChanged={onVisibleRowsChanged}
                     editRow={model.editRow}
-                    editable
+                    onAddRows={model.onAddRows}
+                    onDeleteRows={model.onDeleteRows}
                 />
             </GridViewRoot>
         </FiltersProvider>

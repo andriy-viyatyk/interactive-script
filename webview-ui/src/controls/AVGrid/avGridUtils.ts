@@ -3,8 +3,9 @@ import moment from "moment";
 import { isNullOrUndefined } from "../../common/utils/utils";
 import { Column, TDisplayFormat, TFilter, TOptionsFilter } from "./avGridTypes";
 import { recordsToCsv } from "../../common/utils/csvUtils";
+import { memorize } from "../../common/utils/memorize";
 
-export const defaultCompare =
+export const defaultCompare = memorize(
     (propertyKey?: string) =>
     (left: any, right: any): number => {
         const leftV = propertyKey ? left?.[propertyKey] : left;
@@ -32,7 +33,8 @@ export const defaultCompare =
         }
 
         return 0;
-    };
+    }
+);
 
 export function formatDispayValue(
     value: any,

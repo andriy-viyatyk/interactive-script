@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { AVGridModel } from "./AVGridModel";
 import { AVGridDataChangeEvent } from "./AVGridData";
+import { Column } from "../avGridTypes";
 
 export class EffectsModel<R> {
     readonly model: AVGridModel<R>;
@@ -10,6 +11,8 @@ export class EffectsModel<R> {
         this.model = model;
         this.model.data.onChange.subscribe(this.onDataChange);
         this.model.events.content.onMouseLeave.subscribe(this.onContentMouseLeave);
+        this.model.events.cell.onClick.subscribe(this.propsOnClick);
+        this.model.events.cell.onDoubleClick.subscribe(this.propsOnDoubleClick);
     }
 
     setHovered = (hovered: number) => {
@@ -59,5 +62,15 @@ export class EffectsModel<R> {
     private onContentMouseLeave = () => {
         this.model.data.hovered = -1;
         this.model.data.change();
+    }
+
+    private propsOnClick = (data?: {row: any, col: Column, rowIndex: number, colIndex: number}) => {
+        if (!data) return;
+        this.model.props.onClick?.(data.row, data.col);
+    }
+
+    private propsOnDoubleClick = (data?: {row: any, col: Column}) => {
+        if (!data) return;
+        this.model.props.onDoubleClick?.(data.row, data.col);
     }
 }

@@ -90,14 +90,14 @@ export function DataCell(props: Readonly<TCellRendererProps>) {
 
     const onMouseDown = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
-            model.events.cell.mouseDown(e, rows[row], column, row, col);
+            model.actions.cellMouseDown(e, rows[row], column, row, col);
         },
         [col, column, model, row, rows]
     );
 
     const onDragStart = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
-            if (!isEdit) model.events.cell.dragStart(e, rows[row], column, row, col);
+            if (!isEdit) model.actions.cellDragStart(e, rows[row], column, row, col);
         },
         [col, column, model, rows, isEdit, row]
     );
@@ -105,24 +105,24 @@ export function DataCell(props: Readonly<TCellRendererProps>) {
     const onDragEnter = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
             model.models.effects.setHovered(row);
-            if (!isEdit) model.events.cell.dragEnter(e, rows[row], column, row, col);
+            if (!isEdit) model.actions.cellDragEnter(e, rows[row], column, row, col);
         },
         [model, row, isEdit, rows, column, col]
     );
 
     const onDragEnd = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
-            if (!isEdit) model.events.cell.dragEnd(e, rows[row], column, row, col);
+            if (!isEdit) model.actions.cellDragEnd(e, rows[row], column, row, col);
         },
         [col, column, model, rows, isEdit, row]
     );
 
     const onClick = useCallback(() => {
-        model.events.cell.click(rows[row], column, row, col);
+        model.actions.cellClick(rows[row], column, row, col);
     }, [col, column, model, rows, row]);
 
     const onDoubleClick = useCallback(() => {
-        model.events.cell.doubleClick(rows[row], column);
+        model.actions.cellDoubleClick(rows[row], column);
     }, [column, model, row, rows]);
 
     return (

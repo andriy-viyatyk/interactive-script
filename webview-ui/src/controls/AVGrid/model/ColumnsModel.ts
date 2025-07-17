@@ -21,7 +21,7 @@ export class ColumnsModel<R> {
 
     getColumnWidth = (idx: number) => this.model.data.columns[idx]?.width ?? defaultColumnWidth
 
-        useModel = () => {
+    useModel = () => {
         const propsColumns = this.model.props.columns;
         useEffect(() => {
             this.model.state.update(s => {
@@ -39,7 +39,7 @@ export class ColumnsModel<R> {
                 c.key === columnKey ? { ...c, width } : c,
             )
         });
-        this.model.events.columnsChanged();
+        this.model.actions.columnsChanged();
     };
 
     private onColumnsReorder = (data?: {sourceKey: string, targetKey: string}) => {
@@ -60,7 +60,7 @@ export class ColumnsModel<R> {
                 columns: range(sourceColumnIndex, targetColumnIndex),
             });
         });
-        this.model.events.columnsChanged();
+        this.model.actions.columnsChanged();
     }
 
     private updateColumnsData = (propsColumns?: Column<R>[]) => {

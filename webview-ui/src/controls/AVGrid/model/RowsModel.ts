@@ -18,9 +18,35 @@ export class RowsModel<R> {
 
     useModel = () => {
         const { rows, searchString, filters } = this.model.props;
+        const sortColumn = this.model.state.use(s => s.sortColumn);
+
+        useEffect(() => {
+            this.unfreezeRows();
+        }, [searchString, filters]);
+
         useEffect(() => {
             this.updateRows();
-        }, [rows, searchString, filters]);
+        }, [rows, searchString, filters, sortColumn]);
+    }
+
+    freezeRows = () => {
+        const { searchString, filters } = this.model.props;
+        const sortColumn = this.model.state.get().sortColumn;
+
+        if (!sortColumn && !searchString?.length && !filters?.length) {
+            // freeze only reordered rows
+            return;
+        }
+
+        this.model.data.rowsFrozen = true;
+        this.model.data.change();
+        this.model.update({ rows: [0] });
+    }
+
+    unfreezeRows = () => {
+        this.model.data.rowsFrozen = false;
+        this.model.data.change();
+        this.model.update({ rows: [0] });
     }
 
     private filter = (rows: readonly R[]) => {
@@ -41,18 +67,50 @@ export class RowsModel<R> {
 
     private onDataChange = (e?: AVGridDataChangeEvent) => {
         if (!e) return;
-        if (e.columns || e.rowCompare) {
+
+        if (e.rowCompare) {
+            this.unfreezeRows();
+        }
+
+        if (e.columns) {
             this.updateRows();
         }
     }
 
     private updateRows = () => {
+        if (this.model.data.rowsFrozen) {
+            this.updateFrozenRows();
+            return;
+        }
+
         let rows: readonly R[] = this.model.props.rows;
         const direction = this.model.state.get().sortColumn?.direction;
         rows = this.filter(rows);
         rows = this.sort(rows, direction);
 
         this.model.data.rows = rows;
+        this.model.data.change();
+        this.model.update({ all: true });
+    }
+
+    private updateFrozenRows = () => {
+        if (!this.model.data.rowsFrozen) return;
+
+        const visibleRowsKeys = this.model.data.rows.reduce((acc, row, idx) => {
+            const key = this.model.props.getRowKey(row);
+            acc[key] = idx;
+            return acc;
+        }, {} as Record<string, number>);
+
+        const newRows = [...this.model.data.rows];
+        this.model.props.rows.forEach((row) => {
+            const key = this.model.props.getRowKey(row);
+            const idx = visibleRowsKeys[key];
+            if (idx !== undefined) {
+                newRows[idx] = row;
+            }
+        });
+        this.model.data.rows = newRows;
         this.model.data.change();
         this.model.update({ all: true });
     }

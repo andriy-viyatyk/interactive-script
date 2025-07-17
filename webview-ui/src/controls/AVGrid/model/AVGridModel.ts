@@ -15,37 +15,41 @@ import { EditingModel } from "./EditingModel";
 import { CopyPasteModel } from "./CopyPasteModel";
 import { ContextMenuModel } from "./ContextMenuModel";
 import { EffectsModel } from "./EffectsModel";
+import { AVGridActions } from "./AVGridActions";
 
 export interface AVGridProps<R> {
     className?: string;
     columns: Column<R>[];
     rows: R[];
-    rowHeight?: number;
-    selected?: ReadonlySet<string>;
-    setSelected?: (value: SetStateAction<ReadonlySet<string>>) => void;
-    loading?: boolean;
     getRowKey: (row: R) => string;
+    rowHeight?: number;
+    searchString?: string;
+    filters?: TFilter[];
+    readonly?: boolean;
     disableFiltering?: boolean;
     disableSorting?: boolean;
-    onClick?: (row: R, col: Column<R>) => void;
-    onDoubleClick?: (row: R, col: Column<R>) => void;
-    onCellClass?: (row: R, col: Column<R>) => string;
-    onColumnsChanged?: () => void;
+    loading?: boolean;
+
+    selected?: ReadonlySet<string>;
+    setSelected?: (value: SetStateAction<ReadonlySet<string>>) => void;
     focus?: CellFocus<R>;
     setFocus?: (value: SetStateAction<CellFocus<R> | undefined>) => void;
+
     editRow?: (columnKey: string, rowKey: string, value: any) => void;
-    fitToWidth?: boolean;
     onAddRows?: (count: number, insertIndex?: number) => R[];
     onDeleteRows?: (rowKeys: string[]) => void;
-    growToHeight?: CSSProperties["height"];
-    growToWidth?: CSSProperties["height"];
-    searchString?: string;
-    readonly?: boolean;
-    filters?: TFilter[];
-    onVisibleRowsChanged?: () => void;
-    scrollToFocus?: boolean;
+    
+    onClick?: (row: R, col: Column<R>) => void;
+    onDoubleClick?: (row: R, col: Column<R>) => void;
     onMouseDown?: (e: React.MouseEvent) => void;
-    editable?: boolean;
+    onCellClass?: (row: R, col: Column<R>) => string;
+    onColumnsChanged?: () => void;
+    onVisibleRowsChanged?: () => void;
+    
+    scrollToFocus?: boolean;
+    fitToWidth?: boolean;
+    growToHeight?: CSSProperties["height"];
+    growToWidth?: CSSProperties["height"]; 
 }
 
 export interface AVGridState<R> {
@@ -67,7 +71,7 @@ export const defaultAVGridState: AVGridState<any> = {
 
 export class AVGridModels<R> {
     readonly columns: ColumnsModel<R>;
-    readonly sortColumn: SortColumnModel;
+    readonly sortColumn: SortColumnModel<R>;
     readonly rows: RowsModel<R>;
     readonly selected: SelectedModel<R>;
     readonly focus: FocusModel<R>;
@@ -93,6 +97,7 @@ export class AVGridModel<R> extends TComponentModel<AVGridState<R>, AVGridProps<
     renderModel: RenderGridModel | null = null;
     readonly data: AVGridData<R>;
     readonly events: AVGridEvents<R>;
+    readonly actions: AVGridActions<R>;
     readonly models: AVGridModels<R>;
 
     constructor(
@@ -103,6 +108,7 @@ export class AVGridModel<R> extends TComponentModel<AVGridState<R>, AVGridProps<
         this.data = new AVGridData<R>([], []);
         this.events = new AVGridEvents(this);
         this.models = new AVGridModels<R>(this);
+        this.actions = new AVGridActions<R>(this);
     }
 
     useModel = () => {
