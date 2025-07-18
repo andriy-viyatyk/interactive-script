@@ -39,7 +39,7 @@ export class EditingModel<R> {
         this.model.models.rows.freezeRows();
 
         const value = col.validate ? col.validate(col, row, val) : val;
-        this.model.props.editRow?.(col.key.toString(), this.model.props.getRowKey(row), value);
+        this.model.actions.editRow(col.key.toString(), this.model.props.getRowKey(row), value);
     }
 
     deleteRange = () => {

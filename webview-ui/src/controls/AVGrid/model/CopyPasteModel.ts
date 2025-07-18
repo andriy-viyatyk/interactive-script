@@ -107,8 +107,8 @@ export class CopyPasteModel<R> {
 
         let endRowIndex = startRowIndex + rowCount - 1;
         let newRows: R[] = [];
-        if (endRowIndex >= rows.length) {
-            newRows = onAddRows?.(endRowIndex - rows.length + 1) ?? [];
+        if (endRowIndex >= rows.length && onAddRows) {
+            newRows = this.model.actions.addRows(endRowIndex - rows.length + 1) ?? [];
             endRowIndex = rows.length - 1 + newRows.length;
         }
 

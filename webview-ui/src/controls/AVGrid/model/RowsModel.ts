@@ -10,6 +10,8 @@ export class RowsModel<R> {
     constructor(model: AVGridModel<R>) {
         this.model = model;
         this.model.data.onChange.subscribe(this.onDataChange);
+        this.model.events.onRowsAdded.subscribe(this.onRowsAdded);
+        this.model.events.onRowsDeleted.subscribe(this.onRowsDeleted);
     }
 
     get rowCount() {
@@ -22,7 +24,7 @@ export class RowsModel<R> {
 
         useEffect(() => {
             this.unfreezeRows();
-        }, [searchString, filters]);
+        }, [searchString, filters, sortColumn]);
 
         useEffect(() => {
             this.updateRows();
@@ -44,9 +46,12 @@ export class RowsModel<R> {
     }
 
     unfreezeRows = () => {
+        if (!this.model.data.rowsFrozen) return;
+
         this.model.data.rowsFrozen = false;
         this.model.data.change();
         this.model.update({ rows: [0] });
+        this.updateRows();
     }
 
     private filter = (rows: readonly R[]) => {
@@ -113,5 +118,19 @@ export class RowsModel<R> {
         this.model.data.rows = newRows;
         this.model.data.change();
         this.model.update({ all: true });
+    }
+
+    private onRowsAdded = (data?: {rows: R[], insertIndex?: number}) => {
+        if (!data || !this.model.data.rowsFrozen) return;
+
+        const newRows = [...this.model.data.rows, ...data.rows];
+        this.model.data.rows = newRows;
+    }
+
+    private onRowsDeleted = (data?: {rowKeys: string[]}) => {
+        if (!data || !this.model.data.rowsFrozen) return;
+
+        const newRows = this.model.data.rows.filter(row => !data.rowKeys.includes(this.model.props.getRowKey(row)));
+        this.model.data.rows = newRows;
     }
 }

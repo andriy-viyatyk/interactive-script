@@ -214,7 +214,7 @@ function AVGridComponent<R = any>(
     let extraElement = null as ReactNode;
     if (model.props.onAddRows) {
         extraElement = (
-            <span className="add-row-button" onClick={() => model.props.onAddRows?.(1)}>
+            <span className="add-row-button" onClick={() => model.actions.addRows(1)}>
                 <span className="add-row-plus">+</span>add row
             </span>
         );

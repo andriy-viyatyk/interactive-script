@@ -82,7 +82,7 @@ const HeaderCellRoot = styled.div(
 
 function SortIcon({ direction, frozen }: { direction?: TSortDirection, frozen?: boolean }) {
     if (frozen) {
-        return <QuestionIcon width={16} height={16} className="sort-icon" title="Rows frozen while editing" />;
+        return <QuestionIcon width={16} height={16} className="sort-icon" title="Rows are frozen while editing. Click to unfreeze." />;
     }
     if (direction === "asc") {
         return <FilterArrowDownIcon width={16} height={16} className="sort-icon" />;

@@ -167,7 +167,7 @@ export default function GridView() {
                         <CopyIcon />
                     </Button>
                 </div>
-                <FilterBar className="filter-bar" />
+                <FilterBar className="filter-bar" gridModel={gridRef.current}/>
                 <AVGrid
                     ref={gridRef}
                     columns={state.columns}

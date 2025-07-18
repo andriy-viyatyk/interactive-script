@@ -58,6 +58,10 @@ export class AVGridActions<R> {
         if (this.model.props.disableSorting) {
             return;
         }
+        if (this.model.data.rowsFrozen) {
+            this.model.models.rows.unfreezeRows();
+            return;
+        }
 
         this.model.models.sortColumn.sortColumn(columnKey);
     }
@@ -74,5 +78,31 @@ export class AVGridActions<R> {
 
     columnsChanged = () => {
         this.model.events.onColumnsChanged.send(undefined);
+    }
+
+    editRow = (columnKey: string, rowKey: string, value: any) => {
+        if (!this.model.props.editRow) return;
+
+        this.model.props.editRow(columnKey, rowKey, value);
+    }
+
+    addRows = (count: number, insertIndex?: number): R[] => {
+        if (!this.model.props.onAddRows) return [];
+        const { searchString, filters } = this.model.props;
+        const sortColumn = this.model.state.get().sortColumn;
+        if (searchString?.length || filters?.length || sortColumn) {
+            this.model.models.rows.freezeRows();
+        }
+
+        const rows = this.model.props.onAddRows(count, insertIndex);
+        this.model.events.onRowsAdded.send({rows, insertIndex});
+        return rows;
+    }
+
+    deleteRows = (rowKeys: string[]): void => {
+        if (!this.model.props.onDeleteRows) return;
+
+        this.model.props.onDeleteRows(rowKeys);
+        this.model.events.onRowsDeleted.send({rowKeys});
     }
 }

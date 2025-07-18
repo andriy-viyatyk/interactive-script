@@ -27,6 +27,8 @@ export class AVGridEvents<R> {
     readonly onColumnResize = new Subscription<{columnKey: string, width: number}>();
     readonly onColumnsReorder = new Subscription<{sourceKey: string, targetKey: string}>();
     readonly onColumnsChanged = new Subscription<undefined>();
+    readonly onRowsAdded = new Subscription<{rows: R[], insertIndex?: number}>();
+    readonly onRowsDeleted = new Subscription<{rowKeys: string[]}>();
 
     constructor(model: AVGridModel<R>) {
         this.model = model;

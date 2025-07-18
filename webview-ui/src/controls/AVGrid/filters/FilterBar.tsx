@@ -9,10 +9,12 @@ import {
     ChevronDownIcon,
     ChevronUpIcon,
     CloseIcon,
+    RefreshIcon,
 } from "../../../theme/icons";
 import { Chip } from "../../Chip";
 import { Button } from "../../Button";
 import color from "../../../theme/color";
+import { AVGridModel } from "../model/AVGridModel";
 
 const ChipRoot = styled(Chip)({
     cursor: "pointer",
@@ -203,11 +205,24 @@ export function FilterChip(props: FilterChipProps) {
 export interface FilterBarProps {
     disabled?: boolean;
     className?: string;
+    gridModel?: AVGridModel<any>;
 }
 
 export function FilterBar(props: FilterBarProps) {
-    const { disabled, className } = props;
+    const { disabled, className, gridModel } = props;
     const { filters, setFilters, showFilterPoper } = useFilters();
+    const [frozen, setFrozen] = useState(false);
+
+    useEffect(() => {
+        const subs = gridModel?.data.onChange.subscribe(e => {
+            if (e?.rowsFrozen) {
+                setFrozen(gridModel.data.rowsFrozen);
+            }
+        });
+        return () => {
+            subs?.unsubscribe();
+        };
+    }, [gridModel]);
 
     const onDelete = useCallback(
         (filter: TFilter) => {
@@ -232,6 +247,16 @@ export function FilterBar(props: FilterBarProps) {
                         disabled={disabled}
                     />
                 ))}
+                {frozen && (
+                    <Button
+                        size="small"
+                        type="icon"
+                        onClick={() => { gridModel?.models.rows.unfreezeRows(); }}
+                        title="Rows are frozen while editing. Click to unfreeze."
+                    >
+                        <RefreshIcon />
+                    </Button>
+                )}
             </div>
             <Button
                 size="small"
