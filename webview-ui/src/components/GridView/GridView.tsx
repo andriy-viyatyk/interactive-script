@@ -87,7 +87,9 @@ export default function GridView() {
     }, [model]);
 
     const onVisibleRowsChanged = useCallback(() => {
-        setTimeout(() => setRefresh(new Date().getTime()), 5);
+        Promise.resolve().then(() => {
+            setRefresh(new Date().getTime())
+        });
     }, []);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {

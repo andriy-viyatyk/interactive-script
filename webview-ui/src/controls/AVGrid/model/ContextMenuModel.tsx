@@ -41,7 +41,7 @@ export class ContextMenuModel<R> {
                 },
                 {
                     label: `Insert ${selection?.rows.length} row${(selection?.rows.length ?? 0) > 1 ? 's' : ''}`,
-                    onClick: () => this.model.actions.addRows(selection?.rows.length ?? 1, selection?.rowRange[0]),
+                    onClick: () => this.model.actions.addRows(selection?.rows.length ?? 1, selection?.rowRange[0], true),
                     invisible: !onAddRows || !selection?.rows.length,
                     icon: <PlusIcon />,
                     startGroup: true,
@@ -50,7 +50,7 @@ export class ContextMenuModel<R> {
                 },
                 {
                     label: `Add ${selection?.rows.length} row${(selection?.rows.length ?? 0) > 1 ? 's' : ''}`,
-                    onClick: () => this.model.actions.addRows(selection?.rows.length ?? 1),
+                    onClick: () => this.model.actions.addRows(selection?.rows.length ?? 1, undefined, true),
                     invisible: !onAddRows || !selection?.rows.length,
                     icon: <PlusIcon />,
                 },

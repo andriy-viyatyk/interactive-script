@@ -137,8 +137,21 @@ export class FocusModel<R> {
                     rowEnd: endRowIndex,
                 },
             });
+            this.model.update({ all: true });
         }
     };
+
+    focusNewRows = (startIndex: number, count: number, oldFocus?: CellFocus<R>) => {
+        const endRowIndex = startIndex + count - 1;
+        const startColIndex = oldFocus?.selection?.colStart ?? 0;
+        const endColIndex = oldFocus?.selection?.colEnd ?? 0;
+        this.selectRange(
+            startIndex,
+            startColIndex,
+            endRowIndex,
+            endColIndex
+        );
+    }
 
     getGridFocus = () => {
         const { focus, getRowKey } = this.model.props;
@@ -241,7 +254,9 @@ export class FocusModel<R> {
             });
 
             if (withScroll) {
-                this.model.renderModel?.scrollTo(rowIndex + 1, colIndex);
+                Promise.resolve().then(() => {
+                    this.model.renderModel?.scrollTo(rowIndex + 1, colIndex);
+                });
             }
 
             const currentSel = {

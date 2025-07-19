@@ -128,7 +128,7 @@ export class AVGridActions<R> {
         }
     };
 
-    addRows = (count: number, insertIndex?: number): R[] => {
+    addRows = (count: number, insertIndex?: number, withFocus?: boolean): R[] => {
         if (!this.model.props.onAddRows) return [];
         const { searchString, filters } = this.model.props;
         const sortColumn = this.model.state.get().sortColumn;
@@ -136,28 +136,29 @@ export class AVGridActions<R> {
             this.model.models.rows.freezeRows();
         }
 
+        const rowsPosition = insertIndex ?? this.model.data.rows.length;
+        const oldFocus = this.model.props.focus;
+        
         const rows = this.model.props.onAddRows(count, insertIndex);
         this.model.events.onRowsAdded.send({ rows, insertIndex });
+
+        if (withFocus) {
+            Promise.resolve().then(() => {
+                this.model.models.focus.focusNewRows(rowsPosition, count, oldFocus);
+                if (insertIndex === undefined) {
+                    this.model.renderModel?.scrollToRow(this.model.data.rows.length);
+                }
+            });
+        }
+
         return rows;
     };
 
     addNewRow = (withFocus?: boolean, isTempRow?: boolean) => {
-        const editableColumn = this.model.models.columns.firstEditable;
-        const columnIndex = this.model.props.focus?.selection?.colStart ?? editableColumn?.index ?? 0;
-        const rowIndex = this.model.data.rows.length - 1;
-        const rows = this.addRows(1);
+        const rows = this.addRows(1, undefined, withFocus);
         if (isTempRow) {
             this.model.data.newRowKey = this.model.props.getRowKey(rows[0]);
             this.model.data.change();
-        }
-        if (withFocus && columnIndex >= 0 && rowIndex >= 0) {
-            Promise.resolve().then(() => {
-                this.model.models.focus.focusCell(
-                    rowIndex + 1,
-                    columnIndex,
-                    true
-                );
-            });
         }
         return rows;
     };
