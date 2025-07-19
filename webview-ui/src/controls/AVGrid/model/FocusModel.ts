@@ -91,6 +91,110 @@ export class FocusModel<R> {
         });
     };
 
+    focusCell = (rowIndex: number, colIndex: number, withScroll?: boolean) => {
+        const { columns, rows } = this.model.data;
+
+        if (
+            rowIndex < 0 ||
+            rowIndex >= rows.length ||
+            colIndex < 0 ||
+            colIndex >= columns.length
+        ) {
+            return;
+        }
+
+        const row = rows[rowIndex];
+        const col = columns[colIndex];
+
+        this.updateFocus(row, col, rowIndex, colIndex, "click", withScroll);
+    };
+
+    selectRange = (
+        startRowIndex: number,
+        startColIndex: number,
+        endRowIndex: number,
+        endColIndex: number
+    ) => {
+        const { getRowKey, setFocus } = this.model.props;
+        const { columns, rows } = this.model.data;
+        const startCol = columns[startColIndex];
+        const endCol = columns[endColIndex];
+        const startRow = rows[startRowIndex];
+        const endRow = rows[endRowIndex];
+        if (startCol && endCol && startRow && endRow && setFocus) {
+            setFocus({
+                columnKey: endCol.key,
+                rowKey: getRowKey(endRow),
+                isDragging: false,
+                selection: {
+                    colKeyStart: startCol.key,
+                    rowKeyStart: getRowKey(startRow),
+                    colKeyEnd: endCol.key,
+                    rowKeyEnd: getRowKey(endRow),
+                    colStart: startColIndex,
+                    rowStart: startRowIndex,
+                    colEnd: endColIndex,
+                    rowEnd: endRowIndex,
+                },
+            });
+        }
+    };
+
+    getGridFocus = () => {
+        const { focus, getRowKey } = this.model.props;
+        const { rows, columns } = this.model.data;
+
+        if (focus && focus.columnKey && focus.rowKey) {
+            const rowIndex = rows.findIndex(
+                (r) => getRowKey(r) === focus.rowKey
+            );
+            const colIndex = columns.findIndex(
+                (c) => c.key === focus.columnKey
+            );
+            return {
+                row: rows[rowIndex],
+                column: columns[colIndex],
+                rowIndex,
+                colIndex,
+            };
+        }
+    };
+
+    getGridSelection = () => {
+        const { focus, getRowKey } = this.model.props;
+        const { rows, columns } = this.model.data;
+
+        if (focus && focus.columnKey && focus.rowKey) {
+            const endRowIndex = rows.findIndex(
+                (r) => getRowKey(r) === focus.rowKey
+            );
+            const endColIndex = columns.findIndex(
+                (c) => c.key === focus.columnKey
+            );
+            const startRowIndex = focus.selection?.rowKeyStart
+                ? rows.findIndex(
+                      (r) => getRowKey(r) === focus.selection?.rowKeyStart
+                  )
+                : endRowIndex;
+            const startColIndex = focus.selection?.colKeyStart
+                ? columns.findIndex(
+                      (c) => c.key === focus.selection?.colKeyStart
+                  )
+                : endColIndex;
+            const rowRange = [startRowIndex, endRowIndex].sort((a, b) => a - b);
+            const colRange = [startColIndex, endColIndex].sort((a, b) => a - b);
+
+            return {
+                rows: rows.slice(rowRange[0], rowRange[1] + 1),
+                columns: columns.slice(colRange[0], colRange[1] + 1),
+                focusCol: endColIndex,
+                focusRow: endRowIndex,
+                rowRange,
+                colRange,
+            };
+        }
+    };
+
     private onDataChange = (e?: AVGridDataChangeEvent) => {
         if (!e) return;
         if (e.rows || e.columns) {
@@ -176,7 +280,7 @@ export class FocusModel<R> {
                 ];
                 const min = Math.min(...edges) + 1;
                 const max = Math.max(...edges) + 1;
-                this.model.renderModel?.update({ rows: range(min, max) });
+                this.model.update({ rows: range(min, max) });
             }
 
             return {
@@ -323,7 +427,8 @@ export class FocusModel<R> {
         if (!e) return;
 
         const { getRowKey, focus } = this.model.props;
-        const { rows, columns } = this.model.data;
+        const { rows: dataRows, columns } = this.model.data;
+        let rows = dataRows;
 
         if (
             ["ArrowLeft", "ArrowRight"].includes(e.key) &&
@@ -350,6 +455,22 @@ export class FocusModel<R> {
                     case "ArrowDown":
                         if (rowIndex < rows.length - 1) {
                             rowIndex++;
+                        } else if (
+                            rowIndex === rows.length - 1 &&
+                            this.model.props.onAddRows &&
+                            (!this.model.data.newRowKey ||
+                                (this.model.models.editing.isEditing &&
+                                    this.model.state.get().cellEdit?.rowKey ===
+                                        this.model.data.newRowKey))
+                        ) {
+                            if (this.model.models.editing.isEditing) {
+                                this.model.models.editing.closeEdit(true, true);
+                            }
+                            rows = [
+                                ...rows,
+                                ...this.model.actions.addNewRow(false, true),
+                            ];
+                            rowIndex++;
                         }
                         break;
                     case "ArrowUp":
@@ -372,10 +493,24 @@ export class FocusModel<R> {
                             columnIndex < columns.length - 1
                                 ? columnIndex + 1
                                 : 0;
-                        rowIndex =
-                            columnIndex === 0 && rowIndex < rows.length - 1
-                                ? rowIndex + 1
-                                : rowIndex;
+
+                        if (
+                            columnIndex === 0 &&
+                            rowIndex === rows.length - 1 &&
+                            this.model.props.onAddRows &&
+                            !this.model.data.newRowKey
+                        ) {
+                            rows = [
+                                ...rows,
+                                ...this.model.actions.addNewRow(false, true),
+                            ];
+                            rowIndex++;
+                        } else {
+                            rowIndex =
+                                columnIndex === 0 && rowIndex < rows.length - 1
+                                    ? rowIndex + 1
+                                    : rowIndex;
+                        }
                         break;
                     }
                     default:
@@ -390,6 +525,13 @@ export class FocusModel<R> {
                     true
                 );
             }
+        }
+
+        if (e.ctrlKey && focus && e.code === "KeyA") {
+            e.preventDefault();
+            e.stopPropagation();
+            const { rows, columns } = this.model.data;
+            this.selectRange(0, 0, rows.length - 1, columns.length - 1);
         }
     };
 }

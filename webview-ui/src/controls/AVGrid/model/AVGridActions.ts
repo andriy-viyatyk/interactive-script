@@ -1,4 +1,11 @@
-import { CellClickEvent, CellDragEvent, CellMouseEvent, Column, TOnColumnResize, TOnColumnsReorder } from "../avGridTypes";
+import {
+    CellClickEvent,
+    CellDragEvent,
+    CellMouseEvent,
+    Column,
+    TOnColumnResize,
+    TOnColumnsReorder,
+} from "../avGridTypes";
 import { AVGridModel } from "./AVGridModel";
 
 export class AVGridActions<R> {
@@ -12,45 +19,69 @@ export class AVGridActions<R> {
 
     contentMouseLeave = () => {
         this.model.events.content.onMouseLeave.send(undefined);
-    }
+    };
 
     contentKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
         this.model.events.content.onKeyDown.send(e);
-    }
+    };
 
     contentContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
         this.model.events.content.onContextMenu.send(e);
-    }
+    };
 
     contentBlur = (e: React.FocusEvent<HTMLDivElement>) => {
         this.model.events.content.onBlur.send(e);
-    }
+    };
 
     // Cell actions
 
     cellMouseDown: CellMouseEvent = (e, row, col, rowIndex, colIndex) => {
-        this.model.events.cell.onMouseDown.send({e, row, col, rowIndex, colIndex});
-    }
+        this.model.events.cell.onMouseDown.send({
+            e,
+            row,
+            col,
+            rowIndex,
+            colIndex,
+        });
+    };
 
     cellDragStart: CellDragEvent = (e, row, col, rowIndex, colIndex) => {
-        this.model.events.cell.onDragStart.send({e, row, col, rowIndex, colIndex});
-    }
+        this.model.events.cell.onDragStart.send({
+            e,
+            row,
+            col,
+            rowIndex,
+            colIndex,
+        });
+    };
 
     cellDragEnter: CellDragEvent = (e, row, col, rowIndex, colIndex) => {
-        this.model.events.cell.onDragEnter.send({e, row, col, rowIndex, colIndex});
-    }
+        this.model.events.cell.onDragEnter.send({
+            e,
+            row,
+            col,
+            rowIndex,
+            colIndex,
+        });
+    };
 
     cellDragEnd: CellDragEvent = (e, row, col, rowIndex, colIndex) => {
-        this.model.events.cell.onDragEnd.send({e, row, col, rowIndex, colIndex});
-    }
+        this.model.events.cell.onDragEnd.send({
+            e,
+            row,
+            col,
+            rowIndex,
+            colIndex,
+        });
+    };
 
     cellClick: CellClickEvent = (row, col, rowIndex, colIndex) => {
-        this.model.events.cell.onClick.send({row, col, rowIndex, colIndex});
-    }
+        this.model.events.cell.onClick.send({ row, col, rowIndex, colIndex });
+    };
 
     cellDoubleClick = (row: any, col: Column) => {
-        this.model.events.cell.onDoubleClick.send({row, col});
-    }
+        this.model.events.cell.onDoubleClick.send({ row, col });
+    };
 
     // Column header actions
 
@@ -64,27 +95,38 @@ export class AVGridActions<R> {
         }
 
         this.model.models.sortColumn.sortColumn(columnKey);
-    }
+    };
 
     columnResize: TOnColumnResize = (columnKey: string, width: number) => {
-        this.model.events.onColumnResize.send({columnKey, width});
-    }
+        this.model.events.onColumnResize.send({ columnKey, width });
+    };
 
-    columnsReorder: TOnColumnsReorder = (sourceKey: string, targetKey: string) => {
-        this.model.events.onColumnsReorder.send({sourceKey, targetKey});
-    }
+    columnsReorder: TOnColumnsReorder = (
+        sourceKey: string,
+        targetKey: string
+    ) => {
+        this.model.events.onColumnsReorder.send({ sourceKey, targetKey });
+    };
 
     // Internal actions
 
     columnsChanged = () => {
         this.model.events.onColumnsChanged.send(undefined);
-    }
+    };
 
     editRow = (columnKey: string, rowKey: string, value: any) => {
         if (!this.model.props.editRow) return;
 
+        const newRowEdited = this.model.data.newRowKey === rowKey;
+        if (newRowEdited) {
+            this.model.data.newRowKey = undefined;
+        }
         this.model.props.editRow(columnKey, rowKey, value);
-    }
+
+        if (newRowEdited) {
+            Promise.resolve().then(() => this.model.data.change());
+        }
+    };
 
     addRows = (count: number, insertIndex?: number): R[] => {
         if (!this.model.props.onAddRows) return [];
@@ -95,14 +137,35 @@ export class AVGridActions<R> {
         }
 
         const rows = this.model.props.onAddRows(count, insertIndex);
-        this.model.events.onRowsAdded.send({rows, insertIndex});
+        this.model.events.onRowsAdded.send({ rows, insertIndex });
         return rows;
-    }
+    };
+
+    addNewRow = (withFocus?: boolean, isTempRow?: boolean) => {
+        const editableColumn = this.model.models.columns.firstEditable;
+        const columnIndex = this.model.props.focus?.selection?.colStart ?? editableColumn?.index ?? 0;
+        const rowIndex = this.model.data.rows.length - 1;
+        const rows = this.addRows(1);
+        if (isTempRow) {
+            this.model.data.newRowKey = this.model.props.getRowKey(rows[0]);
+            this.model.data.change();
+        }
+        if (withFocus && columnIndex >= 0 && rowIndex >= 0) {
+            Promise.resolve().then(() => {
+                this.model.models.focus.focusCell(
+                    rowIndex + 1,
+                    columnIndex,
+                    true
+                );
+            });
+        }
+        return rows;
+    };
 
     deleteRows = (rowKeys: string[]): void => {
         if (!this.model.props.onDeleteRows) return;
 
         this.model.props.onDeleteRows(rowKeys);
-        this.model.events.onRowsDeleted.send({rowKeys});
-    }
+        this.model.events.onRowsDeleted.send({ rowKeys });
+    };
 }

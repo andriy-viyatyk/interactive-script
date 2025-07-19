@@ -1,6 +1,5 @@
 import { showPopupMenu } from "../../../dialogs/showPopupMenu";
 import { CopyIcon, DeleteIcon, PasteIcon, PlusIcon } from "../../../theme/icons";
-import { getGridSelection } from "../useUtils";
 import { AVGridModel } from "./AVGridModel";
 
 export class ContextMenuModel<R> {
@@ -20,14 +19,13 @@ export class ContextMenuModel<R> {
         if (!e) return;
         const { focus, getRowKey, onAddRows, onDeleteRows, searchString, filters } = this.model.props;
         const sortColumn = this.model.state.get().sortColumn;
-        const { rows, columns } = this.model.data;
 
         const canInsertRows = !sortColumn && !searchString?.length && !filters?.length;
 
         if (focus && (e.target as HTMLElement).tagName !== 'INPUT') {
             e.stopPropagation();
             e.preventDefault();
-            const selection = getGridSelection(focus, rows, columns, getRowKey);
+            const selection = this.model.models.focus.getGridSelection();
             showPopupMenu(e.clientX, e.clientY, [
                 {
                     label: 'Copy',
@@ -52,7 +50,7 @@ export class ContextMenuModel<R> {
                 },
                 {
                     label: `Add ${selection?.rows.length} row${(selection?.rows.length ?? 0) > 1 ? 's' : ''}`,
-                    onClick: () => onAddRows?.(selection?.rows.length ?? 1),
+                    onClick: () => this.model.actions.addRows(selection?.rows.length ?? 1),
                     invisible: !onAddRows || !selection?.rows.length,
                     icon: <PlusIcon />,
                 },

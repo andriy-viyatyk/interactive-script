@@ -120,7 +120,9 @@ export class AVGridModel<R> extends TComponentModel<AVGridState<R>, AVGridProps<
         this.models.effects.useModel();
     }
 
-    update = (rerender?: RerenderInfo) => this.renderModel?.update(rerender);
+    update = (rerender?: RerenderInfo) => {
+        this.renderModel?.update(rerender);
+    }
 
     setRenderModel = (renderModel: RenderGridModel) => {
         this.renderModel = renderModel;

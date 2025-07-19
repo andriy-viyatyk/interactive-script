@@ -19,6 +19,14 @@ export class ColumnsModel<R> {
         return this.model.data.columns.length;
     }
 
+    get firstEditable() {
+        const index = this.model.data.columns.findIndex(c => !c.readonly && !c.isStatusColumn);
+        return index === -1 ? undefined : {
+            col: this.model.data.columns[index],
+            index,
+        };
+    }
+
     getColumnWidth = (idx: number) => this.model.data.columns[idx]?.width ?? defaultColumnWidth
 
     useModel = () => {

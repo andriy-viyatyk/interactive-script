@@ -21,7 +21,7 @@ export class EffectsModel<R> {
     }
 
     useModel = () => {
-        const { columns, rows, selected, readonly } = this.model.props;
+        const { columns, rows, selected, readonly, focus } = this.model.props;
 
         useEffect(() => {
             const { scrollToFocus, focus, getRowKey } = this.model.props;
@@ -38,6 +38,18 @@ export class EffectsModel<R> {
         useEffect(() => {
             this.model.update({ all: true });
         }, [columns, rows, selected, readonly]);
+
+        useEffect(() => {
+            const newRowKey = this.model.data.newRowKey;
+            if (newRowKey) {
+                const selection = this.model.models.focus.getGridSelection();
+                if (!selection?.rows.find(row => this.model.props.getRowKey(row) === newRowKey)) {
+                    this.model.data.newRowKey = undefined;
+                    this.model.data.change();
+                    this.model.actions.deleteRows([newRowKey]);
+                }
+            }
+        }, [focus]);
     }
 
     private onDataChange = (e?: AVGridDataChangeEvent) => {

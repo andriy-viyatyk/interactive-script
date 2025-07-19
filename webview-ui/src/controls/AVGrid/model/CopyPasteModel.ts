@@ -2,7 +2,6 @@ import { csvToRecords } from "../../../common/utils/csvUtils";
 import { toClipboard } from "../../../common/utils/utils";
 import { Column } from "../avGridTypes";
 import { columnDisplayValue, rowsToCsvText } from "../avGridUtils";
-import { getGridSelection } from "../useUtils";
 import { AVGridModel } from "./AVGridModel";
 
 export class CopyPasteModel<R> {
@@ -14,11 +13,10 @@ export class CopyPasteModel<R> {
     }
 
     copySelection = () => {
-        const { focus, getRowKey } = this.model.props;
+        const { focus } = this.model.props;
         if (!focus) return;
-        const { rows, columns } = this.model.data;
 
-        const selection = getGridSelection(focus, rows, columns, getRowKey);
+        const selection = this.model.models.focus.getGridSelection();
         if (!selection) return;
 
         let text = '';
@@ -33,11 +31,10 @@ export class CopyPasteModel<R> {
     }
 
     canPasteFromClipboard = async () => {
-        const { focus, getRowKey } = this.model.props;
+        const { focus } = this.model.props;
         if (!focus) return false;
-        const { rows, columns } = this.model.data;
 
-        const selection = getGridSelection(focus, rows, columns, getRowKey);
+        const selection = this.model.models.focus.getGridSelection();
         if (selection && selection.rows.length && selection.columns.length) {
             const text = await navigator.clipboard.readText(); // cause second context menu "Paste" in Firefox
             if (text) {
@@ -48,11 +45,10 @@ export class CopyPasteModel<R> {
     }
 
     pasteFromClipboard = async () => {
-        const { focus, getRowKey } = this.model.props;
+        const { focus } = this.model.props;
         if (!focus) return;
-        const { rows, columns } = this.model.data;
 
-        const selection = getGridSelection(focus, rows, columns, getRowKey);
+        const selection = this.model.models.focus.getGridSelection();
         if (selection && selection.rows.length && selection.columns.length) {
             const text = await navigator.clipboard.readText();
             if (text) {
@@ -118,20 +114,13 @@ export class CopyPasteModel<R> {
         pasteRows = rows.slice(startRowIndex, endRowIndex + 1).concat(newRows);
 
         if (pasteColumns.length && pasteRows.length && setFocus) {
-            setFocus({
-                columnKey: pasteColumns[0].key,
-                rowKey: getRowKey(pasteRows[0]),
-                isDragging: false,
-                selection: {
-                    colKeyStart: pasteColumns[pasteColumns.length - 1].key,
-                    rowKeyStart: getRowKey(pasteRows[pasteRows.length - 1]),
-                    colKeyEnd: pasteColumns[0].key,
-                    rowKeyEnd: getRowKey(pasteRows[0]),
-                    colStart: endColIndex,
-                    rowStart: startRowIndex + pasteRows.length - 1,
-                    colEnd: startColIndex,
-                    rowEnd: startRowIndex,
-                }
+            Promise.resolve().then(() => {
+                this.model.models.focus.selectRange(
+                    startRowIndex + pasteRows.length - 1,
+                    endColIndex,
+                    startRowIndex,
+                    startColIndex
+                )
             });
         }
 

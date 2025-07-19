@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Column } from "../avGridTypes";
-import { getGridFocus, getGridSelection } from "../useUtils";
 import { AVGridModel } from "./AVGridModel";
 
 export class EditingModel<R> {
@@ -43,10 +42,7 @@ export class EditingModel<R> {
     }
 
     deleteRange = () => {
-        const { focus, getRowKey } = this.model.props;
-        const { rows, columns } = this.model.data;
-
-        const gridSelection = getGridSelection(focus, rows, columns, getRowKey);
+        const gridSelection = this.model.models.focus.getGridSelection();
         if (gridSelection) {
             gridSelection.columns.forEach((col) => {
                 if (this.model.props.editRow && !col.readonly) {
@@ -111,11 +107,10 @@ export class EditingModel<R> {
     }
 
     private getCellForEdit = () => {
-        const { editRow, getRowKey, focus, readonly } = this.model.props;
-        const { rows, columns } = this.model.data;
+        const { editRow, readonly } = this.model.props;
 
         const gridFocus = editRow
-            ? getGridFocus(focus, rows, columns, getRowKey)
+            ? this.model.models.focus.getGridFocus()
             : undefined;
 
         if (gridFocus && gridFocus.rowIndex >= 0) {
