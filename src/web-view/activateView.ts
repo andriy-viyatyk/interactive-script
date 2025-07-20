@@ -1,46 +1,41 @@
 import * as vscode from 'vscode';
-import * as fs from "fs";
-import * as path from "path";
-import views from './Views';
-import { json } from 'stream/consumers';
+
+import { GridView } from './GridView';
+import { OutputView } from './OutputView';
+import { gridContentProvider } from './GridContentProvider';
 
 export function activateView(context: vscode.ExtensionContext) {
     const disposeGridView = vscode.commands.registerCommand(
         "interactiveScript.showGrid",
-        () => {
+        async () => {
             const editor = vscode.window.activeTextEditor;
             if (!editor) {
                 vscode.window.showErrorMessage("No active editor.");
                 return;
             }
 
-            const filePath = editor.document.uri.fsPath;
-            const fileName = path.basename(filePath);
-            const fileExtension = path.extname(filePath).toLowerCase();
-            const jsonOrCsv = fs.readFileSync(filePath, "utf-8");
+            const documentUri = editor.document.uri;
 
-            let data = jsonOrCsv;
-            let isCsv = true;
-            if (fileExtension === ".json") {
-                try {
-                    data = JSON.parse(jsonOrCsv);
-                    isCsv = false;
-                } catch (e) {
-                    console.error("Error parsing JSON:", e);
-                    vscode.window.showErrorMessage(
-                        "Invalid JSON file. Please check the console for details."
-                    );
-                    return;
-                }
+            try {
+                await vscode.commands.executeCommand(
+                    "vscode.openWith",
+                    documentUri,
+                    "interactiveScript.gridEditor",
+                    {
+                        viewColumn: editor.viewColumn,
+                        preserveFocus: false,
+                    }
+                );
+            } catch (e: any) {
+                vscode.window.showErrorMessage(`Failed to open file with Grid Editor: ${e?.message}`);
+                console.error("Error opening file with custom editor:", e);
             }
-
-            const gridView = views.createView(context, isCsv ? "grid" : "json");
-            gridView.createGridPanel(fileName, data, undefined, isCsv);
         }
     );
 
     // Register the webview view provider for the bottom panel
-    const outputView = views.createView(context, "output");
+    const outputView = new OutputView(context, "output");
+    outputView.isBottomPanel = true; 
     const disposeOutputView = vscode.window.registerWebviewViewProvider(
         "interactiveScript.bottomPanel",
         outputView,
@@ -49,6 +44,27 @@ export function activateView(context: vscode.ExtensionContext) {
         }
     );
 
+    // Register the custom text editor provider for the grid view
+    const gridDocumetProvider = new GridView(context, "json");
+    const disposeGridDocumentProvider = vscode.window.registerCustomEditorProvider(
+        "interactiveScript.gridEditor",
+        gridDocumetProvider,
+        {
+            webviewOptions: {
+                retainContextWhenHidden: true // Keep editor state when hidden
+            },
+            supportsMultipleEditorsPerDocument: true // Allow multiple instances of the same document
+        }
+    )
+
+    // Register the content provider for your virtual scheme
+    const disposeGridContentProvider = vscode.workspace.registerTextDocumentContentProvider(
+        "interactive-script-grid", // This must match the scheme in your virtual URI
+        gridContentProvider
+    );
+
     context.subscriptions.push(disposeGridView);
     context.subscriptions.push(disposeOutputView);
+    context.subscriptions.push(disposeGridDocumentProvider);
+    context.subscriptions.push(disposeGridContentProvider);
 }

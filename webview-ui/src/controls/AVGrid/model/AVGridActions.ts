@@ -128,7 +128,7 @@ export class AVGridActions<R> {
         }
     };
 
-    addRows = (count: number, insertIndex?: number, withFocus?: boolean): R[] => {
+    addRows = (count: number, insertIndex?: number, withFocus?: boolean, isTempRow?: boolean): R[] => {
         if (!this.model.props.onAddRows) return [];
         const { searchString, filters } = this.model.props;
         const sortColumn = this.model.state.get().sortColumn;
@@ -151,11 +151,15 @@ export class AVGridActions<R> {
             });
         }
 
+        if (!isTempRow) {
+            setTimeout(() => { this.model.props.onDataChanged?.(); }, 0);
+        }
+
         return rows;
     };
 
     addNewRow = (withFocus?: boolean, isTempRow?: boolean) => {
-        const rows = this.addRows(1, undefined, withFocus);
+        const rows = this.addRows(1, undefined, withFocus, isTempRow);
         if (isTempRow) {
             this.model.data.newRowKey = this.model.props.getRowKey(rows[0]);
             this.model.data.change();

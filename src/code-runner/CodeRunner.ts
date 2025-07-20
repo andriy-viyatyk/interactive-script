@@ -1,20 +1,18 @@
 import * as vscode from "vscode";
-import * as path from "path";
-import views from "../web-view/Views";
 import { RunningProcess } from "./RunningProcess";
 import vars from "../vars";
-import { WebView } from "../web-view/WebView";
 import commands from "../../shared/commands";
-import { contextScriptRunning } from "../constants";
+import { BaseView, Views } from "../web-view/BaseView";
+import { OutputView } from "../web-view/OutputView";
 
 class CodeRunner {
     private runningProcess: Map<string, RunningProcess> = new Map();
     
     private get bottomPanelId() {
-        return views.output?.id;
+        return Views.output?.id;
     }
 
-    runProcessWithView = (filePath: string, view: WebView) => {
+    runProcessWithView = (filePath: string, view: BaseView) => {
         const id = view.id;
         const process = new RunningProcess(view, () => {
             this.runningProcess.delete(id);
@@ -25,7 +23,7 @@ class CodeRunner {
 
     private runSeparate = async (filePath: string) => {
         if (vars.extensionContext) {
-            const view = views.createView(vars.extensionContext, "output");
+            const view = new OutputView(vars.extensionContext, "output");
             view.createOutputPanel(filePath);
             await view.whenReady;
             this.runProcessWithView(filePath, view);
@@ -44,8 +42,8 @@ class CodeRunner {
             return;
         }
 
-        if (views.output) {
-            this.runProcessWithView(filePath, views.output);
+        if (Views.output) {
+            this.runProcessWithView(filePath, Views.output);
         }
     };
 
@@ -57,8 +55,8 @@ class CodeRunner {
     };
 
     clear = () => {
-        if (views.output) {
-            views.output.messageToOutput(commands.clear());
+        if (Views.output) {
+            Views.output.messageToOutput(commands.clear());
         }
     };
 }

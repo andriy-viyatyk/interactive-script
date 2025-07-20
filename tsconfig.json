@@ -9,7 +9,7 @@
         "esModuleInterop": true,
         "sourceMap": true
     },
-    "include": ["src", "shared"],
+    "include": ["src", "shared", "shared_internal"],
     "exclude": [
         "node_modules",
         ".vscode-test",

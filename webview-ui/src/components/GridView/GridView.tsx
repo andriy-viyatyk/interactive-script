@@ -183,6 +183,7 @@ export default function GridView() {
                     editRow={model.editRow}
                     onAddRows={model.onAddRows}
                     onDeleteRows={model.onDeleteRows}
+                    onDataChanged={model.onDataChanged}
                 />
             </GridViewRoot>
         </FiltersProvider>

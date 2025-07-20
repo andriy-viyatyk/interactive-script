@@ -84,6 +84,7 @@ export class CopyPasteModel<R> {
                             sourceRow = 0;
                         }
                     }
+                    setTimeout(() => { this.model.props.onDataChanged?.(); }, 0);
                 }
             }
         }

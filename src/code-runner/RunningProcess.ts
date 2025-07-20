@@ -2,19 +2,31 @@ import * as cp from "child_process";
 import * as vscode from "vscode";
 import * as path from "path";
 import { contextScriptRunning } from "../constants";
-import { WebView } from "../web-view/WebView";
 import commands from "../../shared/commands";
 import { commandLine } from "../../shared/constants";
 import {
     isWindowGridCommand,
     isWindowTextCommand,
 } from "../../shared/commands/window";
-import { uiTextToString, ViewMessage } from "../../shared/ViewMessage";
+import { ViewMessage } from "../../shared/ViewMessage";
 import { SubscriptionObject } from "../utils/events";
 import { isScriptStopCommand } from "../../shared/commands/script";
-import { handleFileOpenCommand, handleFileOpenFolderCommand, handleFileSaveCommand, handleWindowGridCommand, handleWindowTextCommand, showOpenDialog } from "../utils/common-commands";
-import { isOnConsoleCommand, isOnConsoleLogCommand, OnConsoleCommand } from "../../shared/commands/on-console";
-import { isOutputClearCommand, isOutputCommand } from "../../shared/commands/output";
+import {
+    handleFileOpenCommand,
+    handleFileOpenFolderCommand,
+    handleFileSaveCommand,
+    handleWindowGridCommand,
+    handleWindowTextCommand,
+} from "../utils/common-commands";
+import {
+    isOnConsoleCommand,
+    isOnConsoleLogCommand,
+    OnConsoleCommand,
+} from "../../shared/commands/on-console";
+import {
+    isOutputClearCommand,
+    isOutputCommand,
+} from "../../shared/commands/output";
 import { clearOutput, writeOutput } from "../utils/output-channel";
 import { getPythonPath } from "../utils/python-utils";
 import { WorkingDirectoryType } from "../types";
@@ -22,18 +34,19 @@ import { isFileOpenCommand } from "../../shared/commands/file-open";
 import { isFileSaveCommand } from "../../shared/commands/file-save";
 import { isFileOpenFolderCommand } from "../../shared/commands/file-openFolder";
 import { handleColorCoding } from "./handleColorCoding";
+import { BaseView } from "../web-view/BaseView";
 
 export class RunningProcess extends vscode.Disposable {
     private child: cp.ChildProcessWithoutNullStreams | null = null;
     private fileName: string = "";
-    private view?: WebView;
+    private view?: BaseView;
     private viewIsBottomPanel = false;
     private subscriptions: SubscriptionObject[] = [];
     private onConsoleLog: OnConsoleCommand | undefined;
     private onConsoleError: OnConsoleCommand | undefined;
-    private unprocessedLine: string = '';
+    private unprocessedLine: string = "";
 
-    constructor(view: WebView, callOnDispose: () => any) {
+    constructor(view: BaseView, callOnDispose: () => any) {
         super(callOnDispose);
         this.view = view;
         this.viewIsBottomPanel = view.isBottomPanel;
@@ -85,7 +98,7 @@ export class RunningProcess extends vscode.Disposable {
         if (this.handleCommand(line)) return;
 
         if (this.onConsoleLog) {
-            const message = {...this.onConsoleLog, data: line };
+            const message = { ...this.onConsoleLog, data: line };
             this.sendToProcess(message);
             return;
         }
@@ -95,12 +108,14 @@ export class RunningProcess extends vscode.Disposable {
 
     private onError = (error: string) => {
         if (this.onConsoleError) {
-            const message = {...this.onConsoleError, data: error };
+            const message = { ...this.onConsoleError, data: error };
             this.sendToProcess(message);
             return;
         }
 
-        this.view?.messageToOutput(commands.log.error(handleColorCoding(error)));
+        this.view?.messageToOutput(
+            commands.log.error(handleColorCoding(error))
+        );
     };
 
     private onStdout = (data: Buffer) => {
@@ -108,7 +123,7 @@ export class RunningProcess extends vscode.Disposable {
         let text = data.toString();
         if (this.unprocessedLine) {
             text = this.unprocessedLine + text;
-            this.unprocessedLine = '';
+            this.unprocessedLine = "";
         }
         const lines = text.split("\n");
         if (lines.length && lines[lines.length - 1] === "") {
@@ -120,11 +135,13 @@ export class RunningProcess extends vscode.Disposable {
 
     private normalizeCommandLines = (lines: string[]) => {
         const resultLines: string[] = [];
-        let currentLine = '';
+        let currentLine = "";
         while (lines.length) {
-            currentLine += lines.shift() || '';
+            currentLine += lines.shift() || "";
             if (currentLine.startsWith(commandLine)) {
-                const command = currentLine.substring(commandLine.length).trim();
+                const command = currentLine
+                    .substring(commandLine.length)
+                    .trim();
                 let commandValid = command.endsWith("}");
                 if (commandValid) {
                     try {
@@ -136,18 +153,18 @@ export class RunningProcess extends vscode.Disposable {
                 }
                 if (commandValid) {
                     resultLines.push(currentLine);
-                    currentLine = '';
+                    currentLine = "";
                 }
             } else {
                 resultLines.push(currentLine);
-                currentLine = '';
+                currentLine = "";
             }
         }
         if (currentLine) {
             this.unprocessedLine += currentLine;
         }
         return resultLines;
-    }
+    };
 
     private onStderr = (data: Buffer) => {
         if (!this.isRunning) return;
@@ -183,7 +200,7 @@ export class RunningProcess extends vscode.Disposable {
             const line = `${commandLine}${JSON.stringify(message)}\n`;
             this.child.stdin.write(line);
         }
-    }
+    };
 
     private onWebViewMessage = (message?: ViewMessage<any>) => {
         if (message?.command) {
@@ -200,7 +217,7 @@ export class RunningProcess extends vscode.Disposable {
         this.isRunning = true;
         this.view?.messageToOutput(commands.script.start(filePath));
 
-        const config = vscode.workspace.getConfiguration('interactiveScript');
+        const config = vscode.workspace.getConfiguration("interactiveScript");
 
         const fileExtension = path.extname(filePath);
         let command = "node";
@@ -208,20 +225,24 @@ export class RunningProcess extends vscode.Disposable {
 
         if (fileExtension === ".ts") {
             command = "ts-node";
-            args = config.get<string[]>('tsNodeArgs', []);
+            args = config.get<string[]>("tsNodeArgs", []);
         } else if (fileExtension == ".py") {
             command = await getPythonPath();
-            args = config.get<string[]>('pythonArgs', []);
+            args = config.get<string[]>("pythonArgs", []);
         } else if (fileExtension === ".js") {
             command = "node";
-            args = config.get<string[]>('nodeArgs', []);
+            args = config.get<string[]>("nodeArgs", []);
         } else if (fileExtension === ".ps1") {
             command = "pwsh";
-            args = config.get<string[]>('powershellArgs', ["-ExecutionPolicy", "Bypass"]);
+            args = config.get<string[]>("powershellArgs", [
+                "-ExecutionPolicy",
+                "Bypass",
+            ]);
             args.push("-File");
         }
-        
-        const workingDirectoryOption = config.get<WorkingDirectoryType>('workingDirectory');
+
+        const workingDirectoryOption =
+            config.get<WorkingDirectoryType>("workingDirectory");
 
         let workDirectory = path.dirname(filePath);
         if (workingDirectoryOption !== "file") {
@@ -235,15 +256,22 @@ export class RunningProcess extends vscode.Disposable {
         this.fileName = path.basename(filePath);
         this.view?.messageToOutput(
             commands.log.log([
-                { text: `[ ${this.fileName} ]`, styles: { color: "lightseagreen" } },
-                ` "${command}" ${args.map(arg => ` "${arg}"`).join(" ")}`,
+                {
+                    text: `[ ${this.fileName} ]`,
+                    styles: { color: "lightseagreen" },
+                },
+                ` "${command}" ${args.map((arg) => ` "${arg}"`).join(" ")}`,
             ])
         );
 
-        this.child = cp.spawn(`"${command}"`, args.map(arg => `"${arg}"`), {
-            cwd: workDirectory,
-            shell: true,
-        });
+        this.child = cp.spawn(
+            `"${command}"`,
+            args.map((arg) => `"${arg}"`),
+            {
+                cwd: workDirectory,
+                shell: true,
+            }
+        );
 
         this.child.stdout.on("data", this.onStdout);
         this.child.stderr.on("data", this.onStderr);
@@ -359,7 +387,9 @@ export class RunningProcess extends vscode.Disposable {
                 commandObj = JSON.parse(command);
             } catch (error) {
                 this.view?.messageToOutput(
-                    commands.log.error(`RunningProcess: Error parsing command: ${error}`)
+                    commands.log.error(
+                        `RunningProcess: Error parsing command: ${error}`
+                    )
                 );
                 return false;
             }

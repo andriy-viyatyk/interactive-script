@@ -4,10 +4,11 @@ import { CellFocus, Column, TFilter } from "../../controls/AVGrid/avGridTypes";
 import { resolveState } from "../../common/utils/utils";
 import { TGlobalState } from "../../common/classes/state";
 import { TOnGetFilterOptions } from "../../controls/AVGrid/filters/useFilters";
-import { UiText } from "../../../../shared/ViewMessage";
+import { UiText, ViewMessage } from "../../../../shared/ViewMessage";
 import { getRowKey, getWorkingData, idColumnKey } from "../useGridData";
 import { defaultCompare, filterRows } from "../../controls/AVGrid/avGridUtils";
 import { AVGridModel } from "../../controls/AVGrid/model/AVGridModel";
+import { gridEditorChangedCommand } from "../../../../shared_internal/grid-editor-commands";
 
 const defaultGridViewState = {
     isCsv: false,
@@ -26,6 +27,10 @@ type GridViewState = typeof defaultGridViewState;
 class GridViewModel extends TModel<GridViewState> {
     gridRef: AVGridModel<any> | undefined = undefined;
     maxRowId = 0;
+
+    sendMessage = (message: ViewMessage<any, string>) => {
+        window.vscode.postMessage(message);
+    };
 
     setFocus = (focus?: SetStateAction<CellFocus | undefined>) => {
         this.state.update((s) => {
@@ -133,6 +138,11 @@ class GridViewModel extends TModel<GridViewState> {
         this.state.update((s) => {
             s.rows = s.rows.filter((r) => !rowKeys.includes(getRowKey(r)));
         });
+    }
+
+    onDataChanged = () => {
+        const content = JSON.stringify(this.state.get().rows, null, 4);
+        this.sendMessage(gridEditorChangedCommand({ content}))
     }
 }
 

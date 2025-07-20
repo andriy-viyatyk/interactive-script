@@ -9,6 +9,7 @@ import { OutputItemList } from "./OutputItemList";
 import { v4 } from "uuid";
 import { GlobalRoot } from "../GlobalRoot";
 import commands from "../../../../shared/commands";
+import { isGridEditorCommand } from "../../../../shared_internal/grid-editor-commands";
 import { FlexSpace } from "../../controls/FlexSpace";
 import { Button } from "../../controls/Button";
 import { ARightIcon, ClearConsoleIcon, StopIcon } from "../../theme/icons";
@@ -52,6 +53,10 @@ class OutputViewModel extends TModel<OutputViewState> {
         const message = event.data as ViewMessage;
         if (message?.command) {
             if (responseHandler.handleResponse(message)) {
+                return;
+            }
+
+            if (isGridEditorCommand(message)) {
                 return;
             }
 

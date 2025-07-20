@@ -45,6 +45,7 @@ export interface AVGridProps<R> {
     onCellClass?: (row: R, col: Column<R>) => string;
     onColumnsChanged?: () => void;
     onVisibleRowsChanged?: () => void;
+    onDataChanged?: () => void;
     
     scrollToFocus?: boolean;
     fitToWidth?: boolean;

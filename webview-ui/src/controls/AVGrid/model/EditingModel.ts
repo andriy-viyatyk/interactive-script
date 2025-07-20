@@ -48,6 +48,7 @@ export class EditingModel<R> {
                 if (this.model.props.editRow && !col.readonly) {
                     gridSelection.rows.forEach((row) => {
                         this.editCell(col, row, undefined);
+                        setTimeout(() => { this.model.props.onDataChanged?.(); }, 0);
                     });
                 }
             });
@@ -70,6 +71,7 @@ export class EditingModel<R> {
             );
             if (commit && column && row) {
                 this.editCell(column, row, editState.value);
+                setTimeout(() => { this.model.props.onDataChanged?.(); }, 0);
             }
         }
         this.model.state.update(s => {

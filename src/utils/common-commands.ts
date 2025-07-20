@@ -5,23 +5,37 @@ import {
     WindowTextCommand,
 } from "../../shared/commands/window";
 import vars from "../vars";
-import views from "../web-view/Views";
 import { uiTextToString } from "../../shared/ViewMessage";
 import { FileOpenCommand } from "../../shared/commands/file-open";
 import { FileSaveCommand } from "../../shared/commands/file-save";
 import { FileOpenFolderCommand } from "../../shared/commands/file-openFolder";
 import { FileExistsCommand } from "../../shared/commands/file-exists";
-import path from "path";
+import { gridContentProvider } from "../web-view/GridContentProvider";
 
 export const handleWindowGridCommand = (message: WindowGridCommand) => {
-    setTimeout(() => {
+    setTimeout(async () => {
         if (vars.extensionContext) {
-            const view = views.createView(vars.extensionContext, "grid");
-            view.createGridPanel(
-                message.data?.title ?? "Data",
-                message.data?.data ?? [],
-                message.data?.columns
-            );
+            const { GridView } = await import("../web-view/GridView");
+            const view = new GridView(vars.extensionContext, "grid");
+
+            const virtualUri = vscode.Uri.parse(`interactive-script-grid://${view.id}/data.grid.json`);
+            const initialContent = JSON.stringify(message.data?.data ?? [], null, 4);
+            gridContentProvider.setContent(virtualUri, initialContent);
+
+            try {
+                await vscode.commands.executeCommand(
+                    "vscode.openWith",
+                    virtualUri,
+                    "interactiveScript.gridEditor", // Your custom editor's viewType
+                    {
+                        preview: false, // Open as a preview tab
+                        viewColumn: vscode.ViewColumn.One,
+                    }
+                );
+            } catch (error: any) {
+                vscode.window.showErrorMessage(`Failed to open grid view: ${error?.message}`);
+                console.error("Error opening virtual grid view:", error);
+            }
         }
     }, 0);
 };

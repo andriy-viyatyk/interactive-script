@@ -40,19 +40,19 @@ export type Command =
     | "file.showOpenFolder"
     | "file.exists";
 
-export interface ViewMessage<T = any> {
-    command: Command;
+export interface ViewMessage<T = any, C extends string = Command> {
+    command: C;
     commandId: string;
     data?: T;
     isEvent?: boolean;
 }
 
-export function newMessage<T>(
-    command: Command,
+export function newMessage<T, C extends string = Command>(
+    command: C,
     data?: T,
     commandId?: string,
     isEvent?: boolean
-): ViewMessage<T> {
+): ViewMessage<T, C> {
     return {
         command,
         commandId: commandId || v4(),

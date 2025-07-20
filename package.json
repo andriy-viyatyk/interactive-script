@@ -21,6 +21,24 @@
     ],
     "main": "./out/src/extension.js",
     "contributes": {
+        "customEditors": [
+            {
+                "viewType": "interactiveScript.gridEditor",
+                "displayName": "Interactive Script Grid Editor",
+                "selector": [
+                    {
+                        "filenamePattern": "*.grid.json"
+                    },
+                    {
+                        "filenamePattern": "*.grid.csv"
+                    },
+                    {
+                        "filenamePattern": "interactive-script-grid:*"
+                    }
+                ],
+                "priority": "default"
+            }
+        ],
         "viewsContainers": {
             "panel": [
                 {
