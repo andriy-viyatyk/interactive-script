@@ -12,8 +12,14 @@ import { FileOpenFolderCommand } from "../../shared/commands/file-openFolder";
 import { FileExistsCommand } from "../../shared/commands/file-exists";
 
 export const handleWindowGridCommand = async (message: WindowGridCommand) => {
+    let title = uiTextToString(message.data?.title);
+    title = title.replace(/[^\w.-]/g, '_');  // replace potentially invalid characters with underscore
+    title = title.replace(/_+/g, '_'); // replace multiple underscore with single
+    title = title.replace(/^_+|_+$/g, ''); // trim leading/trailing underscores
+    title = title || "data"; 
+    const fileName = `${title}.grid.json`;
     const initialContent = JSON.stringify(message.data?.data ?? [], null, 4);
-    const untitledUri = vscode.Uri.parse('untitled:data.grid.json');
+    const untitledUri = vscode.Uri.parse(`untitled:${fileName}`);
 
     const edit = new vscode.WorkspaceEdit();
     edit.insert(untitledUri, new vscode.Position(0, 0), initialContent);
