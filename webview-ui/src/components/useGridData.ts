@@ -50,6 +50,13 @@ export function getRowKey(row: any) {
     return row?.[idColumnKey] ?? "";
 }
 
+export function createIdColumn(data: any[]) {
+    return data.map((row, index) => ({
+        ...row,
+        [idColumnKey]: index.toString(),
+    }))
+}
+
 export function getGridData(
     jsonData: any,
     withSelectColumn?: boolean
@@ -71,10 +78,7 @@ export function getGridData(
         }
     }
 
-    rows = rows.map((row, index) => ({
-        ...row,
-        [idColumnKey]: index.toString(),
-    }));
+    rows = createIdColumn(rows); 
 
     return { columns, rows };
 }

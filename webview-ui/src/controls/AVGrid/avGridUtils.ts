@@ -201,7 +201,7 @@ export function rowsToCsvText(
     rows?: any[],
     columns?: Column<any>[],
     withHeaders?: boolean,
-    tabDelimeter?: boolean
+    tabDelimeter?: boolean | string
 ): string | undefined {
     if (!rows?.length || !columns?.length) return undefined;
 
@@ -214,8 +214,10 @@ export function rowsToCsvText(
     const records = [...rows.map((row) => processRow(row))];
     const columnKeys = columns.map((c) => c.name);
 
+    const delimiter = tabDelimeter === true ? "\t" : tabDelimeter;
+
     return recordsToCsv(records, columnKeys, {
         header: withHeaders,
-        delimiter: tabDelimeter ? "\t" : ",",
+        delimiter: delimiter,
     });
 }

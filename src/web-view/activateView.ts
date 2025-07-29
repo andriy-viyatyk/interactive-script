@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 
 import { GridView } from './GridView';
 import { OutputView } from './OutputView';
-import { gridContentProvider } from './GridContentProvider';
 
 export function activateView(context: vscode.ExtensionContext) {
     const disposeGridView = vscode.commands.registerCommand(
@@ -35,7 +34,7 @@ export function activateView(context: vscode.ExtensionContext) {
 
     // Register the webview view provider for the bottom panel
     const outputView = new OutputView(context, "output");
-    outputView.isBottomPanel = true; 
+    outputView.isBottomPanel = true;
     const disposeOutputView = vscode.window.registerWebviewViewProvider(
         "interactiveScript.bottomPanel",
         outputView,
@@ -45,7 +44,15 @@ export function activateView(context: vscode.ExtensionContext) {
     );
 
     // Register the custom text editor provider for the grid view
-    const gridDocumetProvider = new GridView(context, "json");
+    const gridDocumetProvider = {
+        resolveCustomTextEditor(
+            document: vscode.TextDocument,
+            webviewPanel: vscode.WebviewPanel,
+            token: vscode.CancellationToken) {
+            const gridView = new GridView(context, "json");
+            gridView.resolveCustomTextEditor(document, webviewPanel, token)
+        }
+    };
     const disposeGridDocumentProvider = vscode.window.registerCustomEditorProvider(
         "interactiveScript.gridEditor",
         gridDocumetProvider,
@@ -57,14 +64,7 @@ export function activateView(context: vscode.ExtensionContext) {
         }
     )
 
-    // Register the content provider for your virtual scheme
-    const disposeGridContentProvider = vscode.workspace.registerTextDocumentContentProvider(
-        "interactive-script-grid", // This must match the scheme in your virtual URI
-        gridContentProvider
-    );
-
     context.subscriptions.push(disposeGridView);
     context.subscriptions.push(disposeOutputView);
     context.subscriptions.push(disposeGridDocumentProvider);
-    context.subscriptions.push(disposeGridContentProvider);
 }

@@ -18,6 +18,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FiltersProvider } from "../../controls/AVGrid/filters/useFilters";
 import { FilterBar } from "../../controls/AVGrid/filters/FilterBar";
 import { AVGridModel } from "../../controls/AVGrid/model/AVGridModel";
+import commands from "../../../../shared/commands";
 
 const GridViewRoot = styled(GlobalRoot)({
     position: "absolute",
@@ -84,6 +85,13 @@ export default function GridView() {
 
     useEffect(() => {
         model.updateGridData();
+        
+        window.addEventListener("message", model.onWindowMessage);
+        model.sendMessage(commands.viewReady());
+
+        return () => {
+            window.removeEventListener("message", model.onWindowMessage);
+        };
     }, [model]);
 
     const onVisibleRowsChanged = useCallback(() => {

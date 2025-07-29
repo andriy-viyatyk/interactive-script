@@ -172,5 +172,7 @@ export class AVGridActions<R> {
 
         this.model.props.onDeleteRows(rowKeys);
         this.model.events.onRowsDeleted.send({ rowKeys });
+
+        setTimeout(() => { this.model.props.onDataChanged?.(); }, 0);
     };
 }

@@ -5,10 +5,15 @@ import { resolveState } from "../../common/utils/utils";
 import { TGlobalState } from "../../common/classes/state";
 import { TOnGetFilterOptions } from "../../controls/AVGrid/filters/useFilters";
 import { UiText, ViewMessage } from "../../../../shared/ViewMessage";
-import { getRowKey, getWorkingData, idColumnKey } from "../useGridData";
-import { defaultCompare, filterRows } from "../../controls/AVGrid/avGridUtils";
+import { createIdColumn, getRowKey, getWorkingData, idColumnKey, removeIdColumn } from "../useGridData";
+import {
+    defaultCompare,
+    filterRows,
+    rowsToCsvText,
+} from "../../controls/AVGrid/avGridUtils";
 import { AVGridModel } from "../../controls/AVGrid/model/AVGridModel";
-import { gridEditorChangedCommand } from "../../../../shared_internal/grid-editor-commands";
+import { gridEditorChangedCommand, isGridEditorChangedCommand, isGridEditorCommand } from "../../../../shared_internal/grid-editor-commands";
+import { csvToRecords } from "../../common/utils/csvUtils";
 
 const defaultGridViewState = {
     isCsv: false,
@@ -31,6 +36,19 @@ class GridViewModel extends TModel<GridViewState> {
     sendMessage = (message: ViewMessage<any, string>) => {
         window.vscode.postMessage(message);
     };
+
+    onWindowMessage = (event: MessageEvent<any>) => {
+        const message = event.data as ViewMessage<any, string>;
+        if (message?.command) {
+            if (!isGridEditorCommand(message)) {
+                return;
+            }
+
+            if (isGridEditorChangedCommand(message)) {
+                this.updateGridDataFromContent(message.data?.content)
+            }
+        }
+    }
 
     setFocus = (focus?: SetStateAction<CellFocus | undefined>) => {
         this.state.update((s) => {
@@ -55,7 +73,7 @@ class GridViewModel extends TModel<GridViewState> {
             s.withColumns = !s.withColumns;
         });
         this.updateGridData();
-    }
+    };
 
     setDelimiter = (delimiter: string) => {
         this.state.update((s) => {
@@ -80,33 +98,51 @@ class GridViewModel extends TModel<GridViewState> {
             s.rows = data.rows;
             s.title = data.title ?? "";
         });
+    };
+
+    updateGridDataFromContent = (content?: string) => {
+        const { isCsv, withColumns, delimiter } = this.state.get();
+        let rows = [];
+        try {
+            if (isCsv) {
+                rows = csvToRecords(content ?? "", withColumns, delimiter);
+            } else {
+                rows = JSON.parse(content ?? "[]");
+            }
+        } catch (e) {
+            console.error(e);
+        }
+        rows = createIdColumn(rows);
+        this.state.update(s => {
+            s.rows = rows;
+        })
     }
 
     onGetOptions: TOnGetFilterOptions = (
         columns: Column[],
         filters: TFilter[],
         columnKey: string,
-        search?: string,
+        search?: string
     ) => {
         const uniqueValues = new Set<any>();
-		filterRows(
-			this.state.get().rows,
-			columns,
-			search,
-			filters?.filter(f => f.columnKey !== columnKey),
-		).forEach(i => uniqueValues.add(i[columnKey]));
-		const options = Array.from(uniqueValues);
-		options.sort(defaultCompare());
-		return options.map(i => ({
-			value: i,
-			label: i?.toString(),
-		}));
-    }
+        filterRows(
+            this.state.get().rows,
+            columns,
+            search,
+            filters?.filter((f) => f.columnKey !== columnKey)
+        ).forEach((i) => uniqueValues.add(i[columnKey]));
+        const options = Array.from(uniqueValues);
+        options.sort(defaultCompare());
+        return options.map((i) => ({
+            value: i,
+            label: i?.toString(),
+        }));
+    };
 
     get recordsCount() {
         const rows = this.state.get().rows.length;
         const visibleRows = this.gridRef?.data.rows.length ?? rows;
-        return (visibleRows === rows)
+        return visibleRows === rows
             ? `[${rows} rows]`
             : `[${visibleRows} of ${rows} rows]`;
     }
@@ -118,7 +154,7 @@ class GridViewModel extends TModel<GridViewState> {
                 (row as any)[columnKey] = value;
             }
         });
-    }
+    };
 
     onAddRows = (count: number, insertIndex?: number) => {
         const newRows = Array.from({ length: count }, () => ({
@@ -128,22 +164,36 @@ class GridViewModel extends TModel<GridViewState> {
             if (insertIndex !== undefined) {
                 s.rows.splice(insertIndex, 0, ...newRows);
             } else {
-                s.rows.push( ...newRows );
+                s.rows.push(...newRows);
             }
         });
         return newRows;
-    }
+    };
 
     onDeleteRows = (rowKeys: string[]) => {
         this.state.update((s) => {
             s.rows = s.rows.filter((r) => !rowKeys.includes(getRowKey(r)));
         });
+    };
+
+    private getCsvContent = () => {
+        const { delimiter, withColumns, rows, columns } = this.state.get();
+        return rowsToCsvText(rows, columns, withColumns, delimiter) ?? "";
+    };
+
+    private getJsonContent = () => {
+        const { rows } = this.state.get();
+        return JSON.stringify(removeIdColumn(rows), null, 4);
     }
 
     onDataChanged = () => {
-        const content = JSON.stringify(this.state.get().rows, null, 4);
-        this.sendMessage(gridEditorChangedCommand({ content}))
-    }
+        const content = this.state.get().isCsv
+            ? this.getCsvContent()
+            : this.getJsonContent();
+        this.sendMessage(gridEditorChangedCommand({ content }));
+    };
 }
 
-export const gridViewModel = new GridViewModel(new TGlobalState(defaultGridViewState));
+export const gridViewModel = new GridViewModel(
+    new TGlobalState(defaultGridViewState)
+);

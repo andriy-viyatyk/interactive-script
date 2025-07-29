@@ -49,6 +49,8 @@ export class BaseView {
     onPanel = new Subscription<BaseView>();
     onOutputMessage = new Subscription<ViewMessage<any>>();
     onDispose = new Subscription<void>();
+    readonly disposables: vscode.Disposable[] = [];
+    disposed = false;
 
     protected onReady: (() => void) | undefined;
     whenReady = new Promise<void>((resolve) => {
@@ -64,7 +66,7 @@ export class BaseView {
         });
     }
 
-    messageToOutput = (message: ViewMessage<any>) => {
+    messageToOutput = (message: ViewMessage<any, string>) => {
         this.panel?.webview.postMessage(message);
     };
 
@@ -139,7 +141,7 @@ export class BaseView {
 
         const disposeSubscription = this.panel?.onDidDispose(() => {
             subscriptions.forEach((s) => s.dispose());
-            this.onDispose.send();
+            this.dispose();
         });
         if (disposeSubscription) {
             subscriptions.push(disposeSubscription);
@@ -221,6 +223,15 @@ export class BaseView {
             </html>
           `;
     };
+
+    private dispose() {
+        if (this.disposed) return;
+
+        this.disposables.forEach(d => d.dispose());
+        this.disposables.splice(0);
+        this.disposed = true;
+        this.onDispose.send();
+    }
 }
 
 export class Views {

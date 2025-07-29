@@ -52,6 +52,10 @@ class OutputViewModel extends TModel<OutputViewState> {
     onWindowMessage = (event: MessageEvent<any>) => {
         const message = event.data as ViewMessage;
         if (message?.command) {
+            if (isGridEditorCommand(message)) {
+                return;
+            }
+
             if (responseHandler.handleResponse(message)) {
                 return;
             }

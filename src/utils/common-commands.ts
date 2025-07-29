@@ -10,34 +10,24 @@ import { FileOpenCommand } from "../../shared/commands/file-open";
 import { FileSaveCommand } from "../../shared/commands/file-save";
 import { FileOpenFolderCommand } from "../../shared/commands/file-openFolder";
 import { FileExistsCommand } from "../../shared/commands/file-exists";
-import { gridContentProvider } from "../web-view/GridContentProvider";
 
-export const handleWindowGridCommand = (message: WindowGridCommand) => {
-    setTimeout(async () => {
-        if (vars.extensionContext) {
-            const { GridView } = await import("../web-view/GridView");
-            const view = new GridView(vars.extensionContext, "grid");
+export const handleWindowGridCommand = async (message: WindowGridCommand) => {
+    const initialContent = JSON.stringify(message.data?.data ?? [], null, 4);
+    const untitledUri = vscode.Uri.parse('untitled:data.grid.json');
 
-            const virtualUri = vscode.Uri.parse(`interactive-script-grid://${view.id}/data.grid.json`);
-            const initialContent = JSON.stringify(message.data?.data ?? [], null, 4);
-            gridContentProvider.setContent(virtualUri, initialContent);
+    const edit = new vscode.WorkspaceEdit();
+    edit.insert(untitledUri, new vscode.Position(0, 0), initialContent);
+    await vscode.workspace.applyEdit(edit);
 
-            try {
-                await vscode.commands.executeCommand(
-                    "vscode.openWith",
-                    virtualUri,
-                    "interactiveScript.gridEditor", // Your custom editor's viewType
-                    {
-                        preview: false, // Open as a preview tab
-                        viewColumn: vscode.ViewColumn.One,
-                    }
-                );
-            } catch (error: any) {
-                vscode.window.showErrorMessage(`Failed to open grid view: ${error?.message}`);
-                console.error("Error opening virtual grid view:", error);
-            }
+    await vscode.commands.executeCommand(
+        "vscode.openWith",
+        untitledUri,
+        "interactiveScript.gridEditor",
+        {
+            preview: false,
+            viewColumn: vscode.ViewColumn.One,
         }
-    }, 0);
+    );
 };
 
 export const handleWindowTextCommand = async (message: WindowTextCommand) => {
