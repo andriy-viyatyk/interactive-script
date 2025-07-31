@@ -18,8 +18,13 @@ export class ContextMenuModel<R> {
     private onContentContextMenu = async (e?: React.MouseEvent<HTMLDivElement>) => {
         if (!e) return;
         const { focus, getRowKey, onAddRows, onDeleteRows, searchString, filters } = this.model.props;
-        const sortColumn = this.model.state.get().sortColumn;
 
+        if (this.model.models.editing.isFocusEditing(focus)) {
+            this.model.models.editing.preventEditorBlur();
+            return;
+        }
+
+        const sortColumn = this.model.state.get().sortColumn;
         const canInsertRows = !sortColumn && !searchString?.length && !filters?.length;
 
         if (focus && (e.target as HTMLElement).tagName !== 'INPUT') {
@@ -41,7 +46,7 @@ export class ContextMenuModel<R> {
                 },
                 {
                     label: `Insert ${selection?.rows.length} row${(selection?.rows.length ?? 0) > 1 ? 's' : ''}`,
-                    onClick: () => this.model.actions.addRows(selection?.rows.length ?? 1, selection?.rowRange[0], true),
+                    onClick: () => this.model.actions.addRows(selection?.rows.length ?? 1, selection?.rowRange[0], false),
                     invisible: !onAddRows || !selection?.rows.length,
                     icon: <PlusIcon />,
                     startGroup: true,

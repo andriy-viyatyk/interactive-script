@@ -41,6 +41,7 @@ export function DefaultCellFormater(props: TCellRendererProps) {
     const column = model.data.columns[col];
     const row = model.data.rows[rowIndex];
     const highlightedText = useHighlightedText();
+    let isHighlighted = false;
 
     let value: any = null;
     try {
@@ -50,6 +51,7 @@ export function DefaultCellFormater(props: TCellRendererProps) {
 
             if (highlightedText && typeof value === "string") {
                 value = highlightText(highlightedText, value);
+                isHighlighted = true;
             }
         } else if (column.displayType === "checkIcon") {
             return value && !falseString(value) ? (
@@ -60,7 +62,7 @@ export function DefaultCellFormater(props: TCellRendererProps) {
         value = null;
     }
 
-    if (typeof value === "string") {
+    if (typeof value === "string" || isHighlighted) {
         value = <OverflowTooltipText>{value}</OverflowTooltipText>;
     }
 

@@ -41,6 +41,7 @@ export function DefaultEditFormater({ model }: TCellRendererProps) {
             onChange={(v) =>
                 model.state.update((s) => {
                     s.cellEdit.value = v;
+                    s.cellEdit.changed = true;
                 })
             }
             onKeyDown={(e) => {

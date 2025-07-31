@@ -139,6 +139,7 @@ export class AVGridActions<R> {
         const rowsPosition = insertIndex ?? this.model.data.rows.length;
         const oldFocus = this.model.props.focus;
         
+        this.model.flags.noScrollOnFocus = true;
         const rows = this.model.props.onAddRows(count, insertIndex);
         this.model.events.onRowsAdded.send({ rows, insertIndex });
 

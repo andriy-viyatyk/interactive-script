@@ -67,6 +67,7 @@ export const defaultAVGridState: AVGridState<any> = {
         rowKey: "",
         value: undefined,
         dontSelect: false,
+        changed: false,
     },
 }
 
@@ -100,6 +101,9 @@ export class AVGridModel<R> extends TComponentModel<AVGridState<R>, AVGridProps<
     readonly events: AVGridEvents<R>;
     readonly actions: AVGridActions<R>;
     readonly models: AVGridModels<R>;
+    readonly flags = {
+        noScrollOnFocus: false,
+    }
 
     constructor(
         modelState: IState<AVGridState<R>> | (new (defaultState: AVGridState<R>) => IState<AVGridState<R>>),

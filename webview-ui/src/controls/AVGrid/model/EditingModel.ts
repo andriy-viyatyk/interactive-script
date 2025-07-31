@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Column } from "../avGridTypes";
+import { CellFocus, Column } from "../avGridTypes";
 import { AVGridModel } from "./AVGridModel";
 
 export class EditingModel<R> {
@@ -15,6 +15,11 @@ export class EditingModel<R> {
     get isEditing() {
         const cellEdit = this.model.state.get().cellEdit;
         return Boolean(cellEdit.columnKey && cellEdit.rowKey);
+    }
+
+    isFocusEditing = (focus?: CellFocus<R>) => {
+        const cellEdit = this.model.state.get().cellEdit;
+        return Boolean(cellEdit.columnKey && cellEdit.rowKey && cellEdit.columnKey === focus?.columnKey && cellEdit.rowKey === focus?.rowKey);
     }
 
     useModel = () => {
@@ -69,13 +74,13 @@ export class EditingModel<R> {
             const column = columns.find(
                 (c) => c.key === editState.columnKey
             );
-            if (commit && column && row) {
+            if (commit && column && row && editState.changed) {
                 this.editCell(column, row, editState.value);
                 setTimeout(() => { this.model.props.onDataChanged?.(); }, 0);
             }
         }
         this.model.state.update(s => {
-            s.cellEdit = { columnKey: "", rowKey: "", value: undefined };
+            s.cellEdit = { columnKey: "", rowKey: "", value: undefined, changed: false };
         })
 
         if (rowIndex >= 0) {
@@ -101,11 +106,17 @@ export class EditingModel<R> {
         this.model.data.change();
         this.model.state.update(s => {
             s.cellEdit = {
-            columnKey,
-            rowKey,
-            value: `${cellValue ?? ""}${value ?? ""}`,
-            dontSelect,
-        }});
+                columnKey,
+                rowKey,
+                value: `${cellValue ?? ""}${value ?? ""}`,
+                dontSelect,
+                changed: false,
+            }
+        });
+    }
+
+    preventEditorBlur = () => {
+        this.model.data.editTime = new Date().getTime();
     }
 
     private getCellForEdit = () => {
@@ -124,10 +135,10 @@ export class EditingModel<R> {
             !gridFocus.column.readonly &&
             gridFocus.row
             ? {
-                    column: gridFocus.column,
-                    row: gridFocus.row,
-                    rowIndex: gridFocus.rowIndex,
-                }
+                column: gridFocus.column,
+                row: gridFocus.row,
+                rowIndex: gridFocus.rowIndex,
+            }
             : { column: undefined, row: undefined, rowIndex: -1 };
     }
 
@@ -192,7 +203,7 @@ export class EditingModel<R> {
         }
     }
 
-    private onCellMouseDown = (data?: {e: React.MouseEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number}) => {
+    private onCellMouseDown = (data?: { e: React.MouseEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number }) => {
         if (!data) return;
         const { focus, getRowKey } = this.model.props;
         if (

@@ -132,4 +132,5 @@ export type CellEdit<R = any> = {
     columnKey: keyof R | string;
     value: any;
     dontSelect?: boolean;
+    changed: boolean;
 }

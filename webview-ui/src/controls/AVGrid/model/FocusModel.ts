@@ -340,10 +340,14 @@ export class FocusModel<R> {
                         colIndex !== oldSelection.colEnd
                     ) {
                         this.model.renderModel?.update({ all: true });
-                        this.model.renderModel?.scrollToRow(
-                            rowIndex + 1,
-                            "center"
-                        );
+                        if (this.model.flags.noScrollOnFocus) {
+                            this.model.flags.noScrollOnFocus = false;
+                        } else {
+                            this.model.renderModel?.scrollToRow(
+                                rowIndex + 1,
+                                "center"
+                            );
+                        }
                         return {
                             ...oldFocus,
                             selection: {
