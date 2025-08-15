@@ -25,7 +25,7 @@ export class AVGridData<R> {
     private _lastIsStatusIndex = -1;
     private _rowCompare: TRowCompare | undefined;
     private _allSelected = false;
-    private _hovered = -1;
+    private _hovered = { row: -1, col: -1 };
     private _editTime: number = new Date().getTime();
     private _rowsFrozen: boolean = false;
     private _newRowKey: string | undefined;
@@ -93,11 +93,11 @@ export class AVGridData<R> {
         this._changeEvent.allSelected = true;
     }
 
-    get hovered(): number {
+    get hovered(): { row: number; col: number } {
         return this._hovered;
     }
 
-    set hovered(value: number) {
+    set hovered(value: { row: number; col: number }) {
         if (this._hovered === value) return;
         this._hovered = value;
         this._changeEvent.hovered = true;

@@ -1,6 +1,6 @@
 import { SetStateAction } from "react";
 import { TModel } from "../../common/classes/model";
-import { CellFocus, Column, TFilter } from "../../controls/AVGrid/avGridTypes";
+import { CellFocus, Column, TDataType, TFilter } from "../../controls/AVGrid/avGridTypes";
 import { resolveState } from "../../common/utils/utils";
 import { TGlobalState } from "../../common/classes/state";
 import { TOnGetFilterOptions } from "../../controls/AVGrid/filters/useFilters";
@@ -147,11 +147,32 @@ class GridViewModel extends TModel<GridViewState> {
             : `[${visibleRows} of ${rows} rows]`;
     }
 
+    private formatData = (dataType?: TDataType, value?: any) => {
+        switch (dataType) {
+            case "boolean":
+                return typeof value === 'string' && (
+                    value.toLowerCase() === 'false' ||
+                    value.toLowerCase() === 'no' ||
+                    value.toLowerCase() === '0'
+                ) ? false : Boolean(value);
+            case "number":
+                const n = Number(value);
+                return isNaN(n) ? null : n;
+        }
+        return value;
+    }
+
     editRow = (columnKey: string, rowKey: string, value: any) => {
+        let validatedValue = value;
+        const column = this.gridRef?.data.columns.find(c => c.key === columnKey);
+        if (column) {
+            validatedValue = this.formatData(column.dataType, value);
+        }
+
         this.state.update((s) => {
             const row = s.rows.find((r) => getRowKey(r) === rowKey);
             if (row) {
-                (row as any)[columnKey] = value;
+                (row as any)[columnKey] = validatedValue;
             }
         });
     };

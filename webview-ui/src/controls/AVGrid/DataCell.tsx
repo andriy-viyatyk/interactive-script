@@ -3,12 +3,13 @@ import clsx from "clsx";
 
 import { TCellRendererProps } from "./avGridTypes";
 import { highlightText, useHighlightedText } from "../useHighlightedText";
-import { CheckIcon } from "../../theme/icons";
-import { falseString, formatDispayValue } from "./avGridUtils";
+import { CheckedIcon, CheckIcon, UncheckedIcon } from "../../theme/icons";
+import { formatDispayValue, gridBoolean } from "./avGridUtils";
 import { OverflowTooltipText } from "../OverflowTooltipText";
 import color from "../../theme/color";
 import { DefaultEditFormater } from "./DefaultEditFormater";
 import { useCallback } from "react";
+import { Button } from "../Button";
 
 const DataCellRoot = styled.div(
     {
@@ -24,17 +25,47 @@ const DataCellRoot = styled.div(
         },
         "&::before": {
             content: "''",
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             bottom: 0,
             right: 0,
-            backgroundColor: 'transparent',
-            pointerEvents: 'none',
-        }
+            backgroundColor: "transparent",
+            pointerEvents: "none",
+        },
     },
     { label: "DataCellRoot" }
 );
+
+export function DefaultCellBoolean(props: TCellRendererProps) {
+    const { col: colIndex, row: rowIndex, model } = props;
+    const col = model.data.columns[colIndex];
+    const row = model.data.rows[rowIndex];
+    const isHovered =
+        model.data.hovered.row === rowIndex &&
+        model.data.hovered.col === colIndex;
+    const isEditable = model.props.editRow && !col.readonly;
+
+    const value = gridBoolean(row?.[col.key]);
+
+    if (isHovered && isEditable) {
+        return (
+            <Button
+                size="small"
+                type="icon"
+                onClick={() => {
+                    model.models.editing.editCell(col, row, !value);
+                    model.dataChanged();
+                    model.focusGrid();
+                }}
+            >
+                {value ? <CheckedIcon /> : <UncheckedIcon />}
+            </Button>
+        );
+    }
+
+    return value ? <CheckIcon className="cell-check-icon" /> : null;
+}
 
 export function DefaultCellFormater(props: TCellRendererProps) {
     const { col, row: rowIndex, model } = props;
@@ -46,17 +77,15 @@ export function DefaultCellFormater(props: TCellRendererProps) {
     let value: any = null;
     try {
         value = row?.[column.key];
-        if (!column.displayType || column.displayType === "text") {
+        if (!column.dataType || column.dataType !== "boolean") {
             value = formatDispayValue(value, column.displayFormat);
 
             if (highlightedText && typeof value === "string") {
                 value = highlightText(highlightedText, value);
                 isHighlighted = true;
             }
-        } else if (column.displayType === "checkIcon") {
-            return value && !falseString(value) ? (
-                <CheckIcon className="cell-check-icon" />
-            ) : null;
+        } else if (column.dataType === "boolean") {
+            return <DefaultCellBoolean {...props} />;
         }
     } catch {
         value = null;
@@ -72,7 +101,7 @@ export function DefaultCellFormater(props: TCellRendererProps) {
 export function DataCell(props: Readonly<TCellRendererProps>) {
     const { col, row, style, model, className } = props;
     const column = model.data.columns[col];
-    const cellEdit = model.state.use(s => s.cellEdit);
+    const cellEdit = model.state.use((s) => s.cellEdit);
     const isEdit =
         cellEdit?.columnKey === column.key &&
         cellEdit?.rowKey === model.props.getRowKey(model.data.rows[row]);
@@ -81,13 +110,14 @@ export function DataCell(props: Readonly<TCellRendererProps>) {
         (isEdit ? DefaultEditFormater : DefaultCellFormater);
 
     const rows = model.data.rows;
+    const value = rows[row]?.[column.key];
 
     const onMouseEnter = useCallback(() => {
-        model.models.effects.setHovered(row);
-    }, [model, row]);
+        model.models.effects.setHovered({ row, col });
+    }, [model, row, col]);
 
     const onMouseLeave = useCallback(() => {
-        model.models.effects.setHovered(-1);
+        model.models.effects.setHovered({ row: -1, col: -1 });
     }, [model]);
 
     const onMouseDown = useCallback(
@@ -99,22 +129,25 @@ export function DataCell(props: Readonly<TCellRendererProps>) {
 
     const onDragStart = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
-            if (!isEdit) model.actions.cellDragStart(e, rows[row], column, row, col);
+            if (!isEdit)
+                model.actions.cellDragStart(e, rows[row], column, row, col);
         },
         [col, column, model, rows, isEdit, row]
     );
 
     const onDragEnter = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
-            model.models.effects.setHovered(row);
-            if (!isEdit) model.actions.cellDragEnter(e, rows[row], column, row, col);
+            model.models.effects.setHovered({ row, col });
+            if (!isEdit)
+                model.actions.cellDragEnter(e, rows[row], column, row, col);
         },
         [model, row, isEdit, rows, column, col]
     );
 
     const onDragEnd = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
-            if (!isEdit) model.actions.cellDragEnd(e, rows[row], column, row, col);
+            if (!isEdit)
+                model.actions.cellDragEnd(e, rows[row], column, row, col);
         },
         [col, column, model, rows, isEdit, row]
     );
@@ -136,11 +169,19 @@ export function DataCell(props: Readonly<TCellRendererProps>) {
                 "data-cell",
                 className,
                 {
-                    "dataCell-alignCenter": column.dataAlignment === "center",
-                    "dataCell-alignRight": column.dataAlignment === "right",
+                    "dataCell-alignCenter":
+                        column.dataAlignment === "center" ||
+                        (column.dataAlignment === undefined &&
+                            typeof value === "boolean"),
+                    "dataCell-alignRight":
+                        column.dataAlignment === "right" ||
+                        (column.dataAlignment === undefined &&
+                            typeof value === "number"),
                     isEdit,
                 },
-                model.props.focus ? model.models.focus.focusClass(col, row) : undefined,
+                model.props.focus
+                    ? model.models.focus.focusClass(col, row)
+                    : undefined,
                 model.props.onCellClass?.(model.data.rows[row], column)
             )}
             onMouseEnter={onMouseEnter}

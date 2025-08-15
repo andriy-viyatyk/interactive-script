@@ -189,6 +189,10 @@ export function falseString(v: any) {
     );
 }
 
+export function gridBoolean(v: any) {
+    return v && !falseString(v);
+}
+
 export function columnDisplayValue(column: Column<any>, row: any) {
     if (column.formatValue) return column.formatValue(column, row);
 

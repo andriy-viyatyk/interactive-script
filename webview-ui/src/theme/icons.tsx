@@ -104,10 +104,12 @@ export const ProgressIcon = createIcon(32)(
 
 export const CheckIcon = createIcon(16)(
     <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M13.8494 3.15816C14.0502 3.36905 14.0502 3.71095 13.8494 3.92184L6.30651 11.8418C6.10567 12.0527 5.78004 12.0527 5.5792 11.8418L2.15063 8.24184C1.94979 8.03095 1.94979 7.68905 2.15063 7.47816C2.35147 7.26728 2.6771 7.26728 2.87794 7.47816L5.94286 10.6963L13.1221 3.15816C13.3229 2.94728 13.6485 2.94728 13.8494 3.15816Z"
-        fill="currentColor"
+        d="M3.75 7.75L6.75 10.75L12.25 5.25"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
     />
 );
 

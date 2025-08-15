@@ -132,4 +132,12 @@ export class AVGridModel<R> extends TComponentModel<AVGridState<R>, AVGridProps<
     setRenderModel = (renderModel: RenderGridModel) => {
         this.renderModel = renderModel;
     }
+
+    focusGrid = () => {
+        this.renderModel?.gridRef.current?.focus();
+    }
+
+    dataChanged = () => {
+        setTimeout(() => { this.props.onDataChanged?.(); }, 0);
+    }
 }

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { CellFocus, Column } from "../avGridTypes";
 import { AVGridModel } from "./AVGridModel";
+import { gridBoolean } from "../avGridUtils";
 
 export class EditingModel<R> {
     readonly model: AVGridModel<R>;
@@ -53,7 +54,7 @@ export class EditingModel<R> {
                 if (this.model.props.editRow && !col.readonly) {
                     gridSelection.rows.forEach((row) => {
                         this.editCell(col, row, undefined);
-                        setTimeout(() => { this.model.props.onDataChanged?.(); }, 0);
+                        this.model.dataChanged();
                     });
                 }
             });
@@ -76,7 +77,7 @@ export class EditingModel<R> {
             );
             if (commit && column && row && editState.changed) {
                 this.editCell(column, row, editState.value);
-                setTimeout(() => { this.model.props.onDataChanged?.(); }, 0);
+                this.model.dataChanged();
             }
         }
         this.model.state.update(s => {
@@ -142,6 +143,21 @@ export class EditingModel<R> {
             : { column: undefined, row: undefined, rowIndex: -1 };
     }
 
+    private editBooleanInSelection = (focusValue: any, isEnter: boolean) => {
+        const selection = this.model.models.focus.getGridSelection();
+        if (!selection) return;
+        if (!selection.columns.every(c => c.dataType === "boolean")) return;
+        focusValue = gridBoolean(focusValue);
+
+        for (const row of selection.rows) {
+            for (const col of selection.columns) {
+                const currentValue = gridBoolean(row[col.key as keyof R]);
+                this.editCell(col, row, isEnter ? !focusValue : !currentValue);
+            }
+        }
+        this.model.dataChanged();
+    }
+
     private onContentKeyDown = (e?: React.KeyboardEvent<HTMLDivElement>) => {
         if (!e) return;
         const { focus } = this.model.props;
@@ -150,17 +166,18 @@ export class EditingModel<R> {
             [
                 "Enter",
                 "F2",
+                "Space",
                 "Delete",
                 "Escape",
                 "ArrowLeft",
                 "ArrowRight",
-            ].includes(e.key) &&
+            ].includes(e.code) &&
             focus
         ) {
             const { column, row } = this.getCellForEdit();
             if (row && column) {
                 const editState = this.model.state.get().cellEdit;
-                switch (e.key) {
+                switch (e.code) {
                     case "Enter":
                     case "F2":
                         if (
@@ -168,13 +185,15 @@ export class EditingModel<R> {
                             editState.rowKey === focus.rowKey
                         ) {
                             this.closeEdit(true);
-                        } else {
+                        } else if (column.dataType !== "boolean") {
                             this.openEdit(
                                 focus.columnKey,
                                 focus.rowKey,
                                 row[column.key as keyof R],
                                 false
                             );
+                        } else if (column.dataType === "boolean" && e.code === "Enter") {
+                            this.editBooleanInSelection(row[column.key as keyof R], true);
                         }
                         break;
                     case "Delete":
@@ -182,6 +201,11 @@ export class EditingModel<R> {
                         break;
                     case "Escape":
                         this.closeEdit(false);
+                        break;
+                    case "Space":
+                        if (column.dataType === "boolean") {
+                            this.editBooleanInSelection(row[column.key as keyof R], false);
+                        }
                         break;
                     default:
                         break;
@@ -197,7 +221,7 @@ export class EditingModel<R> {
             focus
         ) {
             const { column } = this.getCellForEdit();
-            if (column) {
+            if (column && column.dataType !== "boolean") {
                 this.openEdit(focus.columnKey, focus.rowKey, "", true); // e.key
             }
         }
@@ -218,7 +242,7 @@ export class EditingModel<R> {
                 editState.rowKey !== focus.rowKey
             ) {
                 const { column } = this.getCellForEdit();
-                if (column) {
+                if (column && column.dataType !== "boolean") {
                     data.e.stopPropagation();
                     data.e.preventDefault();
                     this.openEdit(

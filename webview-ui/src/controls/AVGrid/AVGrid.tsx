@@ -165,7 +165,7 @@ function Cell(props: Readonly<TCellRendererProps>) {
         "row-selected":
             row > 0 &&
             model.props.selected?.has(model.props.getRowKey(model.data.rows[row - 1])),
-        "row-hovered": row > 0 && model.data.hovered === row - 1,
+        "row-hovered": row > 0 && model.data.hovered.row === row - 1,
     });
     return (
         <Renderer

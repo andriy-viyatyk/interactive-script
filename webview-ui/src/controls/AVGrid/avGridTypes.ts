@@ -53,7 +53,7 @@ export interface TSortColumn {
     key: string;
     direction: TSortDirection;
 }
-export type TDisplayType = 'text' | 'checkIcon';
+export type TDataType = 'string' | 'number' | 'boolean';
 export type TDisplayFormat =
     | 'text'
     | 'date'
@@ -99,7 +99,7 @@ export interface Column<R = any> {
     isStatusColumn?: boolean;
     resizible?: boolean;
     rowCompare?: TRowCompare<R>;
-    displayType?: TDisplayType;
+    dataType?: TDataType;
     displayFormat?: TDisplayFormat;
     dataAlignment?: TAlignment;
     filterType?: TFilterType;

@@ -5,7 +5,7 @@ import { Column } from "../avGridTypes";
 
 export class EffectsModel<R> {
     readonly model: AVGridModel<R>;
-    private lastHovered: number = -1;
+    private lastHovered: { row: number; col: number } = { row: -1, col: -1 };
 
     constructor(model: AVGridModel<R>) {
         this.model = model;
@@ -15,9 +15,9 @@ export class EffectsModel<R> {
         this.model.events.cell.onDoubleClick.subscribe(this.propsOnDoubleClick);
     }
 
-    setHovered = (hovered: number) => {
+    setHovered = (hovered: { row: number; col: number }) => {
         this.model.data.hovered = hovered;
-        setTimeout(() => { this.model.data.change(); }, hovered >= 0 ? 10 : 50);
+        setTimeout(() => { this.model.data.change(); }, hovered.row >= 0 ? 10 : 50);
     }
 
     useModel = () => {
@@ -65,14 +65,26 @@ export class EffectsModel<R> {
 
         if (e.hovered) {
             const hovered = this.model.data.hovered;
-            if (this.lastHovered >= 0) this.model.update({ rows: [this.lastHovered + 1] });
-            if (hovered >= 0) this.model.update({ rows: [hovered + 1] });
+            if (this.lastHovered.row >= 0) {
+                if (this.lastHovered.row !== hovered.row) {
+                    this.model.update({ rows: [this.lastHovered.row + 1] });
+                } else {
+                    this.model.update({ cells: [this.lastHovered]})
+                }
+            }
+            if (hovered.row >= 0) {
+                if (this.lastHovered.row !== hovered.row) {
+                    this.model.update({ rows: [hovered.row + 1] });
+                } else {
+                    this.model.update({ cells: [hovered] });
+                }
+            }
             this.lastHovered = hovered;
         }
     }
 
     private onContentMouseLeave = () => {
-        this.model.data.hovered = -1;
+        this.model.data.hovered = { row: -1, col: -1 };
         this.model.data.change();
     }
 
