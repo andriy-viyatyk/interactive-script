@@ -172,7 +172,8 @@ export function DataCell(props: Readonly<TCellRendererProps>) {
                     "dataCell-alignCenter":
                         column.dataAlignment === "center" ||
                         (column.dataAlignment === undefined &&
-                            typeof value === "boolean"),
+                            (typeof value === "boolean" ||
+                                (column.dataType === "boolean" && !value))),
                     "dataCell-alignRight":
                         column.dataAlignment === "right" ||
                         (column.dataAlignment === undefined &&

@@ -3,7 +3,7 @@ import * as path from "path";
 
 import { BaseView } from "./BaseView";
 import { WebViewInput } from "../../shared/types";
-import { gridEditorChangedCommand, isGridEditorChangedCommand, isGridEditorCommand } from "../../shared_internal/grid-editor-commands";
+import { gridEditorChangedCommand, GridEditorSaveAsData, isGridEditorChangedCommand, isGridEditorCommand, isGridEditorSaveAsCommand } from "../../shared_internal/grid-editor-commands";
 import { ViewMessage } from "../../shared/ViewMessage";
 
 export class GridView extends BaseView implements vscode.CustomTextEditorProvider {
@@ -55,6 +55,8 @@ export class GridView extends BaseView implements vscode.CustomTextEditorProvide
 
             if (isGridEditorChangedCommand(message) && message.data) {
                 this.updateDocumentContent(message.data.content ?? "");
+            } else if (isGridEditorSaveAsCommand(message) && message.data) {
+                this.saveAs(message.data);
             }
 
             return;
@@ -101,5 +103,34 @@ export class GridView extends BaseView implements vscode.CustomTextEditorProvide
             newContent
         );
         await vscode.workspace.applyEdit(edit);
+    }
+
+    private async saveAs(data: GridEditorSaveAsData) {
+        const { content, format } = data;
+        const filters: { [name: string]: string[]; } = format === "json"
+            ? { "JSON Files": ["json"] }
+            : { "CSV Files": ["csv"] };
+
+        let defaultUri = this.document ? this.document.uri : undefined;
+        if (defaultUri) {
+            const ext = format === "json" ? ".json" : ".csv";
+            const baseName = path.basename(defaultUri.fsPath, path.extname(defaultUri.fsPath));
+            const newPath = path.join(path.dirname(defaultUri.fsPath), `${baseName}${ext}`);
+            defaultUri = vscode.Uri.file(newPath);
+        }
+
+        const uri = await vscode.window.showSaveDialog({
+            filters,
+            defaultUri,
+            saveLabel: "Save As",
+        });
+
+        if (!uri) {
+            return;
+        }
+
+        const writeData = Buffer.from(content, "utf8");
+        await vscode.workspace.fs.writeFile(uri, writeData);
+        vscode.window.showInformationMessage(`File saved as ${uri.fsPath}`);
     }
 }

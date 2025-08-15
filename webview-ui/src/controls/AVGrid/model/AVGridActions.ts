@@ -73,6 +73,7 @@ export class AVGridActions<R> {
             rowIndex,
             colIndex,
         });
+        this.model.focusGrid();
     };
 
     cellClick: CellClickEvent = (row, col, rowIndex, colIndex) => {

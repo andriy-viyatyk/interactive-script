@@ -78,6 +78,7 @@ export interface TAnyFilter extends TFilter {
 export interface TDisplayOption<T = any> {
     value: T;
     label: string;
+    italic?: boolean;
 }
 
 export type TOptionsFilterValue = TDisplayOption[];
@@ -106,6 +107,7 @@ export interface Column<R = any> {
     formatValue?: (column: Column<R>, row: R) => string;
     readonly?: boolean;
     validate?: (column: Column<R>, row: R, value: any) => any;
+    options?: any[] | (() => any[] | Promise<any[]>);
 }
 
 export type TOnColumnResize = (columnKey: string, width: number) => void;

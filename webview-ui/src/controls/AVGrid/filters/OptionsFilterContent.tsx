@@ -126,7 +126,7 @@ export function OptionsFilterContent(
     );
 
     const getOptionClass = useCallback((row: TDisplayOption) => {
-        if (!row.value && row.label === emptyLabel) {
+        if (!row.value && row.label === emptyLabel || row.italic) {
             return "empty-option";
         }
         return "";

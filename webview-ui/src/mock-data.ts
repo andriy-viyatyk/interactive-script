@@ -8,14 +8,14 @@ function sendDebugMessage(message: ViewMessage<any>) {
 
 export async function mockData() {
     try {
-        const response = await fetch('/mock/test.json'); // test.json or test.csv
+        const response = await fetch(`/mock/test.csv`); // test.json or test.csv
         if (!response.ok) {
             return;
         }
         const data = await response.text();
         const jsonData = parseJson(data);
 
-        const graphResponse = await fetch('/mock/miserables.json'); // graph.json
+        const graphResponse = await fetch("/mock/miserables.json"); // graph.json
         if (!graphResponse.ok) {
             return;
         }
@@ -23,11 +23,22 @@ export async function mockData() {
 
         // mock input data
         const appInput: WebViewInput = {
-            viewType: "grid",  // "grid" | "output" | "graph"
+            viewType: "grid", // "grid" | "output" | "graph"
             gridInput: {
-                jsonData: jsonData.slice(0, 10),
+                jsonData: jsonData?.slice(0, 10),
+                gridColumns: jsonData ? [
+                    { key: "id", dataType: "number" },
+                    { key: "name", dataType: "string" },
+                    { key: "age", dataType: "number" },
+                    { key: "email", dataType: "string" },
+                    { key: "status", dataType: "string", options: ["Active", "Inactive"] },
+                    { key: "isSelected", dataType: "boolean" }
+                ] : undefined,
                 csvData: !jsonData && data ? data : undefined,
-                gridTitle:["Test ", {text: "Grid", styles: {color: "pink"}}],
+                gridTitle: [
+                    "Test ",
+                    { text: "Grid", styles: { color: "pink" } },
+                ],
             },
             outputInput: {
                 title: "[test.ts]",
@@ -36,9 +47,12 @@ export async function mockData() {
             },
             graphInput: {
                 jsonData: graphData,
-                graphTitle: ["Test ", {text: "Graph", styles: {color: "blue"}}],
+                graphTitle: [
+                    "Test ",
+                    { text: "Graph", styles: { color: "blue" } },
+                ],
             },
-        }
+        };
         window.appInput = appInput;
         window.sendDebugMessage = sendDebugMessage;
         window.isDebug = true;
@@ -54,6 +68,6 @@ export async function mockData() {
             },
         };
     } catch (error) {
-        console.error('Failed to load test.json:', error);
+        console.error("Failed to load test.json:", error);
     }
 }

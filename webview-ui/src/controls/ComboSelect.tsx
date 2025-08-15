@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import color from "../theme/color";
-import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
+import { ForwardedRef, forwardRef, ReactElement, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import {
     defaultOptionGetLabel,
     useFilteredOptions,
@@ -64,9 +64,10 @@ export interface ComboSelectProps<T = any>
     freeText?: boolean;
     readonly?: boolean;
     active?: boolean;
+    defaultOpen?: boolean;
 }
 
-export function ComboSelect<T = any>(props: ComboSelectProps<T>) {
+export const ComboSelect = forwardRef(function ComboSelectComponent<T = any>(props: ComboSelectProps<T>, ref: ForwardedRef<ComboTemplateRef>) {
     const {
         getLabel: propsGetLabel,
         getIcon,
@@ -77,16 +78,19 @@ export function ComboSelect<T = any>(props: ComboSelectProps<T>) {
         readonly,
         disabled,
         selectFrom,
+        defaultOpen,
         ...other
     } = props;
 
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(defaultOpen ?? false);
     const [inputText, setInputText] = useState<string>("");
     const [search, setSearch] = useState("");
     const comboTemplateRef = useRef<ComboTemplateRef | null>(null);
     const [hovered, setHovered] = useState<T | undefined>();
     const listRef = useRef<ListRef | null>(null);
     const [resized, setResized] = useState(false);
+
+    useImperativeHandle(ref, () => comboTemplateRef.current!);
 
     const getLabel = useCallback(
         (option: T, index?: number) => {
@@ -327,4 +331,4 @@ export function ComboSelect<T = any>(props: ComboSelectProps<T>) {
             {...other}
         />
     );
-}
+})

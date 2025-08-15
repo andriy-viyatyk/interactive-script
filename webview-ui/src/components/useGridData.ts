@@ -153,6 +153,8 @@ export function getGridDataWithColumns(
                 key: column.key,
                 name: column.title ?? column.key,
                 width: column.width ?? existing?.width ?? 100,
+                dataType: column.dataType ?? existing?.dataType,
+                options: column.options ?? existing?.options,
                 resizible: true,
             };
             return c;

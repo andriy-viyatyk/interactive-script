@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { CellFocus, Column } from "../avGridTypes";
 import { AVGridModel } from "./AVGridModel";
-import { gridBoolean } from "../avGridUtils";
+import { defaultValidate, gridBoolean } from "../avGridUtils";
 
 export class EditingModel<R> {
     readonly model: AVGridModel<R>;
@@ -43,7 +43,7 @@ export class EditingModel<R> {
         if (!this.model.props.editRow || col.readonly) return;
         this.model.models.rows.freezeRows();
 
-        const value = col.validate ? col.validate(col, row, val) : val;
+        const value = col.validate ? col.validate(col, row, val) : defaultValidate(col, row, val);
         this.model.actions.editRow(col.key.toString(), this.model.props.getRowKey(row), value);
     }
 
@@ -85,9 +85,9 @@ export class EditingModel<R> {
         })
 
         if (rowIndex >= 0) {
-            this.model.renderModel?.update({ rows: [rowIndex + 1] });
+            this.model.update({ rows: [rowIndex + 1] });
             if (focusGrid) {
-                this.model.renderModel?.gridRef.current?.focus();
+                this.model.focusGrid();
             }
         }
     }

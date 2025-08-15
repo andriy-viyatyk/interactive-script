@@ -19,9 +19,9 @@ const HeaderCellRoot = styled.div(
         position: "relative",
         alignItems: "center",
         backgroundColor: color.grid.headerCellBackground,
-        paddingRight: 10,
         boxSizing: "border-box",
         "&.header-resizible": {
+            paddingRight: 10,
             "&::after": {
                 content: '""',
                 cursor: "col-resize",

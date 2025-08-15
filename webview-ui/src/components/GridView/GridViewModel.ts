@@ -1,18 +1,33 @@
 import { SetStateAction } from "react";
 import { TModel } from "../../common/classes/model";
-import { CellFocus, Column, TDataType, TFilter } from "../../controls/AVGrid/avGridTypes";
+import {
+    CellFocus,
+    Column,
+    TFilter,
+} from "../../controls/AVGrid/avGridTypes";
 import { resolveState } from "../../common/utils/utils";
 import { TGlobalState } from "../../common/classes/state";
 import { TOnGetFilterOptions } from "../../controls/AVGrid/filters/useFilters";
 import { UiText, ViewMessage } from "../../../../shared/ViewMessage";
-import { createIdColumn, getRowKey, getWorkingData, idColumnKey, removeIdColumn } from "../useGridData";
+import {
+    createIdColumn,
+    getRowKey,
+    getWorkingData,
+    idColumnKey,
+    removeIdColumn,
+} from "../useGridData";
 import {
     defaultCompare,
     filterRows,
     rowsToCsvText,
 } from "../../controls/AVGrid/avGridUtils";
 import { AVGridModel } from "../../controls/AVGrid/model/AVGridModel";
-import { gridEditorChangedCommand, isGridEditorChangedCommand, isGridEditorCommand } from "../../../../shared_internal/grid-editor-commands";
+import {
+    gridEditorChangedCommand,
+    gridEditorSaveAsCommand,
+    isGridEditorChangedCommand,
+    isGridEditorCommand,
+} from "../../../../shared_internal/grid-editor-commands";
 import { csvToRecords } from "../../common/utils/csvUtils";
 
 const defaultGridViewState = {
@@ -45,10 +60,10 @@ class GridViewModel extends TModel<GridViewState> {
             }
 
             if (isGridEditorChangedCommand(message)) {
-                this.updateGridDataFromContent(message.data?.content)
+                this.updateGridDataFromContent(message.data?.content);
             }
         }
-    }
+    };
 
     setFocus = (focus?: SetStateAction<CellFocus | undefined>) => {
         this.state.update((s) => {
@@ -113,10 +128,10 @@ class GridViewModel extends TModel<GridViewState> {
             console.error(e);
         }
         rows = createIdColumn(rows);
-        this.state.update(s => {
+        this.state.update((s) => {
             s.rows = rows;
-        })
-    }
+        });
+    };
 
     onGetOptions: TOnGetFilterOptions = (
         columns: Column[],
@@ -135,7 +150,8 @@ class GridViewModel extends TModel<GridViewState> {
         options.sort(defaultCompare());
         return options.map((i) => ({
             value: i,
-            label: i?.toString(),
+            label: i === undefined ? "(undefined)" : i === null ? "(null)" : i?.toString(),
+            italic: i === undefined || i === null,
         }));
     };
 
@@ -147,32 +163,11 @@ class GridViewModel extends TModel<GridViewState> {
             : `[${visibleRows} of ${rows} rows]`;
     }
 
-    private formatData = (dataType?: TDataType, value?: any) => {
-        switch (dataType) {
-            case "boolean":
-                return typeof value === 'string' && (
-                    value.toLowerCase() === 'false' ||
-                    value.toLowerCase() === 'no' ||
-                    value.toLowerCase() === '0'
-                ) ? false : Boolean(value);
-            case "number":
-                const n = Number(value);
-                return isNaN(n) ? null : n;
-        }
-        return value;
-    }
-
     editRow = (columnKey: string, rowKey: string, value: any) => {
-        let validatedValue = value;
-        const column = this.gridRef?.data.columns.find(c => c.key === columnKey);
-        if (column) {
-            validatedValue = this.formatData(column.dataType, value);
-        }
-
         this.state.update((s) => {
             const row = s.rows.find((r) => getRowKey(r) === rowKey);
             if (row) {
-                (row as any)[columnKey] = validatedValue;
+                (row as any)[columnKey] = value;
             }
         });
     };
@@ -197,21 +192,39 @@ class GridViewModel extends TModel<GridViewState> {
         });
     };
 
-    private getCsvContent = () => {
-        const { delimiter, withColumns, rows, columns } = this.state.get();
+    private getCsvContent = (delimiter: string, withColumns: boolean) => {
+        const { rows, columns } = this.state.get();
         return rowsToCsvText(rows, columns, withColumns, delimiter) ?? "";
     };
 
     private getJsonContent = () => {
         const { rows } = this.state.get();
         return JSON.stringify(removeIdColumn(rows), null, 4);
-    }
+    };
 
     onDataChanged = () => {
         const content = this.state.get().isCsv
-            ? this.getCsvContent()
+            ? this.getCsvContent(this.state.get().delimiter, this.state.get().withColumns)
             : this.getJsonContent();
         this.sendMessage(gridEditorChangedCommand({ content }));
+    };
+
+    onUpdateRows = (updateFunc: (rows: any[]) => any[]) => {
+        this.state.update((s) => {
+            s.rows = updateFunc(s.rows);
+        });
+        this.onDataChanged();
+    };
+
+    saveAsJson = () => {
+        const content = this.getJsonContent();
+        this.sendMessage(gridEditorSaveAsCommand({ content, format: "json" }));
+    };
+
+    saveAsCsv = () => {
+        const { delimiter, withColumns, isCsv } = this.state.get();
+        const content = this.getCsvContent(delimiter, isCsv ? withColumns : true);
+        this.sendMessage(gridEditorSaveAsCommand({ content, format: "csv" }));
     };
 }
 

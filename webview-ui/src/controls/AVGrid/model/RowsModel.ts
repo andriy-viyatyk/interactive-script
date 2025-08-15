@@ -80,6 +80,10 @@ export class RowsModel<R> {
         if (e.columns) {
             this.updateRows();
         }
+
+        if (e.rows) {
+            this.model.rerender();
+        }
     }
 
     private updateRows = () => {

@@ -69,14 +69,14 @@ export class EffectsModel<R> {
                 if (this.lastHovered.row !== hovered.row) {
                     this.model.update({ rows: [this.lastHovered.row + 1] });
                 } else {
-                    this.model.update({ cells: [this.lastHovered]})
+                    this.model.update({ cells: [{col: this.lastHovered.col, row: this.lastHovered.row + 1}] });
                 }
             }
             if (hovered.row >= 0) {
                 if (this.lastHovered.row !== hovered.row) {
                     this.model.update({ rows: [hovered.row + 1] });
                 } else {
-                    this.model.update({ cells: [hovered] });
+                    this.model.update({ cells: [{col: hovered.col, row: hovered.row + 1}] });
                 }
             }
             this.lastHovered = hovered;

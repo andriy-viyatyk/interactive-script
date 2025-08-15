@@ -39,6 +39,13 @@ export class ColumnsModel<R> {
         }, [propsColumns]);
     }
 
+    updateColumns = (updateFunc: (columns: Column<R>[]) => Column<R>[]) => {
+        this.model.state.update(s => {
+            s.columns = updateFunc(s.columns);
+        });
+        this.model.actions.columnsChanged();
+    }
+
     private onColumnResize = (data?: {columnKey: string, width: number}) => {
         if (!data) return;
         const {columnKey, width} = data;

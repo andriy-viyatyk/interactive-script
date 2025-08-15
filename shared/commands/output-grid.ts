@@ -4,6 +4,8 @@ export interface GridColumn {
     key: string;
     title?: string;
     width?: number;
+    dataType?: "string" | "number" | "boolean";
+    options?: string[];
 }
 
 export interface GridData {

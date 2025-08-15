@@ -271,6 +271,7 @@ export const ComboTemplate = forwardRef(function ComboTemplateComponent(
                 resizable={resizable}
                 onResize={onResize}
                 tabIndex={0}
+                className="combo-template-popper"
             >
                 {renderControl()}
             </PopperRoot>

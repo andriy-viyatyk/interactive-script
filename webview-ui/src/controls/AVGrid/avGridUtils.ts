@@ -7,33 +7,33 @@ import { memorize } from "../../common/utils/memorize";
 
 export const defaultCompare = memorize(
     (propertyKey?: string) =>
-    (left: any, right: any): number => {
-        const leftV = propertyKey ? left?.[propertyKey] : left;
-        const rightV = propertyKey ? right?.[propertyKey] : right;
+        (left: any, right: any): number => {
+            const leftV = propertyKey ? left?.[propertyKey] : left;
+            const rightV = propertyKey ? right?.[propertyKey] : right;
 
-        if (isNullOrUndefined(leftV) !== isNullOrUndefined(rightV)) {
-            return isNullOrUndefined(leftV) ? -1 : 1;
+            if (isNullOrUndefined(leftV) !== isNullOrUndefined(rightV)) {
+                return isNullOrUndefined(leftV) ? -1 : 1;
+            }
+
+            if (typeof leftV === "number" && typeof rightV === "number") {
+                return leftV - rightV;
+            }
+
+            if (typeof leftV === "string" && typeof rightV === "string") {
+                return leftV.localeCompare(rightV);
+            }
+
+            if (leftV instanceof Date && rightV instanceof Date) {
+                return leftV.getTime() - rightV.getTime();
+            }
+
+            if (typeof leftV === "boolean" && typeof rightV === "boolean") {
+                if (leftV === rightV) return 0;
+                return leftV ? 1 : -1;
+            }
+
+            return 0;
         }
-
-        if (typeof leftV === "number" && typeof rightV === "number") {
-            return leftV - rightV;
-        }
-
-        if (typeof leftV === "string" && typeof rightV === "string") {
-            return leftV.localeCompare(rightV);
-        }
-
-        if (leftV instanceof Date && rightV instanceof Date) {
-            return leftV.getTime() - rightV.getTime();
-        }
-
-        if (typeof leftV === "boolean" && typeof rightV === "boolean") {
-            if (leftV === rightV) return 0;
-            return leftV ? 1 : -1;
-        }
-
-        return 0;
-    }
 );
 
 export function formatDispayValue(
@@ -171,9 +171,9 @@ export function filterRows<R>(
 
     const filtered = rows.filter((r) => {
         if (!r) return false;
-        const sMatch = !searchLower?.length || searchLower.every((s) =>
-            searchStringMatch(r, columns, s)
-        );
+        const sMatch =
+            !searchLower?.length ||
+            searchLower.every((s) => searchStringMatch(r, columns, s));
         const match = sMatch && (!filters?.length || filtersMatch(r, filters));
         return match;
     });
@@ -224,4 +224,25 @@ export function rowsToCsvText(
         header: withHeaders,
         delimiter: delimiter,
     });
+}
+
+export function defaultValidate(col: Column<any>, _: any, val: any) {
+    switch (col.dataType) {
+        case "boolean":
+            return typeof val === "string" &&
+                (val.toLowerCase() === "false" ||
+                    val.toLowerCase() === "no" ||
+                    val.toLowerCase() === "0")
+                ? false
+                : Boolean(val);
+        case "number": {
+            const n = Number(val);
+            return isNaN(n) ? null : n;
+        }
+        default:
+            if (val && Array.isArray(col.options)) {
+                return col.options.find((o) => o === val) ? val : undefined;
+            }
+            return val;
+    }
 }

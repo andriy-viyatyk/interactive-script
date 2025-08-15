@@ -1,5 +1,11 @@
 import { CSSProperties, SetStateAction } from "react";
-import { CellEdit, CellFocus, Column, TFilter, TSortColumn } from "../avGridTypes";
+import {
+    CellEdit,
+    CellFocus,
+    Column,
+    TFilter,
+    TSortColumn,
+} from "../avGridTypes";
 import { TComponentModel } from "../../../common/classes/model";
 import RenderGridModel from "../../RenderGrid/RenderGridModel";
 import { RerenderInfo } from "../../RenderGrid/types";
@@ -38,7 +44,7 @@ export interface AVGridProps<R> {
     editRow?: (columnKey: string, rowKey: string, value: any) => void;
     onAddRows?: (count: number, insertIndex?: number) => R[];
     onDeleteRows?: (rowKeys: string[]) => void;
-    
+
     onClick?: (row: R, col: Column<R>) => void;
     onDoubleClick?: (row: R, col: Column<R>) => void;
     onMouseDown?: (e: React.MouseEvent) => void;
@@ -46,17 +52,18 @@ export interface AVGridProps<R> {
     onColumnsChanged?: () => void;
     onVisibleRowsChanged?: () => void;
     onDataChanged?: () => void;
-    
+
     scrollToFocus?: boolean;
     fitToWidth?: boolean;
     growToHeight?: CSSProperties["height"];
-    growToWidth?: CSSProperties["height"]; 
+    growToWidth?: CSSProperties["height"];
 }
 
 export interface AVGridState<R> {
     columns: Column<R>[]; // props colummns updated by resize and reorder
     sortColumn?: TSortColumn;
     cellEdit: CellEdit<R>;
+    rerender: number;
 }
 
 export const defaultAVGridState: AVGridState<any> = {
@@ -69,7 +76,8 @@ export const defaultAVGridState: AVGridState<any> = {
         dontSelect: false,
         changed: false,
     },
-}
+    rerender: new Date().getTime(),
+};
 
 export class AVGridModels<R> {
     readonly columns: ColumnsModel<R>;
@@ -95,7 +103,10 @@ export class AVGridModels<R> {
     }
 }
 
-export class AVGridModel<R> extends TComponentModel<AVGridState<R>, AVGridProps<R>> {
+export class AVGridModel<R> extends TComponentModel<
+    AVGridState<R>,
+    AVGridProps<R>
+> {
     renderModel: RenderGridModel | null = null;
     readonly data: AVGridData<R>;
     readonly events: AVGridEvents<R>;
@@ -103,11 +114,13 @@ export class AVGridModel<R> extends TComponentModel<AVGridState<R>, AVGridProps<
     readonly models: AVGridModels<R>;
     readonly flags = {
         noScrollOnFocus: false,
-    }
+    };
 
     constructor(
-        modelState: IState<AVGridState<R>> | (new (defaultState: AVGridState<R>) => IState<AVGridState<R>>),
-        defaultState?: AVGridState<R>,
+        modelState:
+            | IState<AVGridState<R>>
+            | (new (defaultState: AVGridState<R>) => IState<AVGridState<R>>),
+        defaultState?: AVGridState<R>
     ) {
         super(modelState, defaultState);
         this.data = new AVGridData<R>([], []);
@@ -123,21 +136,31 @@ export class AVGridModel<R> extends TComponentModel<AVGridState<R>, AVGridProps<
         this.models.selected.useModel();
         this.models.editing.useModel();
         this.models.effects.useModel();
-    }
+
+        this.state.use(s => s.rerender);
+    };
 
     update = (rerender?: RerenderInfo) => {
         this.renderModel?.update(rerender);
-    }
+    };
 
     setRenderModel = (renderModel: RenderGridModel) => {
         this.renderModel = renderModel;
-    }
+    };
 
     focusGrid = () => {
         this.renderModel?.gridRef.current?.focus();
-    }
+    };
 
     dataChanged = () => {
-        setTimeout(() => { this.props.onDataChanged?.(); }, 0);
-    }
+        setTimeout(() => {
+            this.props.onDataChanged?.();
+        }, 0);
+    };
+
+    rerender = () => {
+        this.state.update((s) => {
+            s.rerender = new Date().getTime();
+        });
+    };
 }
