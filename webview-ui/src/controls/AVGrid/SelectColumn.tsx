@@ -69,7 +69,7 @@ function HeaderCell(props: Readonly<TCellRendererProps>) {
 }
 
 function DataCell(props: Readonly<TCellRendererProps>) {
-    const { key, row, style, model, className } = props;
+    const { key, row, col, style, model, className } = props;
     const selected = model.props.selected?.has(model.props.getRowKey(model.data.rows[row]));
 
     const togleSelection = () => {
@@ -89,10 +89,10 @@ function DataCell(props: Readonly<TCellRendererProps>) {
             style={style}
             className={clsx("data-cell", className)}
             onMouseEnter={() => {
-                model.models.effects.setHovered(row);
+                model.models.effects.setHovered({row, col});
             }}
             onMouseLeave={() => {
-                model.models.effects.setHovered(-1);
+                model.models.effects.setHovered({row: -1, col: -1});
             }}
         >
             <Button
