@@ -17,6 +17,6 @@ async function showTextDemo() {
     ui.success("End of demo.");
 }
 
-showTextDemo().finally(() => {
-    process.exit(0);
-});
+showTextDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

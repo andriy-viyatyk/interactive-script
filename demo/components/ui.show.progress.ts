@@ -32,6 +32,6 @@ async function progressDemo() {
     ui.log("Progress demo completed!");
 }
 
-progressDemo().finally(() => {
-  process.exit(0);
-});
+progressDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

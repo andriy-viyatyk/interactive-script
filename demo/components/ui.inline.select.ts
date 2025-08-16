@@ -41,6 +41,6 @@ async function inlineSelectDemo() {
     ui.success("End of demo.");
 }
 
-inlineSelectDemo().finally(() => {
-    process.exit(0);
-});
+inlineSelectDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

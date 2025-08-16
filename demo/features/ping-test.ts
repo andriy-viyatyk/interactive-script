@@ -16,6 +16,6 @@ async function pingTest() {
     }
 }
 
-pingTest().finally(() => {
-    process.exit(0);
-});
+pingTest()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

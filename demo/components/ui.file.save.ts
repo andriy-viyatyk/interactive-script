@@ -30,6 +30,6 @@ async function fileSaveDemo() {
     ui.success("End of Demo");
 }
 
-fileSaveDemo().finally(() => {
-    process.exit(0);
-});
+fileSaveDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

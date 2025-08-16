@@ -38,6 +38,8 @@ import { isFileShowOpenCommand } from "../../../../shared/commands/file-showOpen
 import { isFileShowOpenFolderCommand } from "../../../../shared/commands/file-showOpenFolder";
 import { isFileShowSaveCommand } from "../../../../shared/commands/file-showSave";
 import color from "../../theme/color";
+import { isInputGridCommand } from "../../../../shared/commands/input-grid";
+import { CommandGridInputView } from "./Commands/CommandGridInput";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
@@ -126,6 +128,8 @@ export const OutputItem = forwardRef(function OutputItemComponent(
         el = <CommandFileOpenView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize} />;
     } else if (isFileShowSaveCommand(item)) {
         el = <CommandFileOpenView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize} />;
+    } else if (isInputGridCommand(item)) {
+        el = <CommandGridInputView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     }
 
     const fallbackRender = useCallback(({ error }: any) => {

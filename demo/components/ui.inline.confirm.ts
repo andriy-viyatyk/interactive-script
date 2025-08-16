@@ -34,6 +34,6 @@ async function inlineConfirmDemo() {
         .print();
 }
 
-inlineConfirmDemo().finally(() => {
-    process.exit(0);
-});
+inlineConfirmDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

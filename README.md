@@ -181,6 +181,7 @@ APIs include:
   - [`ui.dialog.checkboxes()`](documentation/api.md#uidialogcheckboxes)
   - [`ui.dialog.radioboxes()`](documentation/api.md#uidialogradioboxes)
   - [`ui.dialog.selectRecord()`](documentation/api.md#uidialogselectrecord)
+  - [`ui.dialog.gridInput()`](documentation/api.md#uidialoggridinput)
 
 - **Inline Components**
   - [`ui.inline.select()`](documentation/api.md#uiinlineselect)
@@ -229,6 +230,7 @@ APIs are similar to the JavaScript version, including:
   - [`ui.dialog.date_input()`](documentation/api.md#uidialogdateinput)
   - [`ui.dialog.text_input()`](documentation/api.md#uidialogtextinput)
   - [`ui.dialog.select_record()`](documentation/api.md#uidialogselectrecord)
+  - [`ui.dialog.grid_input()`](documentation/api.md#uidialoggridinput)
 
 - **Inline Components**
   - [`ui.inline.select()`](documentation/api.md#uiinlineselect)
@@ -275,6 +277,7 @@ APIs are similar to the JavaScript and Python versions, including:
   - [`ui.dialog_dateInput()`](powershell_demo/components/dialog_dateInput.ps1)
   - [`ui.dialog_textInput()`](powershell_demo/components/dialog_textInput.ps1)
   - [`ui.dialog_select_record()`](powershell_demo/components/dialog_select_record.ps1)
+  - [`ui.dialog_gridInput()`](powershell_demo/components/dialog_gridInput.ps1)
 
 - **Inline Components**
   - [`ui.inline_select()`](powershell_demo/components/inline_select.ps1)

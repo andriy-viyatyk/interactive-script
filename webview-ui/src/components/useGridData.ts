@@ -210,3 +210,20 @@ export function useGridDataWithColumns(
 export function useWorkingData(withColumns = false, delimiter = ","): GridData {
     return useMemo(() => getWorkingData(withColumns, delimiter), [withColumns, delimiter]);
 }
+
+export function useGridColumns(
+    columns?: GridColumn[],
+): Column[] {
+    return useMemo(() => {
+        return (columns ?? []).map((column): Column => ({
+            key: column.key,
+            name: column.title ?? column.key,
+            width: column.width ?? 100,
+            dataType: column.dataType ?? "string",
+            options: column.options,
+            readonly: column.readonly ?? false,
+            hidden: column.hidden ?? false,
+            resizible: true,
+        }));
+    }, [columns]);
+}

@@ -66,6 +66,6 @@ async function styledTextDemo() {
         .print();
 }
 
-styledTextDemo().finally(() => {
-    process.exit(0);
-})
+styledTextDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

@@ -19,7 +19,7 @@ async function fileShowSaveDemo() {
             "JavaScript files": ["js"],
             "All files": ["*"]
         },
-        label: "Select many",
+        label: "Save As",
     });
     ui.log('Selected file ')
        .then(file)
@@ -30,6 +30,6 @@ async function fileShowSaveDemo() {
     ui.success("End of Demo");
 }
 
-fileShowSaveDemo().finally(() => {
-    process.exit(0);
-});
+fileShowSaveDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

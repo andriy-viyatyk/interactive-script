@@ -9,6 +9,7 @@ from .commands.input_date import date_input, DateInputDataParam, DateInputData
 from .commands.input_radioboxes import radioboxes, RadioboxesDataParam, RadioboxesData
 from .commands.input_text import textInput, TextInputDataParam, TextInputData
 from .commands.input_select_record import select_record, SelectRecordDataParam, SelectRecordData
+from .commands.input_grid import gridInput, GridInputData, GridInputDataParam
 from .commands.inline_select import select, SelectDataParam
 from .commands.inline_confirm import InlineConfirmDataParam, inline_confirm
 from .commands.inline_text import inlineTextInput
@@ -58,6 +59,10 @@ class DialogNamespace:
     
     async def select_record(self, params: Union[List[Any], SelectRecordDataParam]) -> SelectRecordData:
         response = await response_handler.send(select_record(params))
+        return response.data
+    
+    async def grid_input(self, params: GridInputDataParam) -> GridInputData:
+        response = await response_handler.send(gridInput(params))
         return response.data
 
 class ShowNamespace:

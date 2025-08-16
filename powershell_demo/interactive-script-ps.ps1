@@ -1240,6 +1240,40 @@ function _Add-UiFileShowSaveMethod {
     return $null
 }
 
+function _Add-UiInputGridMethod {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$MethodName,
+        [Parameter(Mandatory=$true)]
+        [string]$CommandType
+    )
+    $scriptBlock = {
+        param (
+            [Parameter(Mandatory=$true)]
+            [hashtable]$Data # Corresponds to the entire InputGridData object
+        )
+
+        # Create the ViewMessage for input.grid
+        $commandMessage = New-ViewMessage -Command $CommandType -Data $Data -IsEvent $false
+
+        # Extract the commandId for waiting
+        $commandId = $commandMessage.commandId
+
+        # Manually construct JSON payload and send it via Write-Host -NoNewline
+        $payload = ConvertTo-Json -InputObject $commandMessage -Compress -Depth 10
+
+        Write-Host "[>-command-<] $payload" -NoNewline
+
+        # Wait for the response from the extension via stdin
+        $response = Wait-ForResponse -CommandId $commandId -ExpectedCommand $CommandType
+
+        return $response # This will be the object containing result and resultButton
+    }.GetNewClosure()
+
+    [void](Add-Member -InputObject $script:Ui -MemberType ScriptMethod -Name $MethodName -Value $scriptBlock)
+    return $null
+}
+
 # Add all log methods to the Ui object
 _Add-UiLogMethod -MethodName "Log" -CommandType "log.log"
 _Add-UiLogMethod -MethodName "Text" -CommandType "log.text"
@@ -1256,6 +1290,7 @@ _Add-UiCheckboxesMethod -MethodName "dialog_checkboxes" -CommandType "input.chec
 _Add-UiRadioboxesMethod -MethodName "dialog_radioboxes" -CommandType "input.radioboxes"
 _Add-UiTextInputMethod -MethodName "dialog_textInput" -CommandType "input.text"
 _Add-UiInputDateMethod -MethodName "dialog_dateInput" -CommandType "input.date"
+_Add-UiInputGridMethod -MethodName "dialog_gridInput" -CommandType "input.grid"
 
 # Add the new inline methods to the Ui object
 _Add-UiInlineConfirmMethod -MethodName "inline_confirm" -CommandType "inline.confirm"

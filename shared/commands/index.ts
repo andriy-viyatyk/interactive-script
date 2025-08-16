@@ -13,6 +13,7 @@ import inputRadioboxes from './input-radioboxes';
 import inputSelectRecord from './input-selectRecord';
 import inputDate from './input-date';
 import inputSelect from './inline-select';
+import inputGrid from './input-grid';
 import viewReady from './view-ready';
 import script from './script';
 import onConsole from './on-console';
@@ -43,6 +44,7 @@ const commands = {
     inputRadioboxes,
     inputSelectRecord,
     inputDate,
+    inputGrid,
     viewReady,
     script,
     onConsole,

@@ -23,7 +23,7 @@ export async function mockData() {
 
         // mock input data
         const appInput: WebViewInput = {
-            viewType: "grid", // "grid" | "output" | "graph"
+            viewType: "output", // "grid" | "output" | "graph"
             gridInput: {
                 jsonData: jsonData?.slice(0, 10),
                 gridColumns: jsonData ? [

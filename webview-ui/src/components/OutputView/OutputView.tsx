@@ -1,6 +1,6 @@
-import { SetStateAction, useEffect } from "react";
+import { SetStateAction, useEffect, useMemo } from "react";
 import { TModel } from "../../common/classes/model";
-import { TGlobalState } from "../../common/classes/state";
+import { TComponentState, TGlobalState } from "../../common/classes/state";
 import styled from "@emotion/styled";
 import color from "../../theme/color";
 import { ViewMessage } from "../../../../shared/ViewMessage";
@@ -13,7 +13,7 @@ import { isGridEditorCommand } from "../../../../shared_internal/grid-editor-com
 import { FlexSpace } from "../../controls/FlexSpace";
 import { Button } from "../../controls/Button";
 import { ARightIcon, ClearConsoleIcon, StopIcon } from "../../theme/icons";
-import { OutputViewProvider, UseItemStateFn } from "./OutputViewContext";
+import { OutputViewProvider, UseComponentStateFn, UseItemStateFn } from "./OutputViewContext";
 import { resolveState } from "../../common/utils/utils";
 import { responseHandler } from "../responseHandler";
 
@@ -49,6 +49,8 @@ const defaultOutputViewState = {
 type OutputViewState = typeof defaultOutputViewState;
 
 class OutputViewModel extends TModel<OutputViewState> {
+    private componentStates: Map<string, TComponentState<any>> = new Map();
+
     onWindowMessage = (event: MessageEvent<any>) => {
         const message = event.data as ViewMessage;
         if (message?.command) {
@@ -102,6 +104,7 @@ class OutputViewModel extends TModel<OutputViewState> {
             state.items = [];
             state.itemsState = {};
         });
+        this.componentStates.clear();
     };
 
     sendMessage = (message: ViewMessage) => {
@@ -167,6 +170,16 @@ class OutputViewModel extends TModel<OutputViewState> {
         };
         return [currentState, setState];
     }
+
+    useComponentState: UseComponentStateFn<any> = (itemId: string, defaultState: any) => {
+        const state = this.componentStates.get(itemId);
+        if (state) {
+            return state;
+        }
+        const newState = new TComponentState(defaultState);
+        this.componentStates.set(itemId, newState);
+        return newState;
+    }
 }
 
 const model = new OutputViewModel(new TGlobalState(defaultOutputViewState));
@@ -184,6 +197,11 @@ export default function OutputView() {
             window.removeEventListener("message", model.onWindowMessage);
         };
     }, []);
+
+    const context = useMemo(() => ({ 
+        useItemState: model.useItemState,
+        useComponentState: model.useComponentState
+    }), []);
 
     return (
         <OutputRoot>
@@ -204,7 +222,7 @@ export default function OutputView() {
                     </Button>
                 </div>
             )}
-            <OutputViewProvider useItemState={model.useItemState}>
+            <OutputViewProvider context={context}>
             <OutputItemList
                 items={state.items}
                 replayMessage={model.replayMessage}

@@ -6,6 +6,8 @@ export interface GridColumn {
     width?: number;
     dataType?: "string" | "number" | "boolean";
     options?: string[];
+    readonly?: boolean;
+    hidden?: boolean;
 }
 
 export interface GridData {
