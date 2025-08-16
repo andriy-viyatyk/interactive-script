@@ -131,6 +131,7 @@ const RenderGridStyled = styled(RenderGrid)(
             cursor: "pointer",
             color: color.text.light,
             opacity: 0.5,
+            userSelect: "none",
             "& .add-row-plus": {
                 color: color.icon.disabled,
                 marginRight: 4,
