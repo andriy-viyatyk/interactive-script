@@ -210,6 +210,10 @@ class ColumnsOptionsModel extends TPopperModel<ColumnsOptionsState, undefined> {
             (c) => c.oldKey && c.oldDataType !== c.newDataType
         );
 
+        if (!deletedKeys.length && !changedKeys.length && !changedTypes.length) {
+            return rows;
+        }
+
         return rows.map((row) => {
             const newRow = { ...row };
             for (const delKey of deletedKeys) {

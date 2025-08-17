@@ -158,6 +158,9 @@ const LoadingContainerRoot = styled.div({
 
 function Cell(props: Readonly<TCellRendererProps>) {
     const { col, row, model } = props;
+
+    if (!model.data.columns[col]) return null;
+
     const Renderer: TCellRenderer =
         row === 0
             ? model.data.columns[col].haderRenderer ?? HeaderCell

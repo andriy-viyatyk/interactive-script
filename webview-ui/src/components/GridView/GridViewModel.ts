@@ -210,10 +210,14 @@ class GridViewModel extends TModel<GridViewState> {
     };
 
     onUpdateRows = (updateFunc: (rows: any[]) => any[]) => {
-        this.state.update((s) => {
-            s.rows = updateFunc(s.rows);
-        });
-        this.onDataChanged();
+        const rows = this.state.get().rows;
+        const updatedRows = updateFunc(rows);
+        if (updatedRows !== rows) {
+            this.state.update((s) => {
+                s.rows = updatedRows;
+            });
+            this.onDataChanged();
+        }
     };
 
     saveAsJson = () => {
