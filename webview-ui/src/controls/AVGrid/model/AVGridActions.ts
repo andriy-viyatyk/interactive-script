@@ -169,12 +169,14 @@ export class AVGridActions<R> {
         return rows;
     };
 
-    deleteRows = (rowKeys: string[]): void => {
+    deleteRows = (rowKeys: string[], skipDataChange?: boolean): void => {
         if (!this.model.props.onDeleteRows) return;
 
         this.model.props.onDeleteRows(rowKeys);
         this.model.events.onRowsDeleted.send({ rowKeys });
 
-        setTimeout(() => { this.model.props.onDataChanged?.(); }, 0);
+        if (!skipDataChange) {
+            setTimeout(() => { this.model.props.onDataChanged?.(); }, 0);
+        }
     };
 }

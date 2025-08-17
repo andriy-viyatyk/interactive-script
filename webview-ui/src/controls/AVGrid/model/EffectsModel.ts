@@ -46,7 +46,7 @@ export class EffectsModel<R> {
                 if (!selection?.rows.find(row => this.model.props.getRowKey(row) === newRowKey)) {
                     this.model.data.newRowKey = undefined;
                     this.model.data.change();
-                    this.model.actions.deleteRows([newRowKey]);
+                    this.model.actions.deleteRows([newRowKey], true);
                 }
             }
         }, [focus]);

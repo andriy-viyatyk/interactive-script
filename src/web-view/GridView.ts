@@ -78,7 +78,7 @@ export class GridView extends BaseView implements vscode.CustomTextEditorProvide
         let data: any = document.getText();
         if (!this.isCsv) {
             try {
-                data = JSON.parse(data);
+                data = data ? JSON.parse(data) : undefined;
             } catch (e) {
                 console.error("Error parsing JSON for custom editor:", e);
                 vscode.window.showErrorMessage(

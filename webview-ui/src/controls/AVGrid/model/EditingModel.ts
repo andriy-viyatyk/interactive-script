@@ -129,10 +129,10 @@ export class EditingModel<R> {
             : undefined;
 
         if (gridFocus && gridFocus.rowIndex >= 0) {
-            this.model.renderModel?.update({ rows: [gridFocus.rowIndex + 1] });
+            this.model.update({ rows: [gridFocus.rowIndex + 1] });
         }
 
-        return gridFocus &&
+        return gridFocus && 
             !readonly &&
             !gridFocus.column.readonly &&
             gridFocus.row
@@ -186,7 +186,7 @@ export class EditingModel<R> {
                             editState.rowKey === focus.rowKey
                         ) {
                             this.closeEdit(true);
-                        } else if (column.dataType !== "boolean") {
+                        } else if (column.dataType !== "boolean" && this.model.models.focus.singleCellSelected) {
                             this.openEdit(
                                 focus.columnKey,
                                 focus.rowKey,
@@ -222,7 +222,7 @@ export class EditingModel<R> {
             focus
         ) {
             const { column } = this.getCellForEdit();
-            if (column && column.dataType !== "boolean") {
+            if (column && column.dataType !== "boolean" && this.model.models.focus.singleCellSelected) {
                 this.openEdit(focus.columnKey, focus.rowKey, "", true); // e.key
             }
         }

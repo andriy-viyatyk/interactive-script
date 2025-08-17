@@ -126,10 +126,14 @@ export function HeaderCell({ key, col, style, model }: TCellRendererProps) {
         if (offset > 11) {
             return;
         }
+        event.stopPropagation();
+        event.preventDefault();
+
         hasResized.current = true;
         resizingRef.current = true;
 
         function onPointerMove(e: PointerEvent) {
+            e.stopPropagation();
             e.preventDefault();
             const { left } = currentTarget.getBoundingClientRect();
             const width = e.clientX + offset - left;

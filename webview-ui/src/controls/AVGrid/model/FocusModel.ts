@@ -141,17 +141,16 @@ export class FocusModel<R> {
         }
     };
 
-    focusNewRows = (startIndex: number, count: number, oldFocus?: CellFocus<R>) => {
+    focusNewRows = (
+        startIndex: number,
+        count: number,
+        oldFocus?: CellFocus<R>
+    ) => {
         const endRowIndex = startIndex + count - 1;
         const startColIndex = oldFocus?.selection?.colStart ?? 0;
         const endColIndex = oldFocus?.selection?.colEnd ?? 0;
-        this.selectRange(
-            startIndex,
-            startColIndex,
-            endRowIndex,
-            endColIndex
-        );
-    }
+        this.selectRange(startIndex, startColIndex, endRowIndex, endColIndex);
+    };
 
     getGridFocus = () => {
         const { focus, getRowKey } = this.model.props;
@@ -172,6 +171,18 @@ export class FocusModel<R> {
             };
         }
     };
+
+    get singleCellSelected() {
+        const { focus } = this.model.props;
+        return (
+            focus &&
+            focus.columnKey &&
+            focus.rowKey &&
+            (!focus.selection ||
+                (focus.selection.colKeyStart === focus.selection.colKeyEnd &&
+                    focus.selection.rowKeyStart === focus.selection.rowKeyEnd))
+        );
+    }
 
     getGridSelection = () => {
         const { focus, getRowKey } = this.model.props;

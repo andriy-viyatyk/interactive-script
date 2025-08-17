@@ -49,6 +49,7 @@ export class ColumnsModel<R> {
     private onColumnResize = (data?: {columnKey: string, width: number}) => {
         if (!data) return;
         const {columnKey, width} = data;
+        if (width < 20) return;
         this.model.state.update(s => {
             s.columns = s.columns.map((c) =>
                 c.key === columnKey ? { ...c, width } : c,
