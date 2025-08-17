@@ -5,6 +5,7 @@ import { defaultValidate, gridBoolean } from "../avGridUtils";
 
 export class EditingModel<R> {
     readonly model: AVGridModel<R>;
+    disableBlur = false;
 
     constructor(model: AVGridModel<R>) {
         this.model = model;
@@ -258,7 +259,7 @@ export class EditingModel<R> {
 
     private onContentBlur = () => {
         // allow blur to transfer focus to cell input
-        if (this.model.data.editTime + 50 < new Date().getTime()) {
+        if (!this.disableBlur && this.model.data.editTime + 50 < new Date().getTime()) {
             this.closeEdit(true, false);
         }
     }

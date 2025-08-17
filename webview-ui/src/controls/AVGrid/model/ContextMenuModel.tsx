@@ -20,7 +20,12 @@ export class ContextMenuModel<R> {
         const { focus, getRowKey, onAddRows, onDeleteRows, searchString, filters } = this.model.props;
 
         if (this.model.models.editing.isFocusEditing(focus)) {
-            this.model.models.editing.preventEditorBlur();
+            // call default context menu and disable blur while it is open
+            e.stopPropagation();
+            e.preventDefault();
+            this.model.models.editing.disableBlur = true;
+            await showPopupMenu(e.clientX, e.clientY, []);
+            this.model.models.editing.disableBlur = false;
             return;
         }
 

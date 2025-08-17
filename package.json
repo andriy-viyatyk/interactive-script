@@ -33,6 +33,9 @@
                         "filenamePattern": "*.grid.csv"
                     },
                     {
+                        "filenamePattern": "*.fg.json"
+                    },
+                    {
                         "scheme": "untitled",
                         "filenamePattern": "*.grid.json"
                     }

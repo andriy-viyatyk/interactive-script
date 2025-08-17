@@ -8,7 +8,7 @@ function sendDebugMessage(message: ViewMessage<any>) {
 
 export async function mockData() {
     try {
-        const response = await fetch(`/mock/test.csv`); // test.json or test.csv
+        const response = await fetch(`/mock/test.json`); // test.json or test.csv
         if (!response.ok) {
             return;
         }
@@ -23,7 +23,7 @@ export async function mockData() {
 
         // mock input data
         const appInput: WebViewInput = {
-            viewType: "output", // "grid" | "output" | "graph"
+            viewType: "grid", // "grid" | "output" | "graph"
             gridInput: {
                 jsonData: jsonData?.slice(0, 10),
                 gridColumns: jsonData ? [
