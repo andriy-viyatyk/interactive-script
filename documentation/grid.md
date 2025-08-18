@@ -16,6 +16,11 @@ The Grid Editor is automatically registered for files with the extensions `.grid
 
 * **Built-in Undo/Redo:** The editor inherits VS Code's default undo (`Ctrl + Z`) and redo (`Ctrl + Shift + Z` or `Ctrl + Y`) functionality, allowing you to easily revert changes.
 
+* **Editing Boolean Columns:** Cells in boolean columns do not enter a separate edit mode. Their value is represented by a visual state: a check icon for `true` and a blank space for `false` or `null`/`undefined`. When you hover over a boolean cell, a checkbox appears, allowing you to instantly change the value with a single click without entering edit mode. The checkbox is centered in the cell, so you can still click near it to select the cell itself.
+In addition, the following keyboard shortcuts are available when one or more boolean cells are selected:
+    - `Space`: Applies a `NOT` operation to each selected cell. `true` values become `false`, and `false` values become `true`.
+    - `Enter`: Applies a `NOT` operation only to the focused cell within the selection. The resulting value (e.g., if the focused cell was `true`, the new value is `false`) is then copied to all other selected cells.
+
 ### Keyboard Shortcuts
 
 The Grid Editor supports a comprehensive set of keyboard shortcuts for efficient navigation, editing, and data manipulation, similar to those found in popular spreadsheet applications.
