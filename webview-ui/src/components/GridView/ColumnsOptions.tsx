@@ -338,6 +338,7 @@ export function ColumnsOptions({ model }: ViewPropsRO<ColumnsOptionsModel>) {
                     editRow={model.editRow}
                     onAddRows={model.onAddRows}
                     onDeleteRows={model.onDeleteRows}
+                    entity="column"
                 />
                 {state.changed && (
                     <div className="buttons-bar">

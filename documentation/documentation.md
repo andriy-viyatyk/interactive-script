@@ -12,6 +12,8 @@
     * Crucial information on matching extension and client library versions to ensure stable operation.
 * [**Extension Settings**](settings.md)
     * Information on configuring the "Interactive Script" VS Code extension.
+* [**Grid Editor**](grid.md)
+    * Hotkeys
 
 ---
 

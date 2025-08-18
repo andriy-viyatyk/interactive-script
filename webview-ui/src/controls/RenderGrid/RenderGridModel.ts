@@ -469,6 +469,13 @@ export default class RenderGridModel extends TComponentModel<
         }
     };
 
+    get visibleRowCount() {
+        const visible = this.renderInfo.current.visible;
+        return visible
+            ? visible.bottom - visible.top + 1
+            : 0;
+    }
+
     async scrollTo(row: number, col: number) {
         const container = await this.containerRef.async;
         const info = await this.renderInfo.async;

@@ -41,6 +41,7 @@ export class ContextMenuModel<R> {
                     label: 'Copy',
                     onClick: () => this.model.models.copyPaste.copySelection(),
                     icon: <CopyIcon />,
+                    title: "Ctrl+C",
                 },
                 {
                     label: 'Paste',
@@ -48,28 +49,30 @@ export class ContextMenuModel<R> {
                     invisible: !this.model.props.editRow,
                     disabled: this.disablePaste(),
                     icon: <PasteIcon />,
+                    title: "Ctrl+V",
                 },
                 {
-                    label: `Insert ${selection?.rows.length} row${(selection?.rows.length ?? 0) > 1 ? 's' : ''}`,
+                    label: `Insert ${selection?.rows.length} ${this.model.props.entity ?? "row"}${(selection?.rows.length ?? 0) > 1 ? 's' : ''}`,
                     onClick: () => this.model.actions.addRows(selection?.rows.length ?? 1, selection?.rowRange[0], false),
                     invisible: !onAddRows || !selection?.rows.length,
                     icon: <PlusIcon />,
                     startGroup: true,
                     disabled: !canInsertRows,
-                    title: !canInsertRows ? "Cannot insert rows while sorting or filtering is applied" : undefined,
+                    title: !canInsertRows ? `Cannot insert ${this.model.props.entity ?? "row"}s while sorting or filtering is applied` : "Ctrl+Insert",
                 },
                 {
-                    label: `Add ${selection?.rows.length} row${(selection?.rows.length ?? 0) > 1 ? 's' : ''}`,
+                    label: `Add ${selection?.rows.length} ${this.model.props.entity ?? "row"}${(selection?.rows.length ?? 0) > 1 ? 's' : ''}`,
                     onClick: () => this.model.actions.addRows(selection?.rows.length ?? 1, undefined, true),
                     invisible: !onAddRows || !selection?.rows.length,
                     icon: <PlusIcon />,
                 },
                 {
-                    label: `Delete ${selection?.rows.length} row${(selection?.rows.length ?? 0) > 1 ? 's' : ''}`,
+                    label: `Delete ${selection?.rows.length} ${this.model.props.entity ?? "row"}${(selection?.rows.length ?? 0) > 1 ? 's' : ''}`,
                     onClick: () =>
                         this.model.actions.deleteRows(selection?.rows.map(getRowKey) ?? []),
                     invisible: !onDeleteRows || !selection?.rows.length,
                     icon: <DeleteIcon />,
+                    title: "Ctrl+Delete",
                 },
             ]);
         }

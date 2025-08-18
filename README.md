@@ -26,7 +26,7 @@ Please refer to the [**Version Compatibility Guide**](documentation/compatibilit
   - Embedded grids and text blocks in the panel
   - Programmatically opening a grid or text block in a central editor tab
   - Progress bars
-- Integrated **interactive grid viewer** that can open JSON or CSV files as a powerful filterable, sortable grid (from button or API)
+- Integrated **grid editor** for direct editing of JSON or CSV files, offering powerful filtering and sorting capabilities.
 
 ## Documentation
 [Contents](documentation/documentation.md)
@@ -90,19 +90,22 @@ if ($pressed -eq "Yes") {
 
 The script’s outputs (styled logs, dialogs, grids, etc.) appear inside **"Script UI"**, interacting with the user live.
 
-## Grid Viewer
+## Grid Editor
 
-You can also open JSON or CSV files as an interactive grid in the editor:
+The extension provides a dedicated [Grid Editor](documentation/grid.md) for JSON and CSV files, enabling you to view, modify, and manage your data directly within VS Code. You can open files with the Grid Editor in several ways:
 
-- A **button in the top right corner** of VS Code (visible when a JSON or CSV file is active) allows you to open that file in a grid view.
-- The grid supports:
-  - Column resizing and moving
-  - Sorting
-  - Column filtering with multi-select
-  - Range selection (Excel-style) with **copy-paste to Excel**
-  - Export/copy options: `Copy as JSON`, `Copy as CSV`, `Copy formatted (HTML table for pasting into Word, Outlook, etc.)`
+- A **button in the top right corner** of VS Code (visible when a JSON or CSV file is active) allows you to open that file in a grid editor.
+- Programmatically via `ui.window.showGrid(jsonArray)` from within a script.
 
-Grids can also be opened programmatically via `ui.window.showGrid(jsonArray)` from within a script.
+### The grid supports:
+
+- Column resizing and moving
+- Sorting
+- Column filtering with multi-select
+- Full editing capabilities (cell editing, row insertion/deletion), column resizing and moving, sorting, column filtering with multi-select, and Excel-style range selection with robust copy-paste to and from Excel/other spreadsheet applications.
+- Smart Data Handling: Automatically detects data types (string, number, boolean) for JSON properties and enforces validation during editing and pasting.
+- Seamless Integration: Built on VS Code's native text file capabilities, ensuring real-time synchronization with external edits and full support for VS Code's built-in Undo/Redo functionality (for data changes).
+- Export/copy options: `Copy as JSON`, `Copy as CSV`, `Copy formatted (HTML table for pasting into Word, Outlook, etc.)`.
 
 ![Example snippet output](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/grid-viewer.png)
 

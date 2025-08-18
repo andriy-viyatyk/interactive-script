@@ -220,7 +220,7 @@ function AVGridComponent<R = any>(
     if (model.props.onAddRows) {
         extraElement = (
             <span className="add-row-button" onClick={() => model.actions.addNewRow(true, false)}>
-                <span className="add-row-plus">+</span>add row
+                <span className="add-row-plus">+</span>add {props.entity ?? "row"}
             </span>
         );
     }

@@ -31,12 +31,18 @@ export class ColumnsModel<R> {
 
     useModel = () => {
         const propsColumns = this.model.props.columns;
+        const stateColumns = this.model.state.use(s => s.columns);
+
         useEffect(() => {
             this.model.state.update(s => {
                 s.columns = propsColumns;
             });
             this.updateColumnsData(propsColumns);
         }, [propsColumns]);
+
+        useEffect(() => {
+            this.updateColumnsData();
+        }, [stateColumns]);
     }
 
     updateColumns = (updateFunc: (columns: Column<R>[]) => Column<R>[]) => {

@@ -35,6 +35,7 @@ export interface AVGridProps<R> {
     disableFiltering?: boolean;
     disableSorting?: boolean;
     loading?: boolean;
+    entity?: string;
 
     selected?: ReadonlySet<string>;
     setSelected?: (value: SetStateAction<ReadonlySet<string>>) => void;

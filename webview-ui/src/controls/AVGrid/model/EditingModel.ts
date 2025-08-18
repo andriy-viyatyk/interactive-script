@@ -161,7 +161,7 @@ export class EditingModel<R> {
 
     private onContentKeyDown = (e?: React.KeyboardEvent<HTMLDivElement>) => {
         if (!e) return;
-        const { focus } = this.model.props;
+        const { focus, getRowKey } = this.model.props;
 
         if (
             [
@@ -172,6 +172,7 @@ export class EditingModel<R> {
                 "Escape",
                 "ArrowLeft",
                 "ArrowRight",
+                "Insert",
             ].includes(e.code) &&
             focus
         ) {
@@ -198,7 +199,12 @@ export class EditingModel<R> {
                         }
                         break;
                     case "Delete":
-                        this.deleteRange();
+                        if (e.ctrlKey) {
+                            const selection = this.model.models.focus.getGridSelection();
+                            this.model.actions.deleteRows(selection?.rows.map(getRowKey) ?? [], false, true);
+                        } else {
+                            this.deleteRange();
+                        }
                         break;
                     case "Escape":
                         this.closeEdit(false);
@@ -206,6 +212,12 @@ export class EditingModel<R> {
                     case "Space":
                         if (column.dataType === "boolean") {
                             this.editBooleanInSelection(row[column.key as keyof R], false);
+                        }
+                        break;
+                    case "Insert":
+                        if (e.ctrlKey) {
+                            const selectedCount = this.model.models.focus.selectedCount;
+                            this.model.actions.addRows(selectedCount.rows, selectedCount.minRow, true);
                         }
                         break;
                     default:

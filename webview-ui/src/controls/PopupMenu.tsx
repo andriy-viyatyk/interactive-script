@@ -8,7 +8,7 @@ import { Popper, PopperProps, PopperRoot } from './Popper';
 import color from '../theme/color';
 import RenderGridModel from './RenderGrid/RenderGridModel';
 
-const PopupMenuRoot = styled(PopperRoot)<{ height?: CSSProperties['height'] }>(
+const PopupMenuRoot = styled(PopperRoot)<{ height?: CSSProperties['height'], width?: CSSProperties['width'] }>(
     (props) => ({
         minWidth: 140,
         minHeight: 26,
@@ -16,6 +16,7 @@ const PopupMenuRoot = styled(PopperRoot)<{ height?: CSSProperties['height'] }>(
         maxWidth: 800,
         padding: '4px 0',
         height: props.height,
+        width: props.width,
         display: 'flex',
         flexDirection: 'column',
         '& .popup-menu-item': {
@@ -120,14 +121,17 @@ export function PopupMenu(props: PopupMenuProps) {
         gridRef.current?.update({ all: true });
     }, [promiseMap]);
 
-    const items = useMemo(() => {
+    const { items, width } = useMemo(() => {
         const prepared = [...itemsProps];
+        let maxLength = 0;
         prepared.forEach((item, i) => {
+            maxLength = Math.max(maxLength, item.label.length);
             if (item.startGroup && promiseValue(item.invisible, true) && i < prepared.length - 1) {
                 prepared[i + 1] = { ...prepared[i + 1], startGroup: true };
             }
         });
-        return prepared.filter((item) => !item.invisible);
+        const items = prepared.filter((item) => !item.invisible);
+        return {items, width: maxLength * 8 + 32};
     }, [itemsProps, promiseValue]);
 
     const popupHeight = Math.min(
@@ -168,7 +172,7 @@ export function PopupMenu(props: PopupMenuProps) {
 
     return (
         <Popper onClose={onClose} {...popperProps}>
-            <PopupMenuRoot height={popupHeight}>
+            <PopupMenuRoot height={popupHeight} width={width}>
                 <RenderGrid
                     ref={gridRef}
                     rowCount={items.length}

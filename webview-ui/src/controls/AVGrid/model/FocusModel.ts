@@ -184,6 +184,33 @@ export class FocusModel<R> {
         );
     }
 
+    get selectedCount() {
+        const { focus } = this.model.props;
+        const rowCount =
+            focus && focus.selection
+                ? Math.abs(focus.selection.rowEnd - focus.selection.rowStart) +
+                  1
+                : focus?.rowKey
+                ? 1
+                : 0;
+        const columnCount =
+            focus && focus.selection
+                ? Math.abs(focus.selection.colEnd - focus.selection.colStart) +
+                  1
+                : focus?.columnKey
+                ? 1
+                : 0;
+        const minRow =
+            focus && focus.selection
+                ? Math.min(focus.selection.rowStart, focus.selection.rowEnd)
+                : 0;
+        const minCol =
+            focus && focus.selection
+                ? Math.min(focus.selection.colStart, focus.selection.colEnd)
+                : 0;
+        return { rows: rowCount, columns: columnCount, minRow, minCol };
+    }
+
     getGridSelection = () => {
         const { focus, getRowKey } = this.model.props;
         const { rows, columns } = this.model.data;
@@ -468,9 +495,17 @@ export class FocusModel<R> {
         }
 
         if (
-            ["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "Tab"].includes(
-                e.key
-            )
+            [
+                "ArrowDown",
+                "ArrowUp",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab",
+                "PageDown",
+                "PageUp",
+                "Home",
+                "End",
+            ].includes(e.key)
         ) {
             e.preventDefault();
             e.stopPropagation();
@@ -484,8 +519,18 @@ export class FocusModel<R> {
                 switch (e.key) {
                     case "ArrowDown":
                         if (rowIndex < rows.length - 1) {
-                            rowIndex++;
+                            if (e.ctrlKey) {
+                                rowIndex = Math.min(
+                                    rows.length - 1,
+                                    rowIndex +
+                                        (this.model.renderModel
+                                            ?.visibleRowCount ?? 1)
+                                );
+                            } else {
+                                rowIndex++;
+                            }
                         } else if (
+                            !e.ctrlKey &&
                             rowIndex === rows.length - 1 &&
                             this.model.props.onAddRows &&
                             (!this.model.data.newRowKey ||
@@ -503,18 +548,67 @@ export class FocusModel<R> {
                             rowIndex++;
                         }
                         break;
+                    case "PageDown":
+                        if (rowIndex < rows.length - 1) {
+                            rowIndex = Math.min(
+                                rows.length - 1,
+                                rowIndex +
+                                    (this.model.renderModel?.visibleRowCount ??
+                                        1)
+                            );
+                        }
+                        break;
+                    case "End":
+                        if (rowIndex < rows.length - 1) {
+                            rowIndex = rows.length - 1;
+                        }
+                        if (e.ctrlKey) {
+                            columnIndex = columns.length - 1;
+                        }
+                        break;
                     case "ArrowUp":
                         if (rowIndex > 0) {
-                            rowIndex--;
+                            if (e.ctrlKey) {
+                                rowIndex = Math.max(
+                                    0,
+                                    rowIndex -
+                                        (this.model.renderModel
+                                            ?.visibleRowCount ?? 1)
+                                );
+                            } else {
+                                rowIndex--;
+                            }
+                        }
+                        break;
+                    case "PageUp":
+                        if (rowIndex > 0) {
+                            rowIndex = Math.max(
+                                0,
+                                rowIndex -
+                                    (this.model.renderModel?.visibleRowCount ??
+                                        1)
+                            );
+                        }
+                        break;
+                    case "Home":
+                        if (rowIndex > 0) {
+                            rowIndex = 0;
+                        }
+                        if (e.ctrlKey) {
+                            columnIndex = 0;
                         }
                         break;
                     case "ArrowLeft":
-                        if (columnIndex > 0) {
+                        if (e.ctrlKey) {
+                            columnIndex = 0;
+                        } else if (columnIndex > 0) {
                             columnIndex--;
                         }
                         break;
                     case "ArrowRight":
-                        if (columnIndex < columns.length - 1) {
+                        if (e.ctrlKey) {
+                            columnIndex = columns.length - 1;
+                        } else if (columnIndex < columns.length - 1) {
                             columnIndex++;
                         }
                         break;

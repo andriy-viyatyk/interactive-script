@@ -169,14 +169,23 @@ export class AVGridActions<R> {
         return rows;
     };
 
-    deleteRows = (rowKeys: string[], skipDataChange?: boolean): void => {
+    deleteRows = (rowKeys: string[], skipDataChange?: boolean, withFocus?: boolean): void => {
         if (!this.model.props.onDeleteRows) return;
+
+        const { minRow, minCol } = this.model.models.focus.selectedCount;
 
         this.model.props.onDeleteRows(rowKeys);
         this.model.events.onRowsDeleted.send({ rowKeys });
 
         if (!skipDataChange) {
             setTimeout(() => { this.model.props.onDataChanged?.(); }, 0);
+        }
+
+        if (withFocus) {
+            Promise.resolve().then(() => {
+                const rowToSel = Math.min(minRow, this.model.data.rows.length - 1);
+                this.model.models.focus.focusCell(rowToSel, minCol);
+            });
         }
     };
 }

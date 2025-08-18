@@ -5,6 +5,7 @@ import { BaseView } from "./BaseView";
 import { WebViewInput } from "../../shared/types";
 import { gridEditorChangedCommand, GridEditorSaveAsData, isGridEditorChangedCommand, isGridEditorCommand, isGridEditorSaveAsCommand } from "../../shared_internal/grid-editor-commands";
 import { ViewMessage } from "../../shared/ViewMessage";
+import { checkEditorAssociations } from "../utils/utils";
 
 export class GridView extends BaseView implements vscode.CustomTextEditorProvider {
     private document: vscode.TextDocument | undefined;
@@ -48,6 +49,10 @@ export class GridView extends BaseView implements vscode.CustomTextEditorProvide
             }
         });
         this.disposables.push(changeSubscription);
+
+        if (!this.isCsv) {
+            checkEditorAssociations();
+        }
     }
 
     handleMessage = async (message: ViewMessage<any, string>) => {
