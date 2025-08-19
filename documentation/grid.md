@@ -38,6 +38,7 @@ The Grid Editor supports a comprehensive set of keyboard shortcuts for efficient
 | `Ctrl + Home` | Move focus to the first cell of the entire grid. Hold `Shift` to extend the selection. |
 | `Ctrl + End` | Move focus to the last cell of the entire grid. Hold `Shift` to extend the selection. |
 | `Tab` | Move focus to the next cell; wraps to the next row |
+| `Shift + Tab` | Move focus to the previous cell; wraps to the previous row |
 | `Shift + Mouse Click` | Select a range of cells from the focused cell to the clicked cell |
 | `Delete` | Clear the data in all selected cells |
 | `Ctrl + Insert` | Insert a new row at the current focused position, insert multiple rows if multiple rows are selected |

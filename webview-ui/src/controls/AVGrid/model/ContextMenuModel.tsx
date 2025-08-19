@@ -17,7 +17,7 @@ export class ContextMenuModel<R> {
 
     private onContentContextMenu = async (e?: React.MouseEvent<HTMLDivElement>) => {
         if (!e) return;
-        const { focus, getRowKey, onAddRows, onDeleteRows, searchString, filters } = this.model.props;
+        const { focus, getRowKey, onAddRows, onDeleteRows } = this.model.props;
 
         if (this.model.models.editing.isFocusEditing(focus)) {
             // call default context menu and disable blur while it is open
@@ -29,8 +29,7 @@ export class ContextMenuModel<R> {
             return;
         }
 
-        const sortColumn = this.model.state.get().sortColumn;
-        const canInsertRows = !sortColumn && !searchString?.length && !filters?.length;
+        const canInsertRows = this.model.models.editing.canInsertRows;
 
         if (focus && (e.target as HTMLElement).tagName !== 'INPUT') {
             e.stopPropagation();

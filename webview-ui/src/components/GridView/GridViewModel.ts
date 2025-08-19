@@ -128,6 +128,9 @@ class GridViewModel extends TModel<GridViewState> {
             console.error(e);
         }
         rows = createIdColumn(rows);
+        if (this.gridRef) {
+            this.gridRef.models.focus.focusFromIndex = true;
+        }
         this.state.update((s) => {
             s.rows = rows;
         });

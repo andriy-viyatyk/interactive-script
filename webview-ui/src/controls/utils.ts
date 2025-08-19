@@ -102,3 +102,26 @@ export function useSelectOptions<T>(
 
 	return { options, loading };
 }
+
+export function beep() {
+	try {
+		const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+		const oscillator = audioCtx.createOscillator();
+		const gainNode = audioCtx.createGain();
+
+		oscillator.frequency.value = 440; // frequency
+		
+		oscillator.type = 'sine'; // type of waveform "sine", "square", etc.
+		gainNode.gain.value = 0.3; // volume [0.0, 1.0]
+
+		oscillator.connect(gainNode);
+		gainNode.connect(audioCtx.destination);
+		oscillator.start();
+		
+		// Set a very short fade-out to prevent a click sound at the end.
+		gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+		oscillator.stop(audioCtx.currentTime + 0.2); // beep time
+	} catch {
+		// Handle any errors that may occur
+	}
+}

@@ -73,11 +73,17 @@ export function DefaultCellFormater(props: TCellRendererProps) {
     const row = model.data.rows[rowIndex];
     const highlightedText = useHighlightedText();
     let isHighlighted = false;
-
+    const isHovered =
+        model.data.hovered.row === rowIndex &&
+        model.data.hovered.col === col;
+        
     let value: any = null;
     try {
         value = row?.[column.key];
-        if (!column.dataType || column.dataType !== "boolean") {
+        const renderBoolean = column.dataType === "boolean" && (
+            !value || typeof value === "boolean" || isHovered
+        )
+        if (!column.dataType || !renderBoolean) {
             value = formatDispayValue(value, column.displayFormat);
 
             if (highlightedText && typeof value === "string") {

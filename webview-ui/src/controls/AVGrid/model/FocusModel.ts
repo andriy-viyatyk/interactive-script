@@ -44,6 +44,7 @@ function inSelection(col: number, row: number, focus?: CellFocus) {
 
 export class FocusModel<R> {
     readonly model: AVGridModel<R>;
+    focusFromIndex = false;
 
     constructor(model: AVGridModel<R>) {
         this.model = model;
@@ -360,8 +361,28 @@ export class FocusModel<R> {
                 const colIndex = columns.findIndex(
                     (c) => c.key === oldFocus.columnKey
                 );
-                if (rowIndex < 0 || colIndex < 0) {
-                    return undefined;
+                if (rowIndex < 0 || colIndex < 0 || this.focusFromIndex) {
+                    this.focusFromIndex = false;
+                    if (!rows.length || !columns.length) {
+                        return undefined;
+                    }
+                    const rIdx = Math.min(oldFocus.selection?.rowEnd ?? 0, rows.length - 1);
+                    const cIdx = Math.min(oldFocus.selection?.colEnd ?? 0, columns.length - 1);
+                    return {
+                        columnKey: columns[cIdx].key,
+                        rowKey: getRowKey(rows[rIdx]),
+                        isDragging: false,
+                        selection: {
+                            colStart: cIdx,
+                            colKeyStart: columns[cIdx].key,
+                            rowStart: rIdx,
+                            rowKeyStart: getRowKey(rows[rIdx]),
+                            colEnd: cIdx,
+                            colKeyEnd: columns[cIdx].key,
+                            rowEnd: rIdx,
+                            rowKeyEnd: getRowKey(rows[rIdx]),
+                        }
+                    };
                 }
                 const oldSelection = oldFocus.selection;
                 if (oldSelection) {
@@ -613,27 +634,36 @@ export class FocusModel<R> {
                         }
                         break;
                     case "Tab": {
-                        columnIndex =
-                            columnIndex < columns.length - 1
-                                ? columnIndex + 1
-                                : 0;
-
-                        if (
-                            columnIndex === 0 &&
-                            rowIndex === rows.length - 1 &&
-                            this.model.props.onAddRows &&
-                            !this.model.data.newRowKey
-                        ) {
-                            rows = [
-                                ...rows,
-                                ...this.model.actions.addNewRow(false, true),
-                            ];
-                            rowIndex++;
+                        if (e.shiftKey) {
+                            if (columnIndex > 0) {
+                                columnIndex = columnIndex - 1;
+                            } else {
+                                columnIndex = columns.length - 1;
+                                rowIndex = rowIndex > 0 ? rowIndex - 1 : 0;
+                            }
                         } else {
-                            rowIndex =
-                                columnIndex === 0 && rowIndex < rows.length - 1
-                                    ? rowIndex + 1
-                                    : rowIndex;
+                            columnIndex =
+                                columnIndex < columns.length - 1
+                                    ? columnIndex + 1
+                                    : 0;
+
+                            if (
+                                columnIndex === 0 &&
+                                rowIndex === rows.length - 1 &&
+                                this.model.props.onAddRows &&
+                                !this.model.data.newRowKey
+                            ) {
+                                rows = [
+                                    ...rows,
+                                    ...this.model.actions.addNewRow(false, true),
+                                ];
+                                rowIndex++;
+                            } else {
+                                rowIndex =
+                                    columnIndex === 0 && rowIndex < rows.length - 1
+                                        ? rowIndex + 1
+                                        : rowIndex;
+                            }
                         }
                         break;
                     }

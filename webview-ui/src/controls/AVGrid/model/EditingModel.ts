@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { CellFocus, Column } from "../avGridTypes";
 import { AVGridModel } from "./AVGridModel";
 import { defaultValidate, gridBoolean } from "../avGridUtils";
+import { beep } from "../../utils";
 
 export class EditingModel<R> {
     readonly model: AVGridModel<R>;
@@ -17,6 +18,12 @@ export class EditingModel<R> {
     get isEditing() {
         const cellEdit = this.model.state.get().cellEdit;
         return Boolean(cellEdit.columnKey && cellEdit.rowKey);
+    }
+
+    get canInsertRows() {
+        const { searchString, filters } = this.model.props;
+        const sortColumn = this.model.state.get().sortColumn;
+        return !sortColumn && !searchString?.length && !filters?.length;
     }
 
     isFocusEditing = (focus?: CellFocus<R>) => {
@@ -166,13 +173,16 @@ export class EditingModel<R> {
         if (
             [
                 "Enter",
+                "NumpadEnter",
                 "F2",
                 "Space",
                 "Delete",
+                "NumpadDecimal",
                 "Escape",
                 "ArrowLeft",
                 "ArrowRight",
                 "Insert",
+                "Numpad0",
             ].includes(e.code) &&
             focus
         ) {
@@ -181,6 +191,7 @@ export class EditingModel<R> {
                 const editState = this.model.state.get().cellEdit;
                 switch (e.code) {
                     case "Enter":
+                    case "NumpadEnter":
                     case "F2":
                         if (
                             editState.columnKey === focus.columnKey &&
@@ -194,11 +205,15 @@ export class EditingModel<R> {
                                 row[column.key as keyof R],
                                 false
                             );
-                        } else if (column.dataType === "boolean" && e.code === "Enter") {
+                        } else if (column.dataType === "boolean" && (e.code === "Enter" || e.code === "NumpadEnter")) {
                             this.editBooleanInSelection(row[column.key as keyof R], true);
                         }
                         break;
                     case "Delete":
+                    case "NumpadDecimal":
+                        if (e.code === "NumpadDecimal" && e.getModifierState("NumLock")) {
+                            break;
+                        }
                         if (e.ctrlKey) {
                             const selection = this.model.models.focus.getGridSelection();
                             this.model.actions.deleteRows(selection?.rows.map(getRowKey) ?? [], false, true);
@@ -215,6 +230,14 @@ export class EditingModel<R> {
                         }
                         break;
                     case "Insert":
+                    case "Numpad0":
+                        if (!this.canInsertRows) {
+                            beep();
+                            break;
+                        }
+                        if (e.code === "Numpad0" && e.getModifierState("NumLock")) {
+                            break;
+                        }
                         if (e.ctrlKey) {
                             const selectedCount = this.model.models.focus.selectedCount;
                             this.model.actions.addRows(selectedCount.rows, selectedCount.minRow, true);

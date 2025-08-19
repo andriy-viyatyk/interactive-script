@@ -67,7 +67,7 @@ export class GridView extends BaseView implements vscode.CustomTextEditorProvide
             return;
         }
 
-        BaseView.prototype.handleMessage.call(this, message as ViewMessage<any>);
+        BaseView.prototype.handleMessage?.call(this, message as ViewMessage<any>);
     }
 
     private documentChanged = (document: vscode.TextDocument) => {

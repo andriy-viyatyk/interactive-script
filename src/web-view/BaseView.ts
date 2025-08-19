@@ -141,6 +141,7 @@ export class BaseView {
 
         const disposeSubscription = this.panel?.onDidDispose(() => {
             subscriptions.forEach((s) => s.dispose());
+            subscriptions.splice(0);
             this.dispose();
         });
         if (disposeSubscription) {
