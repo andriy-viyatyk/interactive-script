@@ -4,7 +4,7 @@
     "description": "Provides interactive UI elements for the JS, TS, PY and PS1 scripts.",
     "publisher": "andriy-viyatyk",
     "author": "Andriy Viyatyk",
-    "version": "1.0.9-dev",
+    "version": "1.0.9",
     "repository": {
         "type": "git",
         "url": "https://github.com/andriy-viyatyk/interactive-script.git"

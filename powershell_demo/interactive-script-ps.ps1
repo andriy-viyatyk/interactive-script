@@ -19,8 +19,8 @@
 
 .NOTES
     Author: Andriy Viyatyk
-    Version: 1.0.0
-    Date: July 5, 2025
+    Version: 1.0.1
+    Date: August 19, 2025
     License: ISC
 #>
 

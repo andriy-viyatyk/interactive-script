@@ -36,6 +36,7 @@ We strive to maintain backward compatibility where possible, but significant cha
 
 | VS Code Extension Version | `interactive-script-js` Version | `interactive-script-py` Version | `interactive-script-ps` Version |
 | :--- | :--- | :--- | :--- |
+| 1.0.9 | 1.0.7 | 1.0.7 | 1.0.1 |
 | 1.0.8 | 1.0.6 | 1.0.6 | 1.0.0 |
 | 1.0.7 | 1.0.6 | 1.0.6 |
 | 1.0.6 | 1.0.5 | 1.0.5 |
