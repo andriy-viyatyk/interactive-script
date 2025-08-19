@@ -17,11 +17,19 @@ class GridColumn:
     key: str = ""
     title: Optional[str] = None
     width: Optional[int] = None
+    dataType: Optional[str] = None  # "string" | "number" | "boolean"
+    options: Optional[List[str]] = None
+    readonly: Optional[bool] = None
+    hidden: Optional[bool] = None
     
     def init(self, data: Mapping[str, Any]):
         self.key = data.get("key", self.key)
         self.title = data.get("title", self.title)
         self.width = data.get("width", self.width)
+        self.dataType = data.get("dataType", self.dataType)
+        self.options = data.get("options", self.options)
+        self.readonly = data.get("readonly", self.readonly)
+        self.hidden = data.get("hidden", self.hidden)
 
 @dataclass
 class GridData:

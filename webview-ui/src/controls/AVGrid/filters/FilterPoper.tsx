@@ -31,9 +31,9 @@ interface FilterContentProps {
 function FilterContent(props: FilterContentProps) {
     const { filter, onApplyFilter, onGetOptions, width, className, resized } =
         props;
-    const { columns } = useAVGridContext();
+    const model = useAVGridContext();
     const filterType =
-        columns.find((c) => c.key === filter.columnKey)?.filterType ??
+        model.data.columns.find((c) => c.key === filter.columnKey)?.filterType ??
         filter.type;
 
     switch (filterType) {

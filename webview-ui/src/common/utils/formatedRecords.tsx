@@ -44,7 +44,7 @@ const renderHeader = (columns: Column[]) => {
 	);
 };
 
-const renderRows = (rows: any[], columns: Column[]) => {
+const renderRows = (rows: readonly any[], columns: Column[]) => {
 	return rows.map((row, idx) => (
 		<tr style={styles.dataRow} key={idx}>
 			{columns.map(c => (
@@ -56,7 +56,7 @@ const renderRows = (rows: any[], columns: Column[]) => {
 	));
 };
 
-export function recordsToTableHTML(rows: any[], columns: Column[]) {
+export function recordsToTableHTML(rows: readonly any[], columns: Column[]) {
 	return ReactDOMServer.renderToString(
 		<table style={styles.table}>
 			<thead>{renderHeader(columns)}</thead>
@@ -65,7 +65,7 @@ export function recordsToTableHTML(rows: any[], columns: Column[]) {
 	);
 }
 
-export async function recordsToClipboardFormatted(rows: any[], columns: Column[]) {
+export async function recordsToClipboardFormatted(rows: readonly any[], columns: Column[]) {
 	const formatted = recordsToTableHTML(rows, columns);
 	const text = recordsToCsv(rows, columns.map(c => c.key.toString()), { delimiter: "\t" });
 

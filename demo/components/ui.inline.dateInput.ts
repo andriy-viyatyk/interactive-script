@@ -36,6 +36,6 @@ async function inlineDateInputDemo() {
     ui.log("\nEnd of demo.");
 }
 
-inlineDateInputDemo().finally(() => {
-    process.exit(0);
-});
+inlineDateInputDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

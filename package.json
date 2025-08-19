@@ -1,10 +1,10 @@
 {
     "name": "interactive-script",
     "displayName": "Interactive Script",
-    "description": "Provides interactive UI elements for the JS and TS scripts.",
+    "description": "Provides interactive UI elements for the JS, TS, PY and PS1 scripts.",
     "publisher": "andriy-viyatyk",
     "author": "Andriy Viyatyk",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "repository": {
         "type": "git",
         "url": "https://github.com/andriy-viyatyk/interactive-script.git"
@@ -21,6 +21,28 @@
     ],
     "main": "./out/src/extension.js",
     "contributes": {
+        "customEditors": [
+            {
+                "viewType": "interactiveScript.gridEditor",
+                "displayName": "Interactive Script Grid Editor",
+                "selector": [
+                    {
+                        "filenamePattern": "*.grid.json"
+                    },
+                    {
+                        "filenamePattern": "*.grid.csv"
+                    },
+                    {
+                        "filenamePattern": "*.fg.json"
+                    },
+                    {
+                        "scheme": "untitled",
+                        "filenamePattern": "*.grid.json"
+                    }
+                ],
+                "priority": "default"
+            }
+        ],
         "viewsContainers": {
             "panel": [
                 {
@@ -209,7 +231,8 @@
     "devDependencies": {
         "@types/node": "^18.0.0",
         "@types/vscode": "^1.70.0",
-        "typescript": "^5.0.0"
+        "typescript": "^5.0.0",
+        "vsce": "^2.15.0"
     },
     "keywords": [
         "interactive",

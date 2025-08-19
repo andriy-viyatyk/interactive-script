@@ -30,6 +30,7 @@ Command = Literal[
     "input.radioboxes",
     "input.selectRecord",
     "input.date",
+    "input.grid",
     "inline.select",
     "inline.confirm",
     "inline.text",

@@ -24,29 +24,29 @@ const DataCellRoot = styled.div({
 });
 
 function HeaderCell(props: Readonly<TCellRendererProps>) {
-    const { key, style, context } = props;
+    const { key, style, model } = props;
     const indeterminate = Boolean(
-        !context.allSelected && context.selected.size
+        !model.data.allSelected && model.props.selected?.size
     );
 
     const togleSelection = useCallback(() => {
-        if (context.readonly) return;
+        if (model.props.readonly) return;
 
-        if (context.allSelected || indeterminate) {
-            context.setSelected?.(new Set());
+        if (model.data.allSelected || indeterminate) {
+            model.props.setSelected?.(new Set());
         } else {
-            context.setSelected?.(
+            model.props.setSelected?.(
                 new Set([
-                    ...context.rows
+                    ...model.data.rows
                         .filter((r) => !r.isRestricted)
-                        .map((r) => context.getRowKey(r)),
+                        .map((r) => model.props.getRowKey(r)),
                 ])
             );
         }
-    }, [context, indeterminate]);
+    }, [model, indeterminate]);
 
     let icon: ReactElement;
-    if (context.allSelected) {
+    if (model.data.allSelected) {
         icon = <CheckedIcon />;
     } else if (indeterminate) {
         icon = <IndeterminateIcon />;
@@ -60,7 +60,7 @@ function HeaderCell(props: Readonly<TCellRendererProps>) {
                 size="small"
                 type="icon"
                 onClick={togleSelection}
-                disabled={context.readonly}
+                disabled={model.props.readonly}
             >
                 {icon}
             </Button>
@@ -69,18 +69,18 @@ function HeaderCell(props: Readonly<TCellRendererProps>) {
 }
 
 function DataCell(props: Readonly<TCellRendererProps>) {
-    const { key, row, style, context, className } = props;
-    const selected = context.selected.has(context.getRowKey(context.rows[row]));
+    const { key, row, col, style, model, className } = props;
+    const selected = model.props.selected?.has(model.props.getRowKey(model.data.rows[row]));
 
     const togleSelection = () => {
-        const newSet = new Set([...context.selected]);
+        const newSet = new Set(model.props.selected ? [...model.props.selected] : []);
         if (selected) {
-            newSet.delete(context.getRowKey(context.rows[row]));
+            newSet.delete(model.props.getRowKey(model.data.rows[row]));
         } else {
-            newSet.add(context.getRowKey(context.rows[row]));
+            newSet.add(model.props.getRowKey(model.data.rows[row]));
         }
-        context.setSelected?.(newSet);
-        context.update({ rows: [0, row + 1] });
+        model.props.setSelected?.(newSet);
+        model.update({ rows: [0, row + 1] });
     };
 
     return (
@@ -89,17 +89,17 @@ function DataCell(props: Readonly<TCellRendererProps>) {
             style={style}
             className={clsx("data-cell", className)}
             onMouseEnter={() => {
-                context.setHovered(row);
+                model.models.effects.setHovered({row, col});
             }}
             onMouseLeave={() => {
-                context.setHovered(-1);
+                model.models.effects.setHovered({row: -1, col: -1});
             }}
         >
             <Button
                 size="small"
                 type="icon"
                 onClick={togleSelection}
-                disabled={context.readonly}
+                disabled={model.props.readonly}
             >
                 {selected ? <CheckedIcon /> : <UncheckedIcon />}
             </Button>

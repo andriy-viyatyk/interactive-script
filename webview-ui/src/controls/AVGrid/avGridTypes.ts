@@ -1,6 +1,7 @@
 import React, { ComponentType, ReactNode, SetStateAction } from 'react';
 import { Percent, RenderCellParams, RerenderInfo } from '../RenderGrid/types';
 import { IState } from '../../common/classes/state';
+import { AVGridModel } from './model/AVGridModel';
 
 export type CellClickEvent = (row: any, col: Column, rowIndex: number, colIndex: number) => void;
 export type CellMouseEvent = (e: React.MouseEvent<HTMLDivElement>, row: any, col: Column, rowIndex: number, colIndex: number) => void;
@@ -35,10 +36,11 @@ export interface TAVGridContext<R = any> {
     editRow?: (columnKey: string, rowKey: string, value: any) => void;
     readonly?: boolean;
     searchString?: string;
+    editable?: boolean;
 }
 
 export interface TCellRendererProps<R = any> extends RenderCellParams {
-    context: TAVGridContext<R>;
+    model: AVGridModel<R>;
     className?: string;
 }
 
@@ -51,7 +53,7 @@ export interface TSortColumn {
     key: string;
     direction: TSortDirection;
 }
-export type TDisplayType = 'text' | 'checkIcon';
+export type TDataType = 'string' | 'number' | 'boolean';
 export type TDisplayFormat =
     | 'text'
     | 'date'
@@ -76,6 +78,7 @@ export interface TAnyFilter extends TFilter {
 export interface TDisplayOption<T = any> {
     value: T;
     label: string;
+    italic?: boolean;
 }
 
 export type TOptionsFilterValue = TDisplayOption[];
@@ -97,13 +100,14 @@ export interface Column<R = any> {
     isStatusColumn?: boolean;
     resizible?: boolean;
     rowCompare?: TRowCompare<R>;
-    displayType?: TDisplayType;
+    dataType?: TDataType;
     displayFormat?: TDisplayFormat;
     dataAlignment?: TAlignment;
     filterType?: TFilterType;
     formatValue?: (column: Column<R>, row: R) => string;
-    editable?: boolean;
+    readonly?: boolean;
     validate?: (column: Column<R>, row: R, value: any) => any;
+    options?: any[] | (() => any[] | Promise<any[]>);
 }
 
 export type TOnColumnResize = (columnKey: string, width: number) => void;
@@ -130,4 +134,5 @@ export type CellEdit<R = any> = {
     columnKey: keyof R | string;
     value: any;
     dontSelect?: boolean;
+    changed: boolean;
 }

@@ -76,6 +76,6 @@ async function checkboxesDemo() {
     ui.success("End of demo.")
 }
 
-checkboxesDemo().then(() => {
-    process.exit(0);
-});
+checkboxesDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

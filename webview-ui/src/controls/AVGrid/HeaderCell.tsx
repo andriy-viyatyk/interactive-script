@@ -9,6 +9,7 @@ import {
     FilterArrowDownIcon,
     FilterArrowUpIcon,
     FilterTableIcon,
+    QuestionIcon,
 } from "../../theme/icons";
 import { Button } from "../Button";
 import { useFilters } from "./filters/useFilters";
@@ -18,9 +19,9 @@ const HeaderCellRoot = styled.div(
         position: "relative",
         alignItems: "center",
         backgroundColor: color.grid.headerCellBackground,
-        paddingRight: 10,
         boxSizing: "border-box",
         "&.header-resizible": {
+            paddingRight: 10,
             "&::after": {
                 content: '""',
                 cursor: "col-resize",
@@ -79,7 +80,10 @@ const HeaderCellRoot = styled.div(
     { label: "HeaderCellRoot" }
 );
 
-function SortIcon({ direction }: { direction?: TSortDirection }) {
+function SortIcon({ direction, frozen }: { direction?: TSortDirection, frozen?: boolean }) {
+    if (frozen) {
+        return <QuestionIcon width={16} height={16} className="sort-icon" title="Rows are frozen while editing. Click to unfreeze." />;
+    }
     if (direction === "asc") {
         return <FilterArrowDownIcon width={16} height={16} className="sort-icon" />;
     }
@@ -89,8 +93,8 @@ function SortIcon({ direction }: { direction?: TSortDirection }) {
     return null;
 }
 
-export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
-    const column = context.columns[col];
+export function HeaderCell({ key, col, style, model }: TCellRendererProps) {
+    const column = model.data.columns[col];
     const headerRef = useRef<HTMLElement>(undefined);
     const resizingRef = useRef(false);
     const hasResized = useRef(false);
@@ -99,25 +103,15 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
     const columnFiltered = filter.filters.find(
         (f) => f.columnKey === column.key
     );
+    const sortColumn = model.state.use(s => s.sortColumn);
 
     const handleClick = () => {
         if (hasResized.current) {
             hasResized.current = false;
             return;
         }
-        if (context.disableSorting) {
-            return;
-        }
 
-        context.setSortColumn((old) => {
-            if (old?.key === (column.key as string)) {
-                return old.direction === "desc"
-                    ? undefined
-                    : { key: column.key as string, direction: "desc" };
-            }
-            return { key: column.key as string, direction: "asc" };
-        });
-        context.update({ all: true });
+        model.actions.sortColumn(column.key);
     };
 
     function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
@@ -132,15 +126,19 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
         if (offset > 11) {
             return;
         }
+        event.stopPropagation();
+        event.preventDefault();
+
         hasResized.current = true;
         resizingRef.current = true;
 
         function onPointerMove(e: PointerEvent) {
+            e.stopPropagation();
             e.preventDefault();
             const { left } = currentTarget.getBoundingClientRect();
             const width = e.clientX + offset - left;
             if (width > 0) {
-                context.onColumnResize(column?.key as string, width);
+                model.actions.columnResize(column?.key as string, width);
             }
         }
 
@@ -175,7 +173,7 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
     const [{ isOver }, drop] = useDrop({
         accept: ["COLUMN_DRAG", "FREEZE_DRAG"],
         drop({ key: dropKey }: { key: string }) {
-            context.onColumnsReorder(dropKey, column.key as string);
+            model.actions.columnsReorder(dropKey, column.key as string);
         },
         collect: (monitor) => ({
             isOver: monitor.isOver(),
@@ -236,11 +234,11 @@ export function HeaderCell({ key, col, style, context }: TCellRendererProps) {
             qa-column={column.key}
         >
             {Boolean(
-                context.sortColumn && column.key === context.sortColumn.key
-            ) && <SortIcon direction={context.sortColumn?.direction} />}
+                sortColumn && column.key === sortColumn.key
+            ) && <SortIcon direction={sortColumn?.direction} frozen={model.data.rowsFrozen}/>}
             <span className="header-cell-title">{column?.name}</span>
             <span className="flex-space" />
-            {Boolean(column.filterType) && !context.disableFiltering && (
+            {Boolean(column.filterType) && !model.props.disableFiltering && (
                 <Button
                     size="small"
                     type="icon"

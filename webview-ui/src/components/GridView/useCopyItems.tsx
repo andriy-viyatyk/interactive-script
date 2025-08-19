@@ -5,16 +5,16 @@ import { toClipboard } from "../../common/utils/utils";
 import { recordsToCsv } from "../../common/utils/csvUtils";
 import { recordsToClipboardFormatted } from "../../common/utils/formatedRecords";
 import { removeIdColumn } from "../useGridData";
-import { AVGridRef } from "../../controls/AVGrid/AVGrid";
+import { AVGridModel } from "../../controls/AVGrid/model/AVGridModel";
 
-export function useCopyItems(gridRef: RefObject<AVGridRef | undefined>): MenuItem[] {
+export function useCopyItems(gridRef: RefObject<AVGridModel<any> | undefined>): MenuItem[] {
     const delimiter = gridViewModel.state.use((s) => s.delimiter);
     return useMemo(
         (): MenuItem[] => [
             {
                 label: "Copy as JSON",
                 onClick: () => {
-                    const rowsToCopy = removeIdColumn(gridRef.current?.context?.rows ?? []);
+                    const rowsToCopy = removeIdColumn(gridRef.current?.data.rows ?? []);
                     toClipboard(JSON.stringify(rowsToCopy, null, 4));
                 },
             },
@@ -23,8 +23,8 @@ export function useCopyItems(gridRef: RefObject<AVGridRef | undefined>): MenuIte
                 onClick: () => {
                     toClipboard(
                         recordsToCsv(
-                            gridRef.current?.context?.rows ?? [],
-                            gridRef.current?.context?.columns.map((c) => c.key.toString()) ?? [],
+                            gridRef.current?.data.rows ?? [],
+                            gridRef.current?.data.columns.map((c) => c.key.toString()) ?? [],
                             { delimiter }
                         )
                     );
@@ -33,7 +33,7 @@ export function useCopyItems(gridRef: RefObject<AVGridRef | undefined>): MenuIte
             {
                 label: "Copy formated",
                 onClick: () => {
-                    recordsToClipboardFormatted(gridRef.current?.context?.rows ?? [], gridRef.current?.context?.columns ?? []);
+                    recordsToClipboardFormatted(gridRef.current?.data.rows ?? [], gridRef.current?.data.columns ?? []);
                 }
             }
         ],

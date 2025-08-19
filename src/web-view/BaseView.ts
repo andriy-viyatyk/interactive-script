@@ -2,13 +2,12 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import { v4 } from "uuid";
-import { Subscription } from "../utils/events";
-import { GridColumn } from "../../shared/commands/output-grid";
+
 import { WebViewInput, WebViewType } from "../../shared/types";
+import { Subscription } from "../utils/events";
 import { UiText, uiTextToString, ViewMessage } from "../../shared/ViewMessage";
 import { isViewReadyCommand } from "../../shared/commands/view-ready";
 import { isScriptStartCommand } from "../../shared/commands/script";
-import codeRunner from "../code-runner/CodeRunner";
 import {
     isWindowGridCommand,
     isWindowTextCommand,
@@ -22,9 +21,9 @@ import {
     handleWindowTextCommand,
 } from "../utils/common-commands";
 import { isFileOpenCommand } from "../../shared/commands/file-open";
-import { isFileExistsCommand } from "../../shared/commands/file-exists";
 import { isFileOpenFolderCommand } from "../../shared/commands/file-openFolder";
 import { isFileSaveCommand } from "../../shared/commands/file-save";
+import { isFileExistsCommand } from "../../shared/commands/file-exists";
 
 export interface ViewPanel {
     viewType: string;
@@ -40,16 +39,20 @@ export interface ViewPanel {
     reveal?: (viewColumn?: vscode.ViewColumn, preserveFocus?: boolean) => void;
 }
 
-export class WebView implements vscode.WebviewViewProvider {
-    id: string = v4();
-    private panel: ViewPanel | undefined;
-    type: WebViewType;
+export class BaseView {
     context: vscode.ExtensionContext;
-    onPanel = new Subscription<WebView>();
+    type: WebViewType;
+    id: string = v4();
+    panel: ViewPanel | undefined;
     isBottomPanel = false;
+
+    onPanel = new Subscription<BaseView>();
     onOutputMessage = new Subscription<ViewMessage<any>>();
     onDispose = new Subscription<void>();
-    private onReady: (() => void) | undefined;
+    readonly disposables: vscode.Disposable[] = [];
+    disposed = false;
+
+    protected onReady: (() => void) | undefined;
     whenReady = new Promise<void>((resolve) => {
         this.onReady = resolve;
     });
@@ -57,13 +60,17 @@ export class WebView implements vscode.WebviewViewProvider {
     constructor(context: vscode.ExtensionContext, type: WebViewType) {
         this.type = type;
         this.context = context;
+        const view = this;
+        Promise.resolve().then(() => {
+            Views.viewCreated(view);
+        });
     }
 
-    messageToOutput = (message: ViewMessage<any>) => {
+    messageToOutput = (message: ViewMessage<any, string>) => {
         this.panel?.webview.postMessage(message);
     };
 
-    private handleMessage = (message: ViewMessage<any>) => {
+    handleMessage = async (message: ViewMessage<any>) => {
         if (message?.command) {
             if (isViewReadyCommand(message)) {
                 this.onReady?.();
@@ -73,6 +80,9 @@ export class WebView implements vscode.WebviewViewProvider {
 
             if (isScriptStartCommand(message)) {
                 if (message.data) {
+                    const codeRunner = (
+                        await import("../code-runner/CodeRunner")
+                    ).default;
                     codeRunner.runProcessWithView(message.data, this);
                 }
                 return;
@@ -89,28 +99,28 @@ export class WebView implements vscode.WebviewViewProvider {
             }
 
             if (isFileOpenCommand(message)) {
-                handleFileOpenCommand(message, replayMessage => {
+                handleFileOpenCommand(message, (replayMessage) => {
                     this.messageToOutput(replayMessage);
                 });
                 return;
             }
 
             if (isFileOpenFolderCommand(message)) {
-                handleFileOpenFolderCommand(message, replayMessage => {
+                handleFileOpenFolderCommand(message, (replayMessage) => {
                     this.messageToOutput(replayMessage);
                 });
                 return;
             }
 
             if (isFileSaveCommand(message)) {
-                handleFileSaveCommand(message, replayMessage => {
+                handleFileSaveCommand(message, (replayMessage) => {
                     this.messageToOutput(replayMessage);
                 });
                 return;
             }
 
             if (isFileExistsCommand(message)) {
-                handleFileExistsCommand(message, replayMessage => {
+                handleFileExistsCommand(message, (replayMessage) => {
                     this.messageToOutput(replayMessage);
                 });
                 return;
@@ -120,7 +130,7 @@ export class WebView implements vscode.WebviewViewProvider {
         }
     };
 
-    private panelCreated = () => {
+    protected panelCreated = () => {
         const subscriptions: vscode.Disposable[] = [];
         const messageSubscription = this.panel?.webview.onDidReceiveMessage(
             this.handleMessage
@@ -131,7 +141,8 @@ export class WebView implements vscode.WebviewViewProvider {
 
         const disposeSubscription = this.panel?.onDidDispose(() => {
             subscriptions.forEach((s) => s.dispose());
-            this.onDispose.send();
+            subscriptions.splice(0);
+            this.dispose();
         });
         if (disposeSubscription) {
             subscriptions.push(disposeSubscription);
@@ -140,24 +151,7 @@ export class WebView implements vscode.WebviewViewProvider {
         this.onPanel.send(this);
     };
 
-    resolveWebviewView(webviewView: vscode.WebviewView) {
-        this.type = "output";
-        this.isBottomPanel = true;
-        this.panel = webviewView;
-        this.panel.title = "Script UI";
-        this.panel.webview.options = {
-            enableScripts: true,
-        };
-
-        const webViewInput: WebViewInput = {
-            viewType: this.type,
-        };
-        this.createPanelHtml(this.panel, webViewInput);
-
-        this.panelCreated();
-    }
-
-    private createPanel = (
+    protected createPanel = (
         title: UiText,
         iconPath: vscode.Uri,
         webViewInput: WebViewInput,
@@ -185,51 +179,7 @@ export class WebView implements vscode.WebviewViewProvider {
         return panel;
     };
 
-    createGridPanel = (
-        title: UiText,
-        data: any,
-        columns?: GridColumn[],
-        isCsv?: boolean
-    ) => {
-        this.createPanel(
-            title,
-            vscode.Uri.file(
-                path.join(this.context.extensionPath, "icons", "av.svg") // Path to your icon
-            ),
-            {
-                viewType: this.type,
-                gridInput: {
-                    jsonData: isCsv ? undefined : data,
-                    csvData: isCsv ? data : undefined,
-                    gridColumns: columns,
-                    gridTitle: title,
-                },
-            },
-            vscode.ViewColumn.One
-        );
-    };
-
-    createOutputPanel = (filePath: string) => {
-        const fileName = path.basename(filePath);
-
-        this.createPanel(
-            `[ ${fileName} ]`,
-            vscode.Uri.file(
-                path.join(this.context.extensionPath, "icons", "arrowRight.svg") // Path to your icon
-            ),
-            {
-                viewType: this.type,
-                outputInput: {
-                    withHeader: true,
-                    title: fileName,
-                    filePath: filePath,
-                },
-            },
-            vscode.ViewColumn.Two
-        );
-    };
-
-    private readonly createPanelHtml = (
+    protected readonly createPanelHtml = (
         panel: ViewPanel,
         webViewInput: WebViewInput
     ) => {
@@ -247,7 +197,9 @@ export class WebView implements vscode.WebviewViewProvider {
         const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
 
         const mediaBaseUri = panel.webview.asWebviewUri(
-            vscode.Uri.file(path.join(this.context.extensionUri.fsPath, "media"))
+            vscode.Uri.file(
+                path.join(this.context.extensionUri.fsPath, "media")
+            )
         );
         const scriptFileName = manifest["index.html"].file;
         const styleFileName = manifest["index.html"].css[0];
@@ -272,4 +224,51 @@ export class WebView implements vscode.WebviewViewProvider {
             </html>
           `;
     };
+
+    private dispose() {
+        if (this.disposed) return;
+
+        this.disposables.forEach(d => d.dispose());
+        this.disposables.splice(0);
+        this.disposed = true;
+        this.onDispose.send();
+    }
+}
+
+export class Views {
+    static views: Map<string, BaseView> = new Map<string, BaseView>();
+    static output: BaseView | undefined = undefined;
+
+    static viewCreated = (view?: BaseView) => {
+        if (!view) {
+            return;
+        }
+
+        if (view.panel) {
+            this.onPanel(view);
+        } else {
+            view.onPanel.subscribe(this.onPanel);
+        }
+    };
+
+    private static readonly onPanel = (view?: BaseView) => {
+        if (!view) {
+            return;
+        }
+        this.setupView(view);
+        this.views.set(view.id, view);
+    }
+
+    private static readonly setupView = (view: BaseView) => {
+        if (view.isBottomPanel) {
+            this.output = view;
+        }
+
+        view.onDispose.subscribe(() => {
+            this.views.delete(view.id);
+            if (view === this.output) {
+                this.output = undefined;
+            }
+        });
+    }
 }

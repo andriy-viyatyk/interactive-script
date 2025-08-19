@@ -52,6 +52,6 @@ async function inlineTextInputDemo() {
     ui.success("End of Demo.");
 }
 
-inlineTextInputDemo().finally(() => {
-    process.exit(0);
-});
+inlineTextInputDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

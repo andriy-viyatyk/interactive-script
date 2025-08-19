@@ -30,6 +30,7 @@ This document provides a detailed reference for all available functions and comp
 * [`ui.dialog.checkboxes()`](#uidialogcheckboxes)
 * [`ui.dialog.radioboxes()`](#uidialogradioboxes)
 * [`ui.dialog.selectRecord()`](#uidialogselectrecord)
+* [`ui.dialog.gridInput()`](#uidialoggridinput)
 
 ### Inline Components
 * [`ui.inline.select()`](#uiinlineselect)
@@ -354,6 +355,54 @@ The method accepts either a simple array of records or a `SelectRecordData` obje
 
 **Usage Examples:**
 For comprehensive examples demonstrating the usage of `ui.dialog.selectRecord()`, including basic record selection, single vs. multiple modes, custom columns, and handling large datasets, please refer to the [Select Record Demo Script](../demo/components/ui.dialog.selectRecord.ts).
+
+### `ui.dialog.gridInput(param)` <a id="uidialoggridinput"></a>
+
+This method displays an editable grid component to the user, allowing them to add, edit, and delete rows of data. It supports various data types, column configurations, and includes functionality for pasting cell ranges (compatible with CSV format, like from Excel). The script execution pauses until the user interacts with the grid and submits their changes by clicking a button.
+
+**Parameters:**
+* `param`: An object containing the configuration for the grid input dialog.
+
+    * `title?: UiText`: Optional. A title to display at the top of the grid dialog. This can be a simple string or styled text.
+
+    * `columns?: GridColumn[]`: Optional. An array of column definitions for the grid. Each `GridColumn` object can specify:
+
+        * `key` (string): The unique identifier for the column, corresponding to the property name in your data objects.
+
+        * `title?` (string): The display title for the column header.
+
+        * `width?` (number): The initial width of the column in pixels.
+
+        * `dataType?` ("string" | "number" | "boolean"): Specifies the data type for validation and input behavior (e.g., a number input for age).
+
+        * `options?` (string[]): For columns representing a selection from predefined values (like a dropdown), an array of strings representing the available options.
+
+        * `readonly?` (boolean): If true, the cells in this column cannot be edited by the user.
+
+        * `hidden?` (boolean): If true, the column will not be visible to the user but its data can still be processed.
+
+    * `editOnly?` (boolean): If true, the user can only edit existing rows and cannot add or delete rows. Defaults to false.
+
+    * `buttons?: UiText[]`: Optional. An array of strings or UiText objects to be displayed as action buttons at the bottom of the grid dialog. If no buttons are provided, a default "Proceed" button will be displayed to submit the result.
+
+    * `result?: any[]`: Optional. This is a two-way parameter.
+
+        * **Input**: Used to pre-populate the grid with initial records or records for editing. Each object in the array should have properties matching the keys defined in columns.
+
+        * **Output**: (As part of the returned object) Contains the array of records after the user has made edits and submitted the grid.
+
+**Returns:**
+
+* `Promise<{ result?: any[]; resultButton?: string } | undefined>`: A promise that resolves with an object containing:
+
+    * `result?: any[]`: An array of the records as they were after the user's edits and submission.
+
+    * `resultButton?: string`: The string value of the label of the button that the user clicked to submit the grid.
+
+**Usage Examples:**
+
+For comprehensive examples demonstrating the usage of `ui.dialog.gridInput()`, please refer to the [Grid Input Demo Script](../demo/components/ui.dialog.gridInput.ts).
+
 
 ### Inline Components
 

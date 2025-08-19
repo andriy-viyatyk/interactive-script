@@ -38,10 +38,5 @@ async function paralelDemo() {
 }
 
 paralelDemo()
-    .catch((error) => {
-        ui.error("An error occurred: " + error.message);
-    })
-    .finally(() => {
-        ui.log("Demo completed.");
-        process.exit(0);
-    });
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

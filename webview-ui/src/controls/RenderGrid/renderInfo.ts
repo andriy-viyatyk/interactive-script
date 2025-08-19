@@ -647,6 +647,16 @@ export function calcScrollOffsetY(
     const size = renderInfo.input.size;
     const res = { ...currOffset };
 
+    const isLastRow = row >= renderInfo.input.rowCount - 1;
+    if (isLastRow) {
+        const maxOffsetY =
+            renderInfo.innerSize.height -
+            renderInfo.input.size.height +
+            renderInfo.input.scrollBarHeight;
+        res.y = maxOffsetY
+        return res;
+    }
+
     const visibleHeight =
         size.height -
         renderInfo.innerSize.stickyBottomHeight -
@@ -667,6 +677,11 @@ export function calcScrollOffsetY(
     }
     else if(rowAlign === "center") {
         res.y = cell.top - renderInfo.innerSize.stickyTopHeight + (cell.bottom - cell.top - visibleHeight) / 2;
+        if (res.y + visibleHeight > cell.bottom) {
+            res.y = cell.bottom - visibleHeight;
+        } else if (res.y < cell.top - renderInfo.innerSize.stickyTopHeight) {
+            res.y = cell.top - renderInfo.innerSize.stickyTopHeight;
+        }
     }
 
     return res;

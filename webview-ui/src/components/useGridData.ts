@@ -9,10 +9,17 @@ import { PackedGridArray, packedGridArrayType } from "../../../shared/PackedGrid
 const charWidth = 8; // Approximate width of a character in pixels
 const maxColumnWidth = 300; // Maximum column width in pixels
 
+const newColumnTypes = () => ({
+    stringCount: 0,
+    numberCount: 0,
+    booleanCount: 0,
+})
+
 function detectColumns(data: any[], withSelectColumn?: boolean): Column[] {
     const columnsMap = new Map<string, Column>();
-    data.forEach((row, idx) => {
-        if (idx > 1000) return; // Limit to 1000 rows for performance
+    const columnTypes = new Map<string, ReturnType<typeof newColumnTypes>>();
+
+    const checkRowColumns = (row: any) => {
         Object.keys(row).forEach((key) => {
             let column = columnsMap.get(key);
             if (!column) {
@@ -24,7 +31,9 @@ function detectColumns(data: any[], withSelectColumn?: boolean): Column[] {
                     filterType: "options",
                 };
                 columnsMap.set(key, column);
+                columnTypes.set(key, newColumnTypes())
             }
+            const colTypes = columnTypes.get(key)!;
             const value = row[key];
             if (value !== null && value !== undefined) {
                 const valueStr = String(value);
@@ -36,18 +45,61 @@ function detectColumns(data: any[], withSelectColumn?: boolean): Column[] {
                     maxColumnWidth
                 );
                 column.width = width;
+                if (typeof value === 'string') {
+                    colTypes.stringCount++;
+                } else if (typeof value === 'number') {
+                    colTypes.numberCount++;
+                } else if (typeof value === 'boolean') {
+                    colTypes.booleanCount++;
+                } else {
+                    colTypes.stringCount++;
+                }
             }
         });
+    }
+
+    // check ~1000 rows to detect columns:
+    // first 200, last 200 and 600 in the middle:
+    const lastCheck = data.length - 200;
+    const middleStep = Math.abs(Math.trunc((data.length - 400) / 600));
+    data.forEach((row, idx) => {
+        if (idx < 200 || idx >= lastCheck || middleStep === 0 || idx % middleStep === 0) {
+            checkRowColumns(row);
+        }
     });
+
+    const columns = [...columnsMap.values()];
+    columns.forEach(col => {
+        const colTypes = columnTypes.get(col.key as string)!;
+        if (colTypes.stringCount >= colTypes.numberCount) {
+            if (colTypes.stringCount >= colTypes.booleanCount) {
+                col.dataType = 'string';
+            } else {
+                col.dataType = 'boolean';
+            }
+        } else if (colTypes.numberCount >= colTypes.booleanCount) {
+            col.dataType = 'number';
+        } else {
+            col.dataType = 'boolean';
+        }
+    })
+
     return withSelectColumn
-        ? [SelectColumn, ...columnsMap.values()]
-        : [...columnsMap.values()];
+        ? [SelectColumn, ...columns]
+        : columns;
 }
 
 export const idColumnKey = "#intrnl-id";
 
 export function getRowKey(row: any) {
     return row?.[idColumnKey] ?? "";
+}
+
+export function createIdColumn(data: any[]) {
+    return data.map((row, index) => ({
+        ...row,
+        [idColumnKey]: index.toString(),
+    }))
 }
 
 export function getGridData(
@@ -71,15 +123,12 @@ export function getGridData(
         }
     }
 
-    rows = rows.map((row, index) => ({
-        ...row,
-        [idColumnKey]: index.toString(),
-    }));
+    rows = createIdColumn(rows); 
 
     return { columns, rows };
 }
 
-export function removeIdColumn(rows?: any[]): any[] | undefined {
+export function removeIdColumn(rows?: readonly any[]): any[] | undefined {
     if (!rows) return rows;
     return rows.map((row) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -104,6 +153,8 @@ export function getGridDataWithColumns(
                 key: column.key,
                 name: column.title ?? column.key,
                 width: column.width ?? existing?.width ?? 100,
+                dataType: column.dataType ?? existing?.dataType,
+                options: column.options ?? existing?.options,
                 resizible: true,
             };
             return c;
@@ -158,4 +209,21 @@ export function useGridDataWithColumns(
 
 export function useWorkingData(withColumns = false, delimiter = ","): GridData {
     return useMemo(() => getWorkingData(withColumns, delimiter), [withColumns, delimiter]);
+}
+
+export function useGridColumns(
+    columns?: GridColumn[],
+): Column[] {
+    return useMemo(() => {
+        return (columns ?? []).map((column): Column => ({
+            key: column.key,
+            name: column.title ?? column.key,
+            width: column.width ?? 100,
+            dataType: column.dataType ?? "string",
+            options: column.options,
+            readonly: column.readonly ?? false,
+            hidden: column.hidden ?? false,
+            resizible: true,
+        }));
+    }, [columns]);
 }

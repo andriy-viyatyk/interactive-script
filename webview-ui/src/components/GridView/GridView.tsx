@@ -5,10 +5,15 @@ import color from "../../theme/color";
 import { getRowKey } from "../useGridData";
 import { TextField } from "../../controls/TextField";
 import { Button } from "../../controls/Button";
-import { CloseIcon, CopyIcon, SearchIcon } from "../../theme/icons";
-import AVGrid, { AVGridRef } from "../../controls/AVGrid/AVGrid";
+import {
+    CloseIcon,
+    ColumnsIcon,
+    CopyIcon,
+    SaveAsIcon,
+    SearchIcon,
+} from "../../theme/icons";
+import AVGrid from "../../controls/AVGrid/AVGrid";
 import { GlobalRoot } from "../GlobalRoot";
-import { UiTextView } from "../OutputView/UiTextView";
 import { FlexSpace } from "../../controls/FlexSpace";
 import { gridViewModel } from "./GridViewModel";
 import { showCsvOptions } from "./CsvOptions";
@@ -17,6 +22,10 @@ import { showPopupMenu } from "../../dialogs/showPopupMenu";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FiltersProvider } from "../../controls/AVGrid/filters/useFilters";
 import { FilterBar } from "../../controls/AVGrid/filters/FilterBar";
+import { AVGridModel } from "../../controls/AVGrid/model/AVGridModel";
+import commands from "../../../../shared/commands";
+import { showColumnsOptions } from "./ColumnsOptions";
+import { useSaveAsItems } from "./useSaveAsItems";
 
 const GridViewRoot = styled(GlobalRoot)({
     position: "absolute",
@@ -73,20 +82,30 @@ const GridViewRoot = styled(GlobalRoot)({
 });
 
 export default function GridView() {
-    const gridRef = useRef<AVGridRef>(undefined);
+    const gridRef = useRef<AVGridModel<any>>(undefined);
     const model = gridViewModel;
-    model.gridRef = gridRef.current?.context;
+    model.gridRef = gridRef.current;
     const state = model.state.use();
     const copyItems = useCopyItems(gridRef);
+    const saveAsItems = useSaveAsItems();
     const [, /* unused */ setRefresh] = useState(0);
     const searchRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         model.updateGridData();
+
+        window.addEventListener("message", model.onWindowMessage);
+        model.sendMessage(commands.viewReady());
+
+        return () => {
+            window.removeEventListener("message", model.onWindowMessage);
+        };
     }, [model]);
 
     const onVisibleRowsChanged = useCallback(() => {
-        setTimeout(() => setRefresh(new Date().getTime()), 5);
+        Promise.resolve().then(() => {
+            setRefresh(new Date().getTime());
+        });
     }, []);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -106,7 +125,24 @@ export default function GridView() {
         >
             <GridViewRoot onKeyDown={handleKeyDown}>
                 <div className="app-header">
-                    <UiTextView uiText={state.title} className="title-text" />
+                    {!state.isCsv && (
+                        <Button
+                            size="mini"
+                            type="flat"
+                            title="Edit Columns"
+                            onClick={(e) => {
+                                if (gridRef.current) {
+                                    showColumnsOptions(
+                                        e.currentTarget,
+                                        gridRef.current,
+                                        model.onUpdateRows
+                                    );
+                                }
+                            }}
+                        >
+                            <ColumnsIcon />
+                        </Button>
+                    )}
                     <FlexSpace />
                     <span className="records-count">{model.recordsCount}</span>
                     <TextField
@@ -154,7 +190,7 @@ export default function GridView() {
                     <Button
                         size="small"
                         type="flat"
-                        title="Copy"
+                        title="Copy as..."
                         onClick={(e) => {
                             showPopupMenu(e.clientX, e.clientY, copyItems, {
                                 elementRef: e.currentTarget,
@@ -165,8 +201,22 @@ export default function GridView() {
                     >
                         <CopyIcon />
                     </Button>
+                    <Button
+                        size="small"
+                        type="flat"
+                        title="Save as..."
+                        onClick={(e) => {
+                            showPopupMenu(e.clientX, e.clientY, saveAsItems, {
+                                elementRef: e.currentTarget,
+                                placement: "bottom-end",
+                                offset: [0, 2],
+                            });
+                        }}
+                    >
+                        <SaveAsIcon />
+                    </Button>
                 </div>
-                <FilterBar className="filter-bar" />
+                <FilterBar className="filter-bar" gridModel={gridRef.current} />
                 <AVGrid
                     ref={gridRef}
                     columns={state.columns}
@@ -177,7 +227,10 @@ export default function GridView() {
                     searchString={state.search}
                     filters={state.filters}
                     onVisibleRowsChanged={onVisibleRowsChanged}
-                    focusOnClick
+                    editRow={model.editRow}
+                    onAddRows={model.onAddRows}
+                    onDeleteRows={model.onDeleteRows}
+                    onDataChanged={model.onDataChanged}
                 />
             </GridViewRoot>
         </FiltersProvider>

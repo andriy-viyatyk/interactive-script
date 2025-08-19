@@ -9,6 +9,8 @@ import { mockData } from './mock-data.ts';
 import { Poppers } from './dialogs/Poppers.tsx';
 import { Global } from '@emotion/react';
 import { globalStyles } from './theme/global-styles.ts';
+import './handleVSCodeDoubleFocus';
+import { showPopupMenu } from './dialogs/showPopupMenu.tsx';
 
 declare function acquireVsCodeApi(): any;
 
@@ -35,3 +37,8 @@ function renderApp() {
     </StrictMode>
   );
 }
+
+document.addEventListener('contextmenu', (e) => {
+    showPopupMenu(e.clientX, e.clientY, []);
+    e.preventDefault();
+});

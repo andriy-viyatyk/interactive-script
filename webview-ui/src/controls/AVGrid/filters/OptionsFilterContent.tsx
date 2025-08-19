@@ -92,15 +92,15 @@ export function OptionsFilterContent(
     const inputRef = React.useRef<HTMLInputElement | null>(null);
 
     const { filters } = useFilters();
-    const { columns } = useAVGridContext();
+    const model = useAVGridContext();
 
     useEffect(() => {
         inputRef.current?.focus();
     }, []);
 
     const optionsOrPromise = useMemo(() => {
-        return onGetOptions(columns, filters, filter.columnKey, undefined);
-    }, [onGetOptions, filter.columnKey, columns, filters]);
+        return onGetOptions(model.data.columns, filters, filter.columnKey, undefined);
+    }, [onGetOptions, filter.columnKey, model, filters]);
 
     const [options, loading] =
         useResolveOptions<TDisplayOption>(optionsOrPromise);
@@ -126,7 +126,7 @@ export function OptionsFilterContent(
     );
 
     const getOptionClass = useCallback((row: TDisplayOption) => {
-        if (!row.value && row.label === emptyLabel) {
+        if (!row.value && row.label === emptyLabel || row.italic) {
             return "empty-option";
         }
         return "";

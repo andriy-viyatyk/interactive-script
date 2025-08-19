@@ -26,6 +26,6 @@ async function gridDemo() {
     ui.info("Also you can open any json file in a grid using 'AV' button in the top right corner of the VSCode.");
 }
 
-gridDemo().finally(() => {
-    process.exit(0);
-});
+gridDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

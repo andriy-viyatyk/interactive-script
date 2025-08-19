@@ -42,9 +42,5 @@ async function handleConsoleDemo() {
 }
 
 handleConsoleDemo()
-    .catch((e) => {
-        console.error(e);
-    })
-    .finally(() => {
-        process.exit(0);
-    });
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

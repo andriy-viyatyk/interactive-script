@@ -33,6 +33,6 @@ async function confirmDemo() {
         .print();
 }
 
-confirmDemo().finally(() => {
-    process.exit(0);
-});
+confirmDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

@@ -17,6 +17,6 @@ async function showGridDemo() {
     ui.success("End of demo.");
 }
 
-showGridDemo().finally(() => {
-    process.exit(0);
-});
+showGridDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

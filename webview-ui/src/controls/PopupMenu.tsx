@@ -1,13 +1,14 @@
 import styled from '@emotion/styled';
-import React, { CSSProperties, ReactNode, useCallback, useMemo } from 'react';
+import React, { CSSProperties, ReactNode, useCallback, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 
 import RenderGrid from './RenderGrid/RenderGrid';
 import { Percent, RenderCellFunc } from './RenderGrid/types';
 import { Popper, PopperProps, PopperRoot } from './Popper';
 import color from '../theme/color';
+import RenderGridModel from './RenderGrid/RenderGridModel';
 
-const PopupMenuRoot = styled(PopperRoot)<{ height?: CSSProperties['height'] }>(
+const PopupMenuRoot = styled(PopperRoot)<{ height?: CSSProperties['height'], width?: CSSProperties['width'] }>(
     (props) => ({
         minWidth: 140,
         minHeight: 26,
@@ -15,6 +16,7 @@ const PopupMenuRoot = styled(PopperRoot)<{ height?: CSSProperties['height'] }>(
         maxWidth: 800,
         padding: '4px 0',
         height: props.height,
+        width: props.width,
         display: 'flex',
         flexDirection: 'column',
         '& .popup-menu-item': {
@@ -60,10 +62,11 @@ const PopupMenuRoot = styled(PopperRoot)<{ height?: CSSProperties['height'] }>(
 export interface MenuItem {
     label: string;
     onClick?: (e: React.MouseEvent<Element>) => void;
-    disabled?: boolean;
+    disabled?: boolean | Promise<boolean>;
     icon?: ReactNode;
-    invisible?: boolean;
+    invisible?: boolean | Promise<boolean>;
     startGroup?: boolean;
+    title?: string;
 }
 
 export interface PopupMenuProps extends PopperProps {
@@ -77,16 +80,59 @@ const whiteSpaceY = 0;
 
 export function PopupMenu(props: PopupMenuProps) {
     const { items: itemsProps, onClose: propsOnClose, ...popperProps } = props;
+    const [promiseMap, setPromiseMap] = React.useState<Map<Promise<any>, boolean>>(new Map());
+    const gridRef = React.useRef<RenderGridModel>(null);
 
-    const items = useMemo(() => {
+    useEffect(() => {
+        let isLive = true;
+        const promises = [] as Promise<any>[];
+        itemsProps.forEach((item) => {
+            if (item.invisible instanceof Promise) {
+                promises.push(item.invisible);
+            }
+            if (item.disabled instanceof Promise) {
+                promises.push(item.disabled);
+            }
+        })
+        const results = Promise.all(promises);
+        results.then((values) => {
+            if (!isLive) return;
+            const newMap = new Map<Promise<any>, boolean>();
+            values.forEach((value, index) => {
+                newMap.set(promises[index], value);
+            });
+            setPromiseMap(newMap);
+        });
+
+        return () => {
+            isLive = false;
+        }
+    }, [itemsProps]);
+
+    const promiseValue = useCallback((value: boolean | Promise<boolean> | undefined, defaultValue: boolean) => {
+        if (value === undefined) return undefined;
+        if (value instanceof Promise) {
+            return promiseMap.get(value) ?? defaultValue;
+        }
+        return value;
+    }, [promiseMap]);
+
+    useEffect(() => {
+        gridRef.current?.update({ all: true });
+    }, [promiseMap]);
+
+    const { items, width } = useMemo(() => {
         const prepared = [...itemsProps];
+        let maxLength = 0;
         prepared.forEach((item, i) => {
-            if (item.startGroup && item.invisible && i < prepared.length - 1) {
+            maxLength = Math.max(maxLength, item.label.length);
+            if (item.startGroup && promiseValue(item.invisible, true) && i < prepared.length - 1) {
                 prepared[i + 1] = { ...prepared[i + 1], startGroup: true };
             }
         });
-        return prepared.filter((item) => !item.invisible);
-    }, [itemsProps]);
+        const items = prepared.filter((item) => !item.invisible);
+        return {items, width: maxLength * 8 + 32};
+    }, [itemsProps, promiseValue]);
 
     const popupHeight = Math.min(
         rowHeight * items.length + whiteSpaceY,
@@ -104,16 +150,17 @@ export function PopupMenu(props: PopupMenuProps) {
                 style={p.style}
                 key={p.key}
                 className={clsx('popup-menu-item', {
-                    disabled: item.disabled,
+                    disabled: promiseValue(item.disabled, true),
                     startGroup: item.startGroup && p.row > 0,
                 })}
                 onClick={(e) => {
                     e.stopPropagation();
-                    if (!item.disabled) {
+                    if (!promiseValue(item.disabled, true)) {
                         onClose();
                         item.onClick?.(e);
                     }
                 }}
+                title={item.title}
             >
                 <span className="popup-menu-item-icon">
                     {Boolean(item.icon) && item.icon}
@@ -125,8 +172,9 @@ export function PopupMenu(props: PopupMenuProps) {
 
     return (
         <Popper onClose={onClose} {...popperProps}>
-            <PopupMenuRoot height={popupHeight}>
+            <PopupMenuRoot height={popupHeight} width={width}>
                 <RenderGrid
+                    ref={gridRef}
                     rowCount={items.length}
                     columnCount={1}
                     columnWidth={columnWidth}

@@ -1,8 +1,8 @@
 import { stringify } from "csv-stringify/browser/esm/sync";
 import { parse } from "csv-parse/browser/esm/sync";
 
-export function recordsToCsv(records: Array<any>, columns: Array<string | undefined>, options = {}): string {
-    return stringify(records, 
+export function recordsToCsv(records: readonly any[], columns: Array<string | undefined>, options = {}): string {
+    return stringify([...records], 
         {
             header: true, 
             columns: columns.map(col => col === undefined ? "undefined" : col), 

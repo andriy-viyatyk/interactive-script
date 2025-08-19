@@ -38,6 +38,6 @@ async function buttonsDemo() {
     ui.success("\nDemo completed.");
 }
 
-buttonsDemo().finally(() => {
-    process.exit(0);
-});
+buttonsDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

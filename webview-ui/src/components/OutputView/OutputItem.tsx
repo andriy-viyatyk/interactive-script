@@ -1,5 +1,7 @@
 import styled from "@emotion/styled";
-import { forwardRef, ReactNode } from "react";
+import { forwardRef, ReactNode, useCallback } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+
 import { CommandLogView } from "./Commands/CommandLogView";
 import { ViewMessage } from "../../../../shared/ViewMessage";
 import { isLogCommand } from "../../../../shared/commands/log";
@@ -35,6 +37,9 @@ import { CommandFileOpenView } from "./Commands/CommandFileOpenView";
 import { isFileShowOpenCommand } from "../../../../shared/commands/file-showOpen";
 import { isFileShowOpenFolderCommand } from "../../../../shared/commands/file-showOpenFolder";
 import { isFileShowSaveCommand } from "../../../../shared/commands/file-showSave";
+import color from "../../theme/color";
+import { isInputGridCommand } from "../../../../shared/commands/input-grid";
+import { CommandGridInputView } from "./Commands/CommandGridInput";
 
 const OutputItemRoot = styled.div({
     lineHeight: "1.4em",
@@ -123,11 +128,26 @@ export const OutputItem = forwardRef(function OutputItemComponent(
         el = <CommandFileOpenView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize} />;
     } else if (isFileShowSaveCommand(item)) {
         el = <CommandFileOpenView item={item} replayMessage={replayMessage} updateMessage={updateMessage} onCheckSize={onCheckSize} />;
+    } else if (isInputGridCommand(item)) {
+        el = <CommandGridInputView item={item} replayMessage={replayMessage} updateMessage={updateMessage} />;
     }
+
+    const fallbackRender = useCallback(({ error }: any) => {
+        return (
+            <>
+                <p>Something wrong with command:</p>
+                <pre style={{ color: color.misc.cian }}>{JSON.stringify(item, null, 4)}</pre>
+                <p style={{ color: color.misc.red }}>Error:</p>
+                <pre style={{ color: color.misc.red }}>{error.message}</pre>
+            </>
+        );
+    }, [item]);
 
     return (
         <OutputItemRoot className="output-item" ref={ref}>
-            {el}
+            <ErrorBoundary fallbackRender={fallbackRender}>
+                {el}
+            </ErrorBoundary>
         </OutputItemRoot>
     );
 });

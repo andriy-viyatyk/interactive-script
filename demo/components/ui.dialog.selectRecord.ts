@@ -38,6 +38,6 @@ async function selectRecordDemo() {
     ui.success("End of demo.");
 }
 
-selectRecordDemo().finally(() => {
-    process.exit(0);
-});
+selectRecordDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

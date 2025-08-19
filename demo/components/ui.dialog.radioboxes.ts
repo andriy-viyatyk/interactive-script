@@ -78,7 +78,6 @@ async function radioboxesDemo() {
     ui.success("End of demo.");
 }
 
-radioboxesDemo().finally(() => {
-    process.exit(0);
-});
-
+radioboxesDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

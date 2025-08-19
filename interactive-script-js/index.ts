@@ -31,6 +31,7 @@ import { FileSaveCommand, FileSaveData } from "../shared/commands/file-save";
 import { FileShowOpenCommand, FileShowOpenData } from "../shared/commands/file-showOpen";
 import { FileShowSaveCommand, FileShowSaveData } from "../shared/commands/file-showSave";
 import { FileShowOpenFolderCommand, FileShowOpenFolderData } from "../shared/commands/file-showOpenFolder";
+import { InputGridCommand, InputGridData } from "../shared/commands/input-grid";
 
 const ui = {
     ping: () => responseHandler.send(commands.ping()),
@@ -137,7 +138,17 @@ const ui = {
             } else {
                 return undefined;
             }
-        }
+        },
+
+        gridInput: async (param: InputGridData) => {
+            const message = commands.inputGrid(param);
+            const response = await responseHandler.send(message);
+            if (response) {
+                return (response as InputGridCommand).data;
+            } else {
+                return undefined;
+            }
+        },
 
     },
     inline: {

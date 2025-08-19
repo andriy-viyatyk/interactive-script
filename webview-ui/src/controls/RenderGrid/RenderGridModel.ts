@@ -460,14 +460,21 @@ export default class RenderGridModel extends TComponentModel<
             this.updateRenderInfo();
         } else if (!this.updateCalled) {
             this.updateCalled = true;
-            setTimeout(() => {
+            Promise.resolve().then(() => {
                 this.updateCalled = false;
                 if (this.isLive && this.rerenderInfo) {
                     this.updateRenderInfo();
                 }
-            }, 80);
+            });
         }
     };
+
+    get visibleRowCount() {
+        const visible = this.renderInfo.current.visible;
+        return visible
+            ? visible.bottom - visible.top + 1
+            : 0;
+    }
 
     async scrollTo(row: number, col: number) {
         const container = await this.containerRef.async;

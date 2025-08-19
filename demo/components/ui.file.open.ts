@@ -32,6 +32,6 @@ async function fileOpenDemo() {
     ui.success("End of Demo");
 }
 
-fileOpenDemo().finally(() => {
-    process.exit(0);
-});
+fileOpenDemo()
+    .catch(e => console.error(e))
+    .finally(() => process.exit(0));

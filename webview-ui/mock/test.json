@@ -13,7 +13,7 @@
         "age": 34,
         "email": "janesmith@example.com",
         "status": "Inactive",
-        "isSelected": true
+        "isSelected": 55
     },
     {
         "id": 3,
@@ -21,7 +21,7 @@
         "age": 25,
         "email": "alicejohnson@example.com",
         "status": "Active",
-        "isSelected": false
+        "isSelected": "test"
     },
     {
         "id": 4,

@@ -13,6 +13,7 @@ from .commands.output_grid import GridCommand
 from .commands.output_progress import ProgressCommand
 from .commands.output_text import TextCommand
 from .commands.input_text import TextInputCommand
+from .commands.input_grid import GridInputCommand
 from .commands.window_show_grid import WindowGridCommand
 from .commands.window_show_text import WindowTextCommand
 from .commands.input_select_record import SelectRecordCommand
@@ -45,6 +46,7 @@ MESSAGE_TYPE_MAPPING: Dict[str, type[ViewMessage]] = {
     "input.radioboxes": RadioboxesCommand,
     "input.text": TextInputCommand,
     "input.selectRecord": SelectRecordCommand,
+    "input.grid": GridInputCommand,
     "inline.select": SelectCommand,
     "inline.confirm": InlineConfirmCommand,
     "inline.text": InlineTextInputCommand,
