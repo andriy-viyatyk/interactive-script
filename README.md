@@ -107,7 +107,7 @@ The extension provides a dedicated [Grid Editor](documentation/grid.md) for JSON
 - Seamless Integration: Built on VS Code's native text file capabilities, ensuring real-time synchronization with external edits and full support for VS Code's built-in Undo/Redo functionality (for data changes).
 - Export/copy options: `Copy as JSON`, `Copy as CSV`, `Copy formatted (HTML table for pasting into Word, Outlook, etc.)`.
 
-![Example snippet output](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/grid-viewer.png)
+![Example snippet output](https://raw.githubusercontent.com/andriy-viyatyk/interactive-script/main/images/grid-demo.gif)
 
 
 ## Why use Interactive Script?
