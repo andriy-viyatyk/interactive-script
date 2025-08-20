@@ -95,6 +95,7 @@ The script’s outputs (styled logs, dialogs, grids, etc.) appear inside **"Scri
 The extension provides a dedicated [Grid Editor](documentation/grid.md) for JSON and CSV files, enabling you to view, modify, and manage your data directly within VS Code. You can open files with the Grid Editor in several ways:
 
 - A **button in the top right corner** of VS Code (visible when a JSON or CSV file is active) allows you to open that file in a grid editor.
+- The editor is also registered by the extension as the **default editor for files with extensions `*.grid.json` and `*.grid.csv`**.
 - Programmatically via `ui.window.showGrid(jsonArray)` from within a script.
 
 ### The grid supports:
