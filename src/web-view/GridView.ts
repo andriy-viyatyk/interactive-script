@@ -3,7 +3,7 @@ import * as path from "path";
 
 import { BaseView } from "./BaseView";
 import { WebViewInput } from "../../shared/types";
-import { gridEditorChangedCommand, GridEditorSaveAsData, isGridEditorChangedCommand, isGridEditorCommand, isGridEditorSaveAsCommand } from "../../shared_internal/grid-editor-commands";
+import { gridEditorChangedCommand, GridEditorSaveAsData, isGridEditorChangedCommand, isGridEditorCommand, isGridEditorOpenLinkCommand, isGridEditorSaveAsCommand } from "../../shared_internal/grid-editor-commands";
 import { ViewMessage } from "../../shared/ViewMessage";
 import { checkEditorAssociations } from "../utils/utils";
 
@@ -62,6 +62,10 @@ export class GridView extends BaseView implements vscode.CustomTextEditorProvide
                 this.updateDocumentContent(message.data.content ?? "");
             } else if (isGridEditorSaveAsCommand(message) && message.data) {
                 this.saveAs(message.data);
+            } else if (isGridEditorOpenLinkCommand(message) && message.data) {
+                const { url } = message.data;
+                const uri = vscode.Uri.parse(url);
+                vscode.env.openExternal(uri);
             }
 
             return;

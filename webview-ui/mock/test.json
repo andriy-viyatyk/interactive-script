@@ -4,6 +4,7 @@
         "name": "John Doe",
         "age": 28,
         "email": "johndoe_some_long_text_here@example.com",
+        "website": "https://johndoe.com",
         "status": "Active",
         "isSelected": false
     },
@@ -12,6 +13,7 @@
         "name": "Jane Smith",
         "age": 34,
         "email": "janesmith@example.com",
+        "website": "https://janesmith.com",
         "status": "Inactive",
         "isSelected": 55
     },
@@ -20,6 +22,7 @@
         "name": "Alice Johnson",
         "age": 25,
         "email": "alicejohnson@example.com",
+        "website": "https://alicejohnson.com",
         "status": "Active",
         "isSelected": "test"
     },
@@ -28,6 +31,7 @@
         "name": "Bob Brown",
         "age": 40,
         "email": "bobbrown@example.com",
+        "website": "https://bobbrown.com",
         "status": "Inactive",
         "isSelected": false
     },

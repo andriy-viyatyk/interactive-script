@@ -1,6 +1,6 @@
 import { Command, newMessage, ViewMessage } from "../shared/ViewMessage";
 
-export type GridEditorCommand = Command | "gridEditor.changed" | "gridEditor.saveAs";
+export type GridEditorCommand = Command | "gridEditor.changed" | "gridEditor.saveAs" | "gridEditor.openLink";
 
 export function isGridEditorCommand(message: ViewMessage<any, string>): boolean {
     return  message.command.startsWith("gridEditor.");
@@ -38,3 +38,19 @@ export function isGridEditorSaveAsCommand(message: ViewMessage<any, string>): me
 }
 
 export const gridEditorSaveAsCommand = (data: GridEditorSaveAsData) => newMessage("gridEditor.saveAs", data) as GridEditorSaveAsCommand;
+
+// open link
+
+export interface GridEditorOpenLinkData {
+    url: string;
+}
+
+export interface GridEditorOpenLinkCommand extends ViewMessage<GridEditorOpenLinkData, GridEditorCommand> {
+    command: "gridEditor.openLink";
+}
+
+export function isGridEditorOpenLinkCommand(message: ViewMessage<any, string>): message is GridEditorOpenLinkCommand {
+    return message.command === "gridEditor.openLink";
+}
+
+export const gridEditorOpenLinkCommand = (data: GridEditorOpenLinkData) => newMessage("gridEditor.openLink", data) as GridEditorOpenLinkCommand;

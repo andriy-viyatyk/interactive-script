@@ -32,7 +32,8 @@ export async function mockData() {
                     { key: "age", dataType: "number" },
                     { key: "email", dataType: "string" },
                     { key: "status", dataType: "string", options: ["Active", "Inactive"] },
-                    { key: "isSelected", dataType: "boolean" }
+                    { key: "isSelected", dataType: "boolean" },
+                    { key: "website", dataType: "string" },
                 ] : undefined,
                 csvData: !jsonData && data ? data : undefined,
                 gridTitle: [

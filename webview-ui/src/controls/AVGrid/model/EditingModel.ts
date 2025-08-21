@@ -278,7 +278,7 @@ export class EditingModel<R> {
                 editState.rowKey !== focus.rowKey
             ) {
                 const { column } = this.getCellForEdit();
-                if (column && column.dataType !== "boolean") {
+                if (column && column.dataType !== "boolean" && !data.e.ctrlKey) {
                     data.e.stopPropagation();
                     data.e.preventDefault();
                     this.openEdit(

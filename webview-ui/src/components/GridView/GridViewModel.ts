@@ -24,6 +24,7 @@ import {
 import { AVGridModel } from "../../controls/AVGrid/model/AVGridModel";
 import {
     gridEditorChangedCommand,
+    gridEditorOpenLinkCommand,
     gridEditorSaveAsCommand,
     isGridEditorChangedCommand,
     isGridEditorCommand,
@@ -40,6 +41,7 @@ const defaultGridViewState = {
     withColumns: false,
     delimiter: ",",
     filters: [] as TFilter[],
+    ctrlPressed: false
 };
 
 type GridViewState = typeof defaultGridViewState;
@@ -232,6 +234,47 @@ class GridViewModel extends TModel<GridViewState> {
         const { delimiter, withColumns, isCsv } = this.state.get();
         const content = this.getCsvContent(delimiter, isCsv ? withColumns : true);
         this.sendMessage(gridEditorSaveAsCommand({ content, format: "csv" }));
+    };
+
+    private isHoveredCell = (row: any, col: Column) => {
+        const { rows, columns, hovered } = this.gridRef?.data ?? {};
+        return hovered && rows && columns && hovered.row >= 0 && hovered.col >= 0
+            && row === rows[hovered.row] && col === columns[hovered.col];
+    };
+
+    private isLinkCell = (row: any, col: Column) => {
+        const value = row[col.key];
+        return typeof value === "string" && (
+            value.startsWith("http://") || value.startsWith("https://")
+        );
+    }
+
+    setCtrlPressed = (pressed: boolean) => {
+        this.state.update((s) => {
+            s.ctrlPressed = pressed;
+        });
+        if (this.gridRef) {
+            const hovered = this.gridRef.data.hovered;
+            if (hovered.row >= 0 && hovered.col >= 0) {
+                this.gridRef.update({ cells: [{row: hovered.row + 1, col: hovered.col}]})
+            }
+        }
+    };
+
+    getCellClass = (row: any, col: Column) => {
+        if (this.isHoveredCell(row, col) && this.isLinkCell(row, col) && this.state.get().ctrlPressed) {
+            return "hovered-link-cell";
+        }
+        return "";
+    }
+
+    cellClick = (row: any, col: Column) => {
+        if (this.isLinkCell(row, col) && this.state.get().ctrlPressed) {
+            const value = row[col.key];
+            if (typeof value === "string") {
+                this.sendMessage(gridEditorOpenLinkCommand({ url: value }));
+            }
+        }
     };
 }
 

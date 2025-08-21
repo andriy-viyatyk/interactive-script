@@ -79,6 +79,10 @@ const GridViewRoot = styled(GlobalRoot)({
             color: color.text.light,
         },
     },
+    "& .hovered-link-cell": {
+        textDecoration: "underline",
+        cursor: "pointer",
+    }
 });
 
 export default function GridView() {
@@ -115,7 +119,20 @@ export default function GridView() {
                 searchRef.current.focus();
             }
         }
-    }, []);
+        if (e.code === "ControlLeft" || e.code === "ControlRight") {
+            model.setCtrlPressed(true);
+        }
+    }, [model]);
+
+    const handleKeyUp = useCallback((e: React.KeyboardEvent) => {
+        if (e.code === "ControlLeft" || e.code === "ControlRight") {
+            model.setCtrlPressed(false);
+        }
+    }, [model]);
+
+    const handleBlur = useCallback(() => {
+        model.setCtrlPressed(false);
+    }, [model]);
 
     return (
         <FiltersProvider
@@ -123,7 +140,7 @@ export default function GridView() {
             setFilters={model.setFilters}
             onGetOptions={model.onGetOptions}
         >
-            <GridViewRoot onKeyDown={handleKeyDown}>
+            <GridViewRoot onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} onBlur={handleBlur}>
                 <div className="app-header">
                     {!state.isCsv && (
                         <Button
@@ -231,6 +248,8 @@ export default function GridView() {
                     onAddRows={model.onAddRows}
                     onDeleteRows={model.onDeleteRows}
                     onDataChanged={model.onDataChanged}
+                    onCellClass={model.getCellClass}
+                    onClick={model.cellClick}
                 />
             </GridViewRoot>
         </FiltersProvider>
